@@ -47,6 +47,28 @@ print(c.generators)
 #### To run Evolve in terminal, navigate to the working directory /phdCode/NEMO and then:
 #python3 evolve ..... 
 
-
+#This creates an Evolve Icon and saves it on my desk top
 from pyshortcuts import make_shortcut
 make_shortcut("/Users/elonarey-costa/Documents/phdCode/NEMO/evolve.py", name = 'Evolve', icon= '/Users/elonarey-costa/Documents/phdCode/NEMO/myicon.ico')
+
+#def re100_nocst(context):
+ #   """100% renewables, but no CST."""
+  #  re100(context)
+   # newlist = [g for g in context.generators if not isinstance(g, CST)]
+    #context.generators = newlist
+
+
+#Practicing with a custome scenario 
+#Includes: Solar, Wind, PumpedHydro, Hydro, Batteries in that merit order 
+#No CST, no biofuels 
+
+
+#start by importing nemo
+import nemo
+#Then we need to load in the scenarios 
+from nemo import scenarios
+#context is a class. We are setting up a default context  object? 
+c = nemo.Context()
+scenarios.re100SWH(c)
+scenarios.re100SWH_batteries(c)
+print(c.generators)

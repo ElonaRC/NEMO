@@ -127,6 +127,28 @@ def re100_batteries(context):
     battery = Battery(WILDCARD, 0, 0, discharge_hours=hrs)
     context.generators.insert(0, battery)
 
+def re100SWH(context):
+    """100% renewable electricity with only PV, Wind, Hydro."""
+    result = []
+    # The following list is in merit order.
+    for g in [PV1Axis, Wind, PumpedHydro, Hydro]:
+        if g == PumpedHydro:
+            result += [h for h in _hydro() if isinstance(h, PumpedHydro)]
+        elif g == Hydro:
+            result += [h for h in _hydro() if not isinstance(h, PumpedHydro)]
+        elif g in [PV1Axis, Wind]:
+            result += _every_poly(g)
+        else:
+            raise ValueError('unhandled generator type')  # pragma: no cover
+    context.generators = result
+
+def re100SWH_batteries(context):
+    """Takes SWH and adds battery."""
+    re100SWH(context)
+    # discharge between 6pm and 6am daily
+    hrs = list(range(0, 7)) + list(range(18, 24))
+    battery = Battery(WILDCARD, 0, 0, discharge_hours=hrs)
+    context.generators.insert(0, battery)
 
 def _one_per_poly(region):
     """Return three lists of wind, PV and CST generators, one per polygon."""
@@ -218,7 +240,6 @@ def re100_south_aus(context):
     """100% renewables in South Australia only."""
     re100_one_region(context, regions.sa)
 
-
 supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     'ccgt': ccgt,
                     'ccgt-ccs': ccgt_ccs,
@@ -230,6 +251,8 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100-nsw': re100_nsw,
                     're100-sa': re100_south_aus,
                     're100+batteries': re100_batteries,
+                    're100SWH': re100SWH, 
+                    're100SWH+batteries': re100SWH_batteries,
                     're100+dsp': re100_dsp,
                     're100-nocst': re100_nocst,
                     'replacement': replacement}
