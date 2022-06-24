@@ -127,8 +127,9 @@ def re100_batteries(context):
     battery = Battery(WILDCARD, 0, 0, discharge_hours=hrs)
     context.generators.insert(0, battery)
 
+
 def re100SWH(context):
-    """100% renewable electricity with only PV, Wind, Hydro."""
+    """100% renewable electricity."""
     result = []
     # The following list is in merit order.
     for g in [PV1Axis, Wind, PumpedHydro, Hydro]:
@@ -137,11 +138,16 @@ def re100SWH(context):
         elif g == Hydro:
             result += [h for h in _hydro() if not isinstance(h, PumpedHydro)]
         elif g in [PV1Axis, Wind]:
-            result += _every_poly(g)
+            for poly in [4, 19, 30, 37, 41]:
+                result += result.append(g(poly, 50, cfg, poly - 1,
+                                  build_limit=wind_limit[poly],
+                                  label=f'polygon {poly} wind'))
+            #result += _every_poly(g)
+            return result
         else:
             raise ValueError('unhandled generator type')  # pragma: no cover
     context.generators = result
-    
+
 
 def re100SWH_batteries(context):
     """Takes SWH and adds battery."""
