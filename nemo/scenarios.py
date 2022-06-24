@@ -141,14 +141,18 @@ def re100SWH(context):
         else:
             raise ValueError('unhandled generator type')  # pragma: no cover
     context.generators = result
+    context.generators[]
+    
 
 def re100SWH_batteries(context):
     """Takes SWH and adds battery."""
     re100SWH(context)
     # discharge between 6pm and 6am daily
     hrs = list(range(0, 7)) + list(range(18, 24))
-    battery = Battery(WILDCARD, 0, 0, discharge_hours=hrs)
-    context.generators.insert(0, battery)
+    battery = Battery(4, 1000, 1500, discharge_hours=hrs, rte = 1)
+    #context.generators.insert(0, battery)
+    context.generators = [battery] + context.generators
+
 
 def _one_per_poly(region):
     """Return three lists of wind, PV and CST generators, one per polygon."""
