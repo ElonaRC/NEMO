@@ -31,7 +31,7 @@ c = nemo.Context()
 
 #Select my chosen scenario
 #Just SWH
-scenarios.re100SWH(c)
+scenarios.re100SWH_batteries(c)
 #SWH + battery
 #scenarios.re100_batteries(c)
 
