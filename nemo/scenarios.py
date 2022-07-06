@@ -128,9 +128,32 @@ def re100_batteries(context):
     context.generators.insert(0, battery)
 
 
-def re100SWH(context):
-    """100% renewable electricity."""
+""" Start Elona's Scenarios """
+
+def one_in_eachstate(gentype):
+    """Create one generator of type gentype (only solar and wind) in each state."""
+    """Capacity of 25 GW for each PV and Wind site = 250 GW """
     result = []
+    for poly in range[17, 23, 37, 39, 26 ]: #Brisbane (QLD), Dubbo (NSW), Ballarat (VIC), Queenstown (TAS), Port Lincoln (SA) 
+        if gentype == PV1Axis:
+            cfg = configfile.get('generation', 'pv1axis-trace')
+            result.append(gentype(poly, 25, cfg, poly - 1,
+                                  build_limit=pv_limit[poly],
+                                  label=f'polygon {poly} PV'))
+        elif gentype == Wind:
+            cfg = configfile.get('generation', 'wind-trace')
+            result.append(gentype(poly, 25, cfg, poly - 1,
+                                  build_limit=wind_limit[poly],
+                                  label=f'polygon {poly} wind'))
+    return result
+
+
+def re100SWH(context):
+    """100% renewable electricity with only PV, Wind, Hydro."""
+    """This will populate all polygons with an empty PV and Wind genererator & """
+    """Put hydro and pumped hydro where they should be located"""
+    result = []
+
     # The following list is in merit order.
     for g in [PV1Axis, Wind, PumpedHydro, Hydro]:
         if g == PumpedHydro:
@@ -138,12 +161,7 @@ def re100SWH(context):
         elif g == Hydro:
             result += [h for h in _hydro() if not isinstance(h, PumpedHydro)]
         elif g in [PV1Axis, Wind]:
-            for poly in [4, 19, 30, 37, 41]:
-                result += result.append(g(poly, 50, cfg, poly - 1,
-                                  build_limit=wind_limit[poly],
-                                  label=f'polygon {poly} wind'))
-            #result += _every_poly(g)
-            return result
+            result += one_in_eachstate(g)
         else:
             raise ValueError('unhandled generator type')  # pragma: no cover
     context.generators = result
@@ -153,11 +171,11 @@ def re100SWH_batteries(context):
     """Takes SWH and adds battery."""
     re100SWH(context)
     # discharge between 6pm and 6am daily
-    hrs = list(range(0, 7)) + list(range(18, 24))
-    battery = Battery(4, 1000, 1500, discharge_hours=hrs, rte = 1)
-    #context.generators.insert(0, battery)
-    context.generators = [battery] + context.generators
+    hrs = range(0,24)
+    battery = Battery(23, 1000, 1500, discharge_hours=hrs, rte = 1)
+    context.generators.insert(0, battery)
 
+""" End Elonas Scenarios"""
 
 def _one_per_poly(region):
     """Return three lists of wind, PV and CST generators, one per polygon."""
