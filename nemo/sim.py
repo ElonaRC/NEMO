@@ -69,8 +69,7 @@ def _store_spills(context, hour, gen, generators, spl):
         # energy stored <= energy transferred, according to store's RTE
         if context.verbose:
             # show the energy transferred, not stored
-            print('STORE:', gen.polygon, '->', end=' ')
-            print(other.polygon, f'({stored:.1f})')
+            print('STORE:', gen, '->', other, f'({stored:.1f})')
     return spl
 
 
@@ -105,7 +104,7 @@ def _dispatch(context, hour, residual_hour_demand, gens, generation, spill):
 
         if context.verbose:
             print(f'GENERATOR: {generator},',
-                  f'generation: {generation[hour, gidx]:.1f}',
+                  f'generation: {gen:.1f}',
                   f'spill: {spl:.1f}',
                   f'residual-demand: {residual_hour_demand:.1f}',
                   f'async-demand: {async_demand:.1f}')

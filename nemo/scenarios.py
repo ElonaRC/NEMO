@@ -12,8 +12,10 @@
 from nemo import configfile, regions
 from nemo.generators import (CCGT, CCGT_CCS, CST, OCGT, Battery, Biofuel,
                              Black_Coal, CentralReceiver, Coal_CCS,
-                             DemandResponse, Hydro, PumpedHydro, PV1Axis, Wind)
-from nemo.polygons import (WILDCARD, cst_limit, pv_limit, wind_limit)
+                             DemandResponse, Hydro, PumpedHydro, PV1Axis, Wind,
+                             WindOffshore)
+from nemo.polygons import (WILDCARD, cst_limit, pv_limit, wind_limit,
+                           offshore_wind_limit)
 
 
 def _demand_response():
@@ -106,12 +108,18 @@ def re100(context):
     """100% renewable electricity."""
     result = []
     # The following list is in merit order.
-    for g in [PV1Axis, Wind, PumpedHydro, Hydro, CentralReceiver,
-              Biofuel]:
+    for g in [PV1Axis, Wind, WindOffshore, PumpedHydro, Hydro,
+              CentralReceiver, Biofuel]:
         if g == PumpedHydro:
             result += [h for h in _hydro() if isinstance(h, PumpedHydro)]
         elif g == Hydro:
             result += [h for h in _hydro() if not isinstance(h, PumpedHydro)]
+        elif g == WindOffshore:
+            cfg = configfile.get('generation', 'offshore-wind-trace')
+            for column, poly in enumerate([31, 36, 38, 40]):
+                result.append(g(poly, 0, cfg, column,
+                                build_limit=offshore_wind_limit[poly],
+                                label='polygon {poly} offshore'))
         elif g in [Biofuel, PV1Axis, CentralReceiver, Wind]:
             result += _every_poly(g)
         else:
@@ -124,7 +132,7 @@ def re100_batteries(context):
     re100(context)
     # discharge between 6pm and 6am daily
     hrs = list(range(0, 7)) + list(range(18, 24))
-    battery = Battery(WILDCARD, 0, 0, discharge_hours=hrs)
+    battery = Battery(WILDCARD, 0, 4, discharge_hours=hrs)
     context.generators.insert(0, battery)
 
 def re100SWH(context):

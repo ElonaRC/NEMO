@@ -30,7 +30,7 @@ dummy_arguments = {'self': None,
                    'intensity': 0.7,
                    'capture': 0.85,
                    'solarmult': 2.5,
-                   'shours': 15,
+                   'shours': 8,
                    'cost_per_mwh': 1000,
                    'kwh_per_litre': 10,
                    'tank': hydrogen_storage,
@@ -53,7 +53,7 @@ class TestGenerators(unittest.TestCase):
         self.generators = []
 
         for (cls, clstype) in self.classes:
-            if cls in ['Generator', 'Patch', 'HydrogenStorage']:
+            if cls in ['Generator', 'Storage', 'Patch', 'HydrogenStorage']:
                 # imported via matplotlib
                 continue
             args = inspect.getfullargspec(clstype.__init__).args
@@ -151,7 +151,7 @@ class TestGenerators(unittest.TestCase):
                 self.assertEqual(gen.maxstorage, gen.capacity * testvalue)
                 self.assertEqual(gen.stored, 0.5 * gen.maxstorage)
             elif isinstance(gen, generators.Battery):
-                testvalue = 10
+                testvalue = 4
                 gen.set_storage(testvalue)
                 self.assertEqual(gen.maxstorage, gen.capacity * testvalue)
                 self.assertEqual(gen.stored, 0)
@@ -165,3 +165,27 @@ class TestGenerators(unittest.TestCase):
         """Test __repr__() method."""
         for gen in self.generators:
             repr(gen)
+
+
+class TestStorage(unittest.TestCase):
+    """Test Storage class."""
+
+    def test_initialisation(self):
+        """Test constructor."""
+        storage = generators.Storage()
+        self.assertEqual(storage.series_charge, {})
+
+    def test_record(self):
+        """Test record() method."""
+        storage = generators.Storage()
+        storage.record(0, 100)
+        storage.record(0, 50)
+        storage.record(1, 75)
+        self.assertEqual(storage.series_charge, {0: 150, 1: 75})
+
+    def test_reset(self):
+        """Test reset() method."""
+        storage = generators.Storage()
+        storage.series_charge = {0: 150}
+        storage.reset()
+        self.assertEqual(storage.series_charge, {})
