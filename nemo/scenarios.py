@@ -141,7 +141,6 @@ def re100SWH(context):
         else:
             raise ValueError('unhandled generator type')  # pragma: no cover
     context.generators = result
-    context.generators[]
     
 
 def re100SWH_batteries(context):

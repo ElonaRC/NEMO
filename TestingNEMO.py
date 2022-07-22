@@ -1,29 +1,39 @@
+####-------------------- SET WD() -----------------------#####
+import os 
+os.chdir('/Users/elonarey-costa/Documents/phdCode/NEMO')
+
+####---------------- EVOLVE OPTIMISER -------------------#####
+
 #### To run Evolve in terminal, navigate to the working directory /phdCode/NEMO and then:
 #python3 evolve ..... 
 
-#This creates an Evolve Icon and saves it on my desk top
-from pyshortcuts import make_shortcut
-make_shortcut("/Users/elonarey-costa/Documents/phdCode/NEMO/evolve.py", name = 'Evolve', icon= '/Users/elonarey-costa/Documents/phdCode/NEMO/myicon.ico')
+#This creates an Evolve Icon and saves it on my desk top. The idea is to be able to double click on this icon, 
+#and it opens up the evolve optimiser 
+    #from pyshortcuts import make_shortcut
+    #make_shortcut("/Users/elonarey-costa/Documents/phdCode/NEMO/evolve.py", name = 'Evolve', icon= '/Users/elonarey-costa/Documents/phdCode/NEMO/myicon.ico')
 
 
-### TEXT CASE ###
-##Includes only: Solar, Wind, PumpedHydro, Hydro, Batteries in that merit order 
+####-------------------- Test CASE  ---------------------#####
+## Create a test scenario that only includes: Solar, Wind, PumpedHydro, Hydro, Batteries in that merit order 
+## This scenario has been created in scenario.py
+## I can run this scenario in this script. 
 
 #start by importing nemo and relevant info (scenarios, generators etc)
+
 import nemo
 from nemo import scenarios
 from nemo.generators import Battery
-from nemo.polygons import WILDCARD
+
 
 #Set up an empty context class
 c = nemo.Context()
+
 
 #Select my chosen scenario
 #Just SWH
 scenarios.re100SWH(c)
 #SWH + battery
 #scenarios.re100_batteries(c)
-
 
 ## Adding in generators for solar and wind into the same polygon. 
 ## One polygon for each state.
@@ -35,7 +45,7 @@ b30 = Battery(30, 2000, 2000, discharge_hours=hrs, rte = 1)
 c.generators = [b30] + c.generators
 
 #PV QLD in poly 4
-c.generators[4].set_capacity(50)
+c.generators[10].set_capacity(100)
 #PV NSW in poly 30
 c.generators[30].set_capacity(50)
 #PV VIC in poly 37
