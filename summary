@@ -169,7 +169,7 @@ for line in sys.stdin:  # noqa: C901
         if av.unserved:
             print(f"# unserved {str(av.unserved)}")
         print(f"# score {av.cost} $/MWh")
-        if av.penalty:
+        if av.penalty > 0:
             print(f"# penalty {av.penalty} $/MWh")
             print(f"# constraints <{av.constraints}> violated")
         print(f"# {'tech':>10}\t  GW\tshare\t  TWh\tshare\tCF")
@@ -187,7 +187,7 @@ for line in sys.stdin:  # noqa: C901
                   f"{capfactor:02.3f}")
 
         if av.surplus > 0:
-            print(f"{'av.surplus':>12}{'N/A':>8}\t{'N/A':>5}\t"
+            print(f"{'surplus':>12}{'N/A':>8}\t{'N/A':>5}\t"
                   f"{av.surplus:5.1f}\t"
                   f"{av.surplus / av.total_demand:.3f}")
 
