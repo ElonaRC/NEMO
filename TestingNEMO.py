@@ -1,5 +1,7 @@
 ####-------------------- SET WD() -----------------------#####
-import os 
+import os
+
+from nemo import polygons 
 os.chdir('/Users/elonarey-costa/Documents/phdCode/NEMO')
 
 ####---------------- EVOLVE OPTIMISER -------------------#####
@@ -22,7 +24,7 @@ os.chdir('/Users/elonarey-costa/Documents/phdCode/NEMO')
 
 import nemo
 from nemo import scenarios
-from nemo.generators import Battery
+from nemo.generators import PV, Battery, PV1Axis
 
 
 #Set up an empty context class
@@ -44,8 +46,10 @@ c.generators = [b4] + c.generators
 b30 = Battery(30, 2000, 2000, discharge_hours=hrs, rte = 1)
 c.generators = [b30] + c.generators
 
-#PV QLD in poly 4
+#Currently installed Large Scale PV (data retrieved from https://pv-map.apvi.org.au/power-stations and solarfarm coordinates superimposed onto polygons in "coords.py")
+#Final solar capacity sum for each polygon in /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/NEM_AEMOPoly_OnlySolarfarms.xlsx 
 c.generators[10].set_capacity(100)
+
 #PV NSW in poly 30
 c.generators[30].set_capacity(50)
 #PV VIC in poly 37
@@ -90,3 +94,20 @@ utils.plot(c, xlim=[datetime(2010, 1, 5), datetime(2010, 1, 12)])
     #if c.unserved_energy() == 0:
         #break
 #print(c.generators)
+
+
+
+####-------------------- Test CASE  ---------------------#####
+import nemo
+from nemo import scenarios
+from nemo.generators import Battery, PV1Axis, PV
+
+#Set up an empty context class
+c = nemo.Context()
+#Chosen scenario 
+scenarios.re100SWH(c)
+
+nemo.run(c)
+print(c)
+print(c.generators)
+

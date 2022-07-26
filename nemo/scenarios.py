@@ -48,6 +48,9 @@ def _hydro():
         [hydro24, hydro31, hydro35, hydro36, hydro38, hydro39] + \
         [hydro40, hydro41, hydro42, hydro43]
 
+def _existingSolar():
+    """Return a list of exiting large scale utility generators"""
+
 
 def replacement(context):
     """Replace the current NEM fleet, more or less."""
@@ -135,8 +138,113 @@ def re100_batteries(context):
     battery = Battery(WILDCARD, 0, 4, discharge_hours=hrs)
     context.generators.insert(0, battery)
 
+
+def _existingSolarWind(gentype):
+    """Add in existing generators for each polygon (solar farm capacity total for each polygon) """
+    result = []
+    if gentype == PV1Axis:
+        cfg = configfile.get('generation', 'pv1axis-trace')
+        result.append(gentype(1, 19.8, cfg, 1 - 1,
+                                build_limit=pv_limit[1],
+                                label=f'polygon {1} PV'))
+        result.append(gentype(2, 0, cfg, 2 - 1,
+                                build_limit=pv_limit[2],
+                                label=f'polygon {2} PV'))   
+        result.append(gentype(3, 63.2, cfg, 3 - 1,
+                                build_limit=pv_limit[3],
+                                label=f'polygon {3} PV')) 
+        result.append(gentype(4, 1089.3, cfg, 4 - 1,
+                                build_limit=pv_limit[4],
+                                label=f'polygon {4} PV'))
+        result.append(gentype(5, 3.1, cfg, 5 - 1,
+                                build_limit=pv_limit[5],
+                                label=f'polygon {5} PV'))
+        result.append(gentype(6, 272.6, cfg, 6 - 1,
+                                build_limit=pv_limit[6],
+                                label=f'polygon {6} PV'))   
+        result.append(gentype(7, 164.3, cfg, 7 - 1,
+                                build_limit=pv_limit[7],
+                                label=f'polygon {7} PV')) 
+        result.append(gentype(8, 0, cfg, 8 - 1,
+                                build_limit=pv_limit[8],
+                                label=f'polygon {8} PV'))                                             
+        result.append(gentype(9, 0, cfg, 9 - 1,
+                                build_limit=pv_limit[9],
+                                label=f'polygon {9} PV')) 
+        result.append(gentype(10, 0, cfg, 10 - 1,
+                                build_limit=pv_limit[10],
+                                label=f'polygon {10} PV')) 
+        result.append(gentype(11, 176.4, cfg, 11 - 1,
+                                build_limit=pv_limit[11],
+                                label=f'polygon {11} PV'))  
+        result.append(gentype(12, 1, cfg, 12 - 1,
+                                build_limit=pv_limit[12],
+                                label=f'polygon {12} PV')) 
+        result.append(gentype(13, 0, cfg, 13 - 1,
+                                build_limit=pv_limit[13],
+                                label=f'polygon {13} PV')) 
+        result.append(gentype(14, 0.3, cfg, 14 - 1,
+                                build_limit=pv_limit[14],
+                                label=f'polygon {14} PV'))  
+        result.append(gentype(15, 0.8, cfg, 15 - 1,
+                                build_limit=pv_limit[15],
+                                label=f'polygon {15} PV'))
+        result.append(gentype(16, 572.5, cfg, 16 - 1,
+                                build_limit=pv_limit[16],
+                                label=f'polygon {16} PV'))
+        result.append(gentype(17, 1068.0, cfg, 17 - 1,
+                                build_limit=pv_limit[17],
+                                label=f'polygon {17} PV'))
+        result.append(gentype(18, 0, cfg, 18 - 1,
+                                build_limit=pv_limit[18],
+                                label=f'polygon {18} PV'))
+        result.append(gentype(19, 0, cfg, 19 - 1,
+                                build_limit=pv_limit[19],
+                                label=f'polygon {19} PV'))
+        result.append(gentype(20, 0, cfg, 20 - 1,
+                                build_limit=pv_limit[20],
+                                label=f'polygon {20} PV'))
+        result.append(gentype(21, 0, cfg, 21 - 1,
+                                build_limit=pv_limit[21],
+                                label=f'polygon {21} PV'))
+        result.append(gentype(22, 0, cfg, 22 - 1,
+                                build_limit=pv_limit[22],
+                                label=f'polygon {22} PV'))
+        result.append(gentype(23, 298.8, cfg, 23 - 1,
+                                build_limit=pv_limit[23],
+                                label=f'polygon {23} PV'))
+        result.append(gentype(24, 330.2, cfg, 24 - 1,
+                                build_limit=pv_limit[24],
+                                label=f'polygon {24} PV'))
+        result.append(gentype(25, 3.4, cfg, 25 - 1,
+                                build_limit=pv_limit[25],
+                                label=f'polygon {25} PV'))
+        result.append(gentype(26, 300.0, cfg, 26 - 1,
+                                build_limit=pv_limit[26],
+                                label=f'polygon {26} PV'))
+        result.append(gentype(27, 32.9, cfg, 27 - 1,
+                                build_limit=pv_limit[27],
+                                label=f'polygon {27} PV'))
+        result.append(gentype(28, 53.0, cfg, 28 - 1,
+                                build_limit=pv_limit[28],
+                                label=f'polygon {28} PV'))
+        result.append(gentype(29, 121.4, cfg, 29 - 1,
+                                build_limit=pv_limit[29],
+                                label=f'polygon {29} PV'))
+        result.append(gentype(30, 709.2, cfg, 30 - 1,
+                                build_limit=pv_limit[30],
+                                label=f'polygon {30} PV'))                       
+    elif gentype == Wind:
+        cfg = configfile.get('generation', 'wind-trace')
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+    return result
+
+
+
 def re100SWH(context):
-    """100% renewable electricity with only PV, Wind, Hydro."""
+    """100% renewable electricity with only PV, Wind, Hydro. ERC Addition"""
     result = []
     # The following list is in merit order.
     for g in [PV1Axis, Wind, PumpedHydro, Hydro]:
@@ -145,7 +253,7 @@ def re100SWH(context):
         elif g == Hydro:
             result += [h for h in _hydro() if not isinstance(h, PumpedHydro)]
         elif g in [PV1Axis, Wind]:
-            result += _every_poly(g)
+            result += _existingSolarWind(g)
         else:
             raise ValueError('unhandled generator type')  # pragma: no cover
     context.generators = result

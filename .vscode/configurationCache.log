@@ -1,0 +1,1 @@
+{"buildTargets":["all","check","clean","coverage","coveralls","dist","flake8","html","lineprof","lint","nemo.prof","pdoc","prof","pylint","replay-nocost.json","replay-noscenario.json","replay.json","stub.py","upload"],"launchTargets":[],"customConfigurationProvider":{"workspaceBrowse":{"browsePath":[],"compilerArgs":[]},"fileIndex":[]}}
