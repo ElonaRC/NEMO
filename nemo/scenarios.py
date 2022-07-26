@@ -140,29 +140,32 @@ def re100_batteries(context):
 
 
 def _existingSolarWind(gentype):
-    """Add in existing generators for each polygon (solar farm capacity total for each polygon) """
+    """Add in existing generators for each polygon""" 
+    #(Total solarfarms capacity for each polygon - https://pv-map.apvi.org.au/power-stations)
+    #Total size of solarfarms in the NEM = 9175.9242MW according to APVI... AEMO say there is only 5897MW existing  
+    #(Total windfarm capacty for each polygon )
     result = []
     if gentype == PV1Axis:
         cfg = configfile.get('generation', 'pv1axis-trace')
-        result.append(gentype(1, 19.8, cfg, 1 - 1,
+        result.append(gentype(1, 0, cfg, 1 - 1,
                                 build_limit=pv_limit[1],
                                 label=f'polygon {1} PV'))
         result.append(gentype(2, 0, cfg, 2 - 1,
                                 build_limit=pv_limit[2],
                                 label=f'polygon {2} PV'))   
-        result.append(gentype(3, 63.2, cfg, 3 - 1,
+        result.append(gentype(3, 50, cfg, 3 - 1,
                                 build_limit=pv_limit[3],
                                 label=f'polygon {3} PV')) 
-        result.append(gentype(4, 1089.3, cfg, 4 - 1,
+        result.append(gentype(4, 879.01, cfg, 4 - 1,
                                 build_limit=pv_limit[4],
                                 label=f'polygon {4} PV'))
-        result.append(gentype(5, 3.1, cfg, 5 - 1,
+        result.append(gentype(5, 0, cfg, 5 - 1,
                                 build_limit=pv_limit[5],
                                 label=f'polygon {5} PV'))
-        result.append(gentype(6, 272.6, cfg, 6 - 1,
+        result.append(gentype(6, 254.47, cfg, 6 - 1,
                                 build_limit=pv_limit[6],
                                 label=f'polygon {6} PV'))   
-        result.append(gentype(7, 164.3, cfg, 7 - 1,
+        result.append(gentype(7, 148, cfg, 7 - 1,
                                 build_limit=pv_limit[7],
                                 label=f'polygon {7} PV')) 
         result.append(gentype(8, 0, cfg, 8 - 1,
@@ -174,25 +177,25 @@ def _existingSolarWind(gentype):
         result.append(gentype(10, 0, cfg, 10 - 1,
                                 build_limit=pv_limit[10],
                                 label=f'polygon {10} PV')) 
-        result.append(gentype(11, 176.4, cfg, 11 - 1,
+        result.append(gentype(11, 149.38, cfg, 11 - 1,
                                 build_limit=pv_limit[11],
                                 label=f'polygon {11} PV'))  
-        result.append(gentype(12, 1, cfg, 12 - 1,
+        result.append(gentype(12, 0, cfg, 12 - 1,
                                 build_limit=pv_limit[12],
                                 label=f'polygon {12} PV')) 
         result.append(gentype(13, 0, cfg, 13 - 1,
                                 build_limit=pv_limit[13],
                                 label=f'polygon {13} PV')) 
-        result.append(gentype(14, 0.3, cfg, 14 - 1,
+        result.append(gentype(14, 0, cfg, 14 - 1,
                                 build_limit=pv_limit[14],
                                 label=f'polygon {14} PV'))  
-        result.append(gentype(15, 0.8, cfg, 15 - 1,
+        result.append(gentype(15, 0, cfg, 15 - 1,
                                 build_limit=pv_limit[15],
                                 label=f'polygon {15} PV'))
-        result.append(gentype(16, 572.5, cfg, 16 - 1,
+        result.append(gentype(16, 579, cfg, 16 - 1,
                                 build_limit=pv_limit[16],
                                 label=f'polygon {16} PV'))
-        result.append(gentype(17, 1068.0, cfg, 17 - 1,
+        result.append(gentype(17, 1189.5, cfg, 17 - 1,
                                 build_limit=pv_limit[17],
                                 label=f'polygon {17} PV'))
         result.append(gentype(18, 0, cfg, 18 - 1,
@@ -210,36 +213,203 @@ def _existingSolarWind(gentype):
         result.append(gentype(22, 0, cfg, 22 - 1,
                                 build_limit=pv_limit[22],
                                 label=f'polygon {22} PV'))
-        result.append(gentype(23, 298.8, cfg, 23 - 1,
+        result.append(gentype(23, 291, cfg, 23 - 1,
                                 build_limit=pv_limit[23],
                                 label=f'polygon {23} PV'))
-        result.append(gentype(24, 330.2, cfg, 24 - 1,
+        result.append(gentype(24, 301, cfg, 24 - 1,
                                 build_limit=pv_limit[24],
                                 label=f'polygon {24} PV'))
-        result.append(gentype(25, 3.4, cfg, 25 - 1,
+        result.append(gentype(25, 0, cfg, 25 - 1,
                                 build_limit=pv_limit[25],
                                 label=f'polygon {25} PV'))
-        result.append(gentype(26, 300.0, cfg, 26 - 1,
+        result.append(gentype(26, 270, cfg, 26 - 1,
                                 build_limit=pv_limit[26],
                                 label=f'polygon {26} PV'))
-        result.append(gentype(27, 32.9, cfg, 27 - 1,
+        result.append(gentype(27, 0, cfg, 27 - 1,
                                 build_limit=pv_limit[27],
                                 label=f'polygon {27} PV'))
-        result.append(gentype(28, 53.0, cfg, 28 - 1,
+        result.append(gentype(28, 53.76, cfg, 28 - 1,
                                 build_limit=pv_limit[28],
                                 label=f'polygon {28} PV'))
-        result.append(gentype(29, 121.4, cfg, 29 - 1,
+        result.append(gentype(29, 110, cfg, 29 - 1,
                                 build_limit=pv_limit[29],
                                 label=f'polygon {29} PV'))
-        result.append(gentype(30, 709.2, cfg, 30 - 1,
+        result.append(gentype(30, 661, cfg, 30 - 1,
                                 build_limit=pv_limit[30],
-                                label=f'polygon {30} PV'))                       
+                                label=f'polygon {30} PV'))
+        result.append(gentype(31, 134, cfg, 31 - 1,
+                                build_limit=pv_limit[31],
+                                label=f'polygon {31} PV'))
+        result.append(gentype(32, 149.25, cfg, 32 - 1,
+                                build_limit=pv_limit[32],
+                                label=f'polygon {32} PV'))
+        result.append(gentype(33, 1177, cfg, 33 - 1,
+                                build_limit=pv_limit[33],
+                                label=f'polygon {33} PV'))
+        result.append(gentype(34, 693.56, cfg, 34 - 1,
+                                build_limit=pv_limit[34],
+                                label=f'polygon {34} PV'))
+        result.append(gentype(35, 358, cfg, 35 - 1,
+                                build_limit=pv_limit[35],
+                                label=f'polygon {35} PV'))
+        result.append(gentype(36, 42.205, cfg, 36 - 1,
+                                build_limit=pv_limit[36],
+                                label=f'polygon {36} PV'))
+        result.append(gentype(37, 55, cfg, 37 - 1,
+                                build_limit=pv_limit[37],
+                                label=f'polygon {37} PV'))
+        result.append(gentype(38, 239, cfg, 38 - 1,
+                                build_limit=pv_limit[38],
+                                label=f'polygon {38} PV'))
+        result.append(gentype(39, 143, cfg, 39 - 1,
+                                build_limit=pv_limit[39],
+                                label=f'polygon {39} PV'))
+        result.append(gentype(40, 0, cfg, 40 - 1,
+                                build_limit=pv_limit[40],
+                                label=f'polygon {40} PV'))
+        result.append(gentype(41, 0, cfg, 41 - 1,
+                                build_limit=pv_limit[41],
+                                label=f'polygon {41} PV'))
+        result.append(gentype(42, 0, cfg, 42 - 1,
+                                build_limit=pv_limit[42],
+                                label=f'polygon {42} PV'))
+        result.append(gentype(43, 0, cfg, 43 - 1,
+                                build_limit=pv_limit[43],
+                                label=f'polygon {43} PV'))                                         
     elif gentype == Wind:
         cfg = configfile.get('generation', 'wind-trace')
         result.append(gentype(1, 0, cfg, 1 - 1,
                                 build_limit=wind_limit[1],
                                 label=f'polygon {1} wind'))
+        result.append(gentype(2, 0, cfg, 2 - 1,
+                                build_limit=wind_limit[2],
+                                label=f'polygon {2} wind'))
+        result.append(gentype(3, 0, cfg, 3 - 1,
+                                build_limit=wind_limit[3],
+                                label=f'polygon {3} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        result.append(gentype(1, 0, cfg, 1 - 1,
+                                build_limit=wind_limit[1],
+                                label=f'polygon {1} wind'))
+        
     return result
+
 
 def re100SWH(context):
     """100% renewable electricity with only PV, Wind, Hydro. ERC Addition"""

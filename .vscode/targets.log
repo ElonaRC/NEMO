@@ -6,15 +6,13 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # PARTICULAR PURPOSE.
 
 # This program built for i386-apple-darwin11.3.0
- 
 
-# Make data base, printed on Fri Jul 22 13:01:24 2022
+# Make data base, printed on Tue Jul 26 14:41:09 2022
 
 # Variables
 
 # automatic
 <D = $(patsubst %/,%,$(dir $<))
- 
 # automatic
 ?F = $(notdir $?)
 # environment
@@ -42,7 +40,7 @@ VSCODE_VERBOSE_LOGGING = true
 # environment
 __CFBundleIdentifier = com.microsoft.VSCode
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/44/sn4jg2w52xx7467m5hq6zsb40000gn/T/vscode-ipc-34b8104a-7813-4d1f-b13f-c83425827435.sock
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/44/sn4jg2w52xx7467m5hq6zsb40000gn/T/vscode-ipc-a80c5d2b-03af-4401-b9f5-a98eb1c6847d.sock
 # environment
 VSCODE_CWD = /
 # environment
@@ -76,7 +74,7 @@ VSCODE_CODE_CACHE_PATH = /Users/elonarey-costa/Library/Application Support/Code/
 # environment
 LOGNAME = elonarey-costa
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
 CONDA_PROMPT_MODIFIER = (myenv) 
 # environment
@@ -88,7 +86,6 @@ VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # environment
 CONDA_DEFAULT_ENV = myenv
 # environment
- 
 XPC_FLAGS = 0x0
 # default
 MAKE = $(MAKE_COMMAND)
@@ -97,7 +94,6 @@ MAKECMDGOALS := all
 # environment
 SHLVL = 1
 # default
- 
 MAKE_VERSION := 3.81
 # environment
 USER = elonarey-costa
@@ -162,13 +158,12 @@ CONDA_PREFIX = /opt/anaconda3/envs/myenv
 # environment
 CONDA_PYTHONBREAKPOINT = 
 # environment
-VSCODE_PID = 96759
+VSCODE_PID = 83665
 # environment
 _CE_CONDA = 
 # environment
 LANG = C
 # variable set hash-table stats:
- 
 # Load=76/1024=7%, Rehash=0, Collisions=2/99=2%
 
 # Pattern-specific Variable Values
@@ -177,9 +172,9 @@ LANG = C
 
 # Directories
 
-# . (device 16777230, inode 10780725): 27 files, no impossibilities.
+# . (device 16777230, inode 10780725): 29 files, no impossibilities.
 
-# 27 files, no impossibilities in 1 directories.
+# 29 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -308,6 +303,7 @@ coverage: replay.json replay-noscenario.json replay-nocost.json
 	#  environment variables
 	NEMORC=nemo.cfg $(COVRUN) evolve -g1 -s __one_ccgt__ > /dev/null
 	unset NEMORC && $(COVRUN) evolve -g1 -s __one_ccgt__ > /dev/null
+ 
 	unset DISPLAY && $(COVRUN) evolve -g1 -s __one_ccgt__ > /dev/null
 	if test -f trace.out; then rm trace.out; fi
 	$(COVRUN) evolve -v --lambda 2 -g1 -s __one_ccgt__ \
@@ -409,9 +405,8 @@ nemo.prof: stub.py
 # # of strings in strcache: 1
 # # of strcache buffers: 1
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
- 
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Fri Jul 22 13:01:24 2022
+# Finished Make data base on Tue Jul 26 14:41:09 2022
 
  

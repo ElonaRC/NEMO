@@ -350,7 +350,95 @@ allPoly = [P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16
             P18, P19, P20, P21, P22, P23, P24, P25, P26, P27, P28, P29, P30, 
             P31, P32, P33, P34, P35, P36, P37, P38, P39, P40, P41, P42, P43]
 
-#All NEM solarfarms above 100kw coordinates
+#All NEW solarfarms from AEMO + openCEM (USE THIS)
+#These numbers add up to 7.9 GW installed cap which matches the ISP 2022 report
+SolarFarms1 = [Point(150.55417,-26.7211659999999),
+Point(142.750362,-34.67263),
+Point(145.318972,-23.547333),
+Point(149.460738,-32.347501),
+Point(150.500037191533,-26.6917081975343),
+Point(138.387641,-34.495482),
+Point(147.443962745579,-35.0476270585897),
+Point(141.391547,-31.988905),
+Point(137.841798,-32.423316),
+Point(137.840933,-32.406993),
+Point(149.546482,-35.180684),
+Point(152.403674,-25.2950269999999),
+Point(147.21055,-19.83977),
+Point(147.5460307,-22.8394058),
+Point(144.221530854885,-35.8803166255988),
+Point(145.929839999999,-34.759494),
+Point(147.820552,-20.55714),
+Point(150.332196755356,-26.636447555479),
+Point(146.36145628096,-35.9862903364084),
+Point(150.8819,-27.112),
+Point(146.035755540709,-34.6448079974092),
+Point(147.691968,-20.512804),
+Point(148.128017,-23.50879),
+Point(145.508644,-35.64421),
+Point(149.986703836144,-26.254812591286),
+Point(143.7711,-35.73),
+Point(146.146887248495,-36.4880826970102),
+Point(148.077305833598,-33.1113717228104),
+Point(146.120739,-34.317414),
+Point(149.458548623602,-34.6245115552508),
+Point(150.367917284276,-30.965468597893),
+Point(147.799484,-20.468593),
+Point(138.564760431125,-35.0631178114067),
+Point(147.076137,-19.7321679999999),
+Point(147.846064999999,-20.536162),
+Point(145.522278886588,-33.5329914722474),
+Point(144.186048,-20.854794),
+Point(147.66937504508,-33.3887640031594),
+Point(147.572098742068,-34.811240455848),
+Point(142.28033,-34.2279039999999),
+Point(145.015873066131,-20.7675096693552),
+Point(142.30295254616,-35.0181331271962),
+Point(144.151,-18.88),
+Point(148.413865,-23.070504),
+Point(143.5080463,-34.7755018),
+Point(143.5080463,-34.7755018),
+Point(144.227917,-23.455048),
+Point(148.718239999999,-33.172831),
+Point(151.5456,-27.7096),
+Point(151.782970600077,-30.5332340968482),
+Point(148.720115490209,-22.8222346347412),
+Point(148.900073424536,-33.082577712299),
+Point(149.861266,-29.572607),
+Point(139.680292940496,-34.0189960633932),
+Point(149.14906,-35.398441),
+Point(148.254523,-32.218323),
+Point(147.7051778,-31.8310438),
+Point(145.473890999999,-36.159275),
+Point(147.074195112039,-31.5631913442784),
+Point(151.6425757,-27.402454),
+Point(151.6425757,-27.402454),
+Point(148.076372,-33.113056),
+Point(146.715686,-19.4253049999999),
+Point(149.141965695762,-35.4860524604201),
+Point(147.880877,-21.940469),
+Point(147.554757053968,-34.603286576607),
+Point(148.649836,-32.2728599999999),
+Point(146.696015,-19.4373179999999),
+Point(143.50915997932,-34.8214891573718),
+Point(153.025947,-26.560799),
+Point(148.860468674681,-32.5741998263652),
+Point(152.742028,-25.420275),
+Point(139.49,-35.28),
+Point(147.438227261185,-35.0690811780762),
+Point(152.066792,-28.18321),
+Point(152.066792,-28.18321),
+Point(148.972054023615,-32.5116630465167),
+Point(142.543348,-34.80259),
+Point(150.601542383175,-26.9279222338794),
+Point(151.55238703361,-29.7533806621943),
+Point(147.80475,-20.537259),
+Point(146.114554165057,-36.4996951041726),
+Point(152.435089484157,-26.1105606052323),
+Point(151.5308,-27.7237),
+Point(142.205340248921,-34.3807297303396)]
+
+#All NEM solarfarms above 100kw coordinates from AVPI (skeptical about this data)
 SolarFarms = [ 
 Point(150.6482586,-26.94114752),
 Point(146.0348,-34.6491),
@@ -1719,19 +1807,36 @@ Point(150.8229,-33.8227),
 Point(153.3703,-28.0155),
 Point(138.6031037,-31.52948713)
 ]
-
 ##These solar farms above are only solar farms that lie within the AEMO NEM polygons. 
 ##I excluded 4 solar farms that lie in the norther parts and western parts of QLD and added two back in manually 
 ##For the original solarfarm coordinates, check out the Australian Institute PV website. 
 
 
+#This plots th polygons and the points for visual aid. 
+import matplotlib.pyplot as plt
+import geopandas
+
+#plotting the stupid polygons and the solar farms together 
+for geom in allPoly:
+    plt.plot(*geom.exterior.xy)
+x = [point.x for point in SolarFarms1]
+y = [point.y for point in SolarFarms1]
+lab = range(1,86)
+plt.scatter(x, y)
+for i in range(len(x)):
+    plt.annotate(lab[i], (x[i], y[i] + 0.2), fontsize = 10)
+plt.show()
+
+
+
 # Goes through all combinations of points and polygons to find where those polygons lie. 
 # Prints the index + 1 to get the actual solarfarm ID number in my excel spreadsheet(ish)
-for points in SolarFarms:
+for points in SolarFarms1:
     for geom in allPoly:
         if points.within(geom):
             index = allPoly.index(geom)
             print(index + 1)
+
 
 
 #test individual points that lie on lines
@@ -1742,17 +1847,3 @@ for geom in allPoly:
 
 
 
-#This plots th polygons and the points for visual aid. 
-import matplotlib.pyplot as plt
-import geopandas
-
-#plotting the stupid polygons and the solar farms together 
-for geom in allPoly:
-    plt.plot(*geom.exterior.xy)
-x = [point.x for point in SolarFarms]
-y = [point.y for point in SolarFarms]
-lab = range(1,1369)
-plt.scatter(x, y)
-for i in range(len(x)):
-    plt.annotate(lab[i], (x[i], y[i] + 0.2), fontsize = 10)
-plt.show()
