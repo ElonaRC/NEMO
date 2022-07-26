@@ -241,8 +241,6 @@ def _existingSolarWind(gentype):
                                 label=f'polygon {1} wind'))
     return result
 
-
-
 def re100SWH(context):
     """100% renewable electricity with only PV, Wind, Hydro. ERC Addition"""
     result = []
