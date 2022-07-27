@@ -141,9 +141,8 @@ def re100_batteries(context):
 
 def _existingSolarWind(gentype):
     """Add in existing generators for each polygon""" 
-    #(Total solarfarms capacity for each polygon - https://pv-map.apvi.org.au/power-stations)
-    #Total size of solarfarms in the NEM = 9175.9242MW according to APVI... AEMO say there is only 5897MW existing  
-    #(Total windfarm capacty for each polygon )
+    #(Total solarfarms capacity for each polygon - /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/NEM_SolarGenerators_Spatial_Cap_OPENNEM.csv )
+    #(Total windfarm capacty for each polygon - /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/NEM_WindGenerators_Spatial_Cap_OPENNEM.csv)
     result = []
     if gentype == PV1Axis:
         cfg = configfile.get('generation', 'pv1axis-trace')
@@ -278,7 +277,7 @@ def _existingSolarWind(gentype):
                                 label=f'polygon {43} PV'))                                         
     elif gentype == Wind:
         cfg = configfile.get('generation', 'wind-trace')
-        result.append(gentype(1, 0, cfg, 1 - 1,
+        result.append(gentype(1, 192.45, cfg, 1 - 1,
                                 build_limit=wind_limit[1],
                                 label=f'polygon {1} wind'))
         result.append(gentype(2, 0, cfg, 2 - 1,
@@ -287,127 +286,126 @@ def _existingSolarWind(gentype):
         result.append(gentype(3, 0, cfg, 3 - 1,
                                 build_limit=wind_limit[3],
                                 label=f'polygon {3} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        result.append(gentype(1, 0, cfg, 1 - 1,
-                                build_limit=wind_limit[1],
-                                label=f'polygon {1} wind'))
-        
+        result.append(gentype(4, 0, cfg, 4 - 1,
+                                build_limit=wind_limit[4],
+                                label=f'polygon {4} wind'))
+        result.append(gentype(5, 0, cfg, 5 - 1,
+                                build_limit=wind_limit[5],
+                                label=f'polygon {5} wind'))
+        result.append(gentype(6, 43, cfg, 6 - 1,
+                                build_limit=wind_limit[6],
+                                label=f'polygon {6} wind'))
+        result.append(gentype(7, 0, cfg, 7 - 1,
+                                build_limit=wind_limit[7],
+                                label=f'polygon {7} wind'))
+        result.append(gentype(8, 0, cfg, 8 - 1,
+                                build_limit=wind_limit[8],
+                                label=f'polygon {8} wind'))
+        result.append(gentype(9, 0, cfg, 9 - 1,
+                                build_limit=wind_limit[9],
+                                label=f'polygon {9} wind'))
+        result.append(gentype(10, 0, cfg, 10 - 1,
+                                build_limit=wind_limit[10],
+                                label=f'polygon {10} wind'))
+        result.append(gentype(11, 0, cfg, 11 - 1,
+                                build_limit=wind_limit[11],
+                                label=f'polygon {11} wind'))
+        result.append(gentype(12, 0, cfg, 12 - 1,
+                                build_limit=wind_limit[12],
+                                label=f'polygon {12} wind'))
+        result.append(gentype(13, 0, cfg, 13 - 1,
+                                build_limit=wind_limit[13],
+                                label=f'polygon {13} wind'))
+        result.append(gentype(14, 0, cfg, 14 - 1,
+                                build_limit=wind_limit[14],
+                                label=f'polygon {14} wind'))
+        result.append(gentype(15, 0, cfg, 15 - 1,
+                                build_limit=wind_limit[15],
+                                label=f'polygon {15} wind'))
+        result.append(gentype(16, 0, cfg, 16 - 1,
+                                build_limit=wind_limit[16],
+                                label=f'polygon {16} wind'))
+        result.append(gentype(17, 452, cfg, 17 - 1,
+                                build_limit=wind_limit[17],
+                                label=f'polygon {17} wind'))
+        result.append(gentype(18, 0, cfg, 18 - 1,
+                                build_limit=wind_limit[18],
+                                label=f'polygon {18} wind'))
+        result.append(gentype(19, 0, cfg, 19 - 1,
+                                build_limit=wind_limit[19],
+                                label=f'polygon {19} wind'))
+        result.append(gentype(20, 0, cfg, 20 - 1,
+                                build_limit=wind_limit[20],
+                                label=f'polygon {20} wind'))
+        result.append(gentype(21, 0, cfg, 21 - 1,
+                                build_limit=wind_limit[21],
+                                label=f'polygon {21} wind'))
+        result.append(gentype(22, 0, cfg, 22 - 1,
+                                build_limit=wind_limit[22],
+                                label=f'polygon {22} wind'))
+        result.append(gentype(23, 0, cfg, 23 - 1,
+                                build_limit=wind_limit[23],
+                                label=f'polygon {23} wind'))
+        result.append(gentype(24, 445, cfg, 24 - 1,
+                                build_limit=wind_limit[24],
+                                label=f'polygon {24} wind'))
+        result.append(gentype(25, 0, cfg, 25 - 1,
+                                build_limit=wind_limit[25],
+                                label=f'polygon {25} wind'))
+        result.append(gentype(26, 648.75, cfg, 26 - 1,
+                                build_limit=wind_limit[26],
+                                label=f'polygon {26} wind'))
+        result.append(gentype(27, 1086.86, cfg, 27 - 1,
+                                build_limit=wind_limit[27],
+                                label=f'polygon {27} wind'))
+        result.append(gentype(28, 198.94, cfg, 28 - 1,
+                                build_limit=wind_limit[28],
+                                label=f'polygon {28} wind'))
+        result.append(gentype(29, 0, cfg, 29 - 1,
+                                build_limit=wind_limit[29],
+                                label=f'polygon {29} wind'))
+        result.append(gentype(30, 113, cfg, 30 - 1,
+                                build_limit=wind_limit[30],
+                                label=f'polygon {30} wind'))
+        result.append(gentype(31, 152.22, cfg, 31 - 1,
+                                build_limit=wind_limit[31],
+                                label=f'polygon {31} wind'))
+        result.append(gentype(32, 615.8, cfg, 32 - 1,
+                                build_limit=wind_limit[32],
+                                label=f'polygon {32} wind'))
+        result.append(gentype(33, 0, cfg, 33 - 1,
+                                build_limit=wind_limit[33],
+                                label=f'polygon {33} wind'))
+        result.append(gentype(34, 0, cfg, 34 - 1,
+                                build_limit=wind_limit[34],
+                                label=f'polygon {34} wind'))
+        result.append(gentype(35, 0, cfg, 35 - 1,
+                                build_limit=wind_limit[35],
+                                label=f'polygon {35} wind'))
+        result.append(gentype(36, 1441.57, cfg, 36 - 1,
+                                build_limit=wind_limit[36],
+                                label=f'polygon {36} wind'))
+        result.append(gentype(37, 3257.69, cfg, 37 - 1,
+                                build_limit=wind_limit[37],
+                                label=f'polygon {37} wind'))
+        result.append(gentype(38, 21, cfg, 38 - 1,
+                                build_limit=wind_limit[38],
+                                label=f'polygon {38} wind'))
+        result.append(gentype(39, 1018.184, cfg, 39 - 1,
+                                build_limit=wind_limit[39],
+                                label=f'polygon {39} wind'))
+        result.append(gentype(40, 250, cfg, 40 - 1,
+                                build_limit=wind_limit[40],
+                                label=f'polygon {40} wind'))
+        result.append(gentype(41, 168, cfg, 41 - 1,
+                                build_limit=wind_limit[41],
+                                label=f'polygon {41} wind'))
+        result.append(gentype(42, 0, cfg, 42 - 1,
+                                build_limit=wind_limit[42],
+                                label=f'polygon {42} wind'))
+        result.append(gentype(43, 148, cfg, 43 - 1,
+                                build_limit=wind_limit[43],
+                                label=f'polygon {43} wind'))
     return result
 
 
