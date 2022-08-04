@@ -7,6 +7,9 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 
+
+RUNFAST = 1 #changes everypoly from 44 to 10 
+
 """Supply side scenarios."""
 
 from nemo import configfile, regions
@@ -83,7 +86,8 @@ def coal_ccs(context):
 def _every_poly(gentype):
     """Create a generator of type gentype in each of the 44 polygons."""
     result = []
-    for poly in range(1, 44):
+    
+    for poly in range(1, 10 if RUNFAST else 44):
         if gentype == Biofuel:
             result.append(gentype(poly, 0, label=f'polygon {poly} GT'))
         elif gentype == PV1Axis:
