@@ -8,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Thu Aug  4 10:23:18 2022
+# Make data base, printed on Thu Aug  4 11:32:17 2022
 
 # Variables
 
@@ -165,9 +165,9 @@ LANG = C
 
 # Directories
 
-# . (device 16777230, inode 10780725): 31 files, no impossibilities.
+# . (device 16777230, inode 10780725): 32 files, no impossibilities.
 
-# 31 files, no impossibilities in 1 directories.
+# 32 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -298,6 +298,7 @@ coverage: replay.json replay-noscenario.json replay-nocost.json
 	unset NEMORC && $(COVRUN) evolve -g1 -s __one_ccgt__ > /dev/null
 	unset DISPLAY && $(COVRUN) evolve -g1 -s __one_ccgt__ > /dev/null
 	if test -f trace.out; then rm trace.out; fi
+ 
 	$(COVRUN) evolve -v --lambda 2 -g1 -s __one_ccgt__ \
 	--trace-file=trace.out --emissions-limit=0 \
 	--fossil-limit=0.1 --reserves=1000 \
@@ -307,7 +308,6 @@ coverage: replay.json replay-noscenario.json replay-nocost.json
 	$(COVRUN) replay -f replay.json -v -v > /dev/null
 	$(COVRUN) replay -f replay-noscenario.json -v > /dev/null || true
 	$(COVRUN) replay -f replay-nocost.json -v > /dev/null || true
- 
 	$(COVRUN) evolve -g1 -s __one_ccgt__ -p > /dev/null
 	$(COVRUN) replay -p -f replay.json > /dev/null
 	rm results.json
@@ -400,6 +400,6 @@ nemo.prof: stub.py
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Thu Aug  4 10:23:18 2022
+# Finished Make data base on Thu Aug  4 11:32:17 2022
 
  

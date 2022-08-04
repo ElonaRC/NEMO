@@ -13,6 +13,7 @@ import argparse
 import json
 import re
 import sys
+import numpy as np
 
 from gooey import Gooey
 
@@ -83,17 +84,19 @@ def run_one(bundle):
     nemo.run(context)
     context.verbose = args.v > 0
     print(context)
+    
+    #save surplus energy at every time step from each generator into CSV 
+    numgens = len(context.generators)
+    spills = np.zeros((numgens, 8760))
+    for i, g in enumerate(context.generators):
+        spills[i] = list(g.series_spilled.values())
+    np.savetxt("spillsTest.csv", spills, delimiter=",")
+    
     print()
-    print('hello world')
-
-#Print some stuff in here. Save spilled generator output etc 
-# eg. 
-# spills = np.zeros((137, 8760))
-#for i, g in enumerate(c.generators):
-    #spills[i] = list(g.series_power.values())
 
     if args.plot:
         utils.plot(context, spills=args.spills, showlegend=args.no_legend)
+
 
 
 args = process_options()
