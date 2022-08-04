@@ -100,6 +100,7 @@ utils.plot(c, xlim=[datetime(2010, 1, 5), datetime(2010, 1, 12)])
 ####-------------------- Test CASE  ---------------------#####
 import nemo
 from nemo import scenarios
+
 from nemo.generators import Battery, PV1Axis, PV
 
 #Set up an empty context class
@@ -111,3 +112,16 @@ nemo.run(c)
 print(c)
 print(c.generators)
 
+#Plot scenario output
+from matplotlib.pyplot import ioff
+from nemo import utils 
+from datetime import datetime
+ioff()
+utils.plt.rcParams["figure.figsize"] = (12, 6)  # 12" x 6" figure
+utils.plot(c, xlim=[datetime(2010, 1, 5), datetime(2010, 1, 12)])
+
+
+
+
+#in terminal widow -s = scenario -g = generators and > erc.txt saves output. 
+python3 evolve -s ccgt -g 3 > erc.txt

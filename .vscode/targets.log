@@ -6,8 +6,9 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # PARTICULAR PURPOSE.
 
 # This program built for i386-apple-darwin11.3.0
+ 
 
-# Make data base, printed on Tue Jul 26 14:41:09 2022
+# Make data base, printed on Thu Aug  4 10:23:18 2022
 
 # Variables
 
@@ -15,8 +16,6 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 <D = $(patsubst %/,%,$(dir $<))
 # automatic
 ?F = $(notdir $?)
-# environment
-VSCODE_LOG_NATIVE = false
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # automatic
@@ -36,17 +35,11 @@ CONDA_PREFIX_1 = /opt/anaconda3
 # makefile (from `Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
 # environment
-VSCODE_VERBOSE_LOGGING = true
-# environment
 __CFBundleIdentifier = com.microsoft.VSCode
-# environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/44/sn4jg2w52xx7467m5hq6zsb40000gn/T/vscode-ipc-a80c5d2b-03af-4401-b9f5-a98eb1c6847d.sock
 # environment
 VSCODE_CWD = /
 # environment
 PATH = /opt/anaconda3/envs/myenv/bin:/opt/anaconda3/condabin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
-# environment
-VSCODE_LOG_STACK = false
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # default
@@ -58,8 +51,6 @@ SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.mNkR1Br2bY/Listeners
 # environment
 CONDA_EXE = /opt/anaconda3/bin/conda
 # environment
-VSCODE_PIPE_LOGGING = true
-# environment
 PWD = /Users/elonarey-costa/Documents/phdCode/NEMO
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = undefined
@@ -70,7 +61,7 @@ HOME = /Users/elonarey-costa
 # default
 MAKEFILEPATH = $(shell /usr/bin/xcode-select -print-path 2>/dev/null || echo /Developer)/Makefiles
 # environment
-VSCODE_CODE_CACHE_PATH = /Users/elonarey-costa/Library/Application Support/Code/CachedData/30d9c6cd9483b2cc586687151bcbcd635f373630
+VSCODE_CODE_CACHE_PATH = /Users/elonarey-costa/Library/Application Support/Code/CachedData/3b889b090b5ad5793f524b5d1d39fda662b96a2a
 # environment
 LOGNAME = elonarey-costa
 # environment
@@ -114,7 +105,9 @@ TMPDIR = /var/folders/44/sn4jg2w52xx7467m5hq6zsb40000gn/T/
 # automatic
 *F = $(notdir $*)
 # environment
-VSCODE_IPC_HOOK = /Users/elonarey-costa/Library/Application Support/Code/1.68.1-main.sock
+VSCODE_IPC_HOOK = /Users/elonarey-costa/Library/Application Support/Code/1.69.2-main.sock
+# environment
+MallocNanoZone = 0
 # environment
 PROJ_NETWORK = ON
 # makefile
@@ -124,7 +117,7 @@ MFLAGS = -Rrqp
 # automatic
 *D = $(patsubst %/,%,$(dir $*))
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.10965918.10965924
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.12994183.12994190
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # automatic
@@ -158,13 +151,13 @@ CONDA_PREFIX = /opt/anaconda3/envs/myenv
 # environment
 CONDA_PYTHONBREAKPOINT = 
 # environment
-VSCODE_PID = 83665
+VSCODE_PID = 93917
 # environment
 _CE_CONDA = 
 # environment
 LANG = C
 # variable set hash-table stats:
-# Load=76/1024=7%, Rehash=0, Collisions=2/99=2%
+# Load=72/1024=7%, Rehash=0, Collisions=2/95=2%
 
 # Pattern-specific Variable Values
 
@@ -172,9 +165,9 @@ LANG = C
 
 # Directories
 
-# . (device 16777230, inode 10780725): 29 files, no impossibilities.
+# . (device 16777230, inode 10780725): 31 files, no impossibilities.
 
-# 29 files, no impossibilities in 1 directories.
+# 31 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -303,7 +296,6 @@ coverage: replay.json replay-noscenario.json replay-nocost.json
 	#  environment variables
 	NEMORC=nemo.cfg $(COVRUN) evolve -g1 -s __one_ccgt__ > /dev/null
 	unset NEMORC && $(COVRUN) evolve -g1 -s __one_ccgt__ > /dev/null
- 
 	unset DISPLAY && $(COVRUN) evolve -g1 -s __one_ccgt__ > /dev/null
 	if test -f trace.out; then rm trace.out; fi
 	$(COVRUN) evolve -v --lambda 2 -g1 -s __one_ccgt__ \
@@ -315,6 +307,7 @@ coverage: replay.json replay-noscenario.json replay-nocost.json
 	$(COVRUN) replay -f replay.json -v -v > /dev/null
 	$(COVRUN) replay -f replay-noscenario.json -v > /dev/null || true
 	$(COVRUN) replay -f replay-nocost.json -v > /dev/null || true
+ 
 	$(COVRUN) evolve -g1 -s __one_ccgt__ -p > /dev/null
 	$(COVRUN) replay -p -f replay.json > /dev/null
 	rm results.json
@@ -407,6 +400,6 @@ nemo.prof: stub.py
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Tue Jul 26 14:41:09 2022
+# Finished Make data base on Thu Aug  4 10:23:18 2022
 
  
