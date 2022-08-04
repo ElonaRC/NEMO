@@ -69,6 +69,7 @@ class Generator():
 
         Arguments: installed polygon, installed capacity, descriptive label.
         """
+        assert capacity >= 0
         self.setters = [(self.set_capacity, 0, 40)]
         self.label = self.__class__.__name__ if label is None else label
         self.capacity = capacity
@@ -183,7 +184,7 @@ class Storage():
         self.series_charge[hour] += power
 
     def store(self, hour, power):
-        """Abstract method to ensure that dervied classes define this."""
+        """Abstract method to ensure that derived classes define this."""
         raise NotImplementedError
 
     def reset(self):
@@ -371,6 +372,7 @@ class Fuelled(Generator):
         if power > 0:
             self.runhours += 1
         self.series_power[hour] = power
+        self.series_spilled[hour] = 0
         return power, 0
 
     def summary(self, context):
@@ -431,6 +433,7 @@ class PumpedHydro(Storage, Hydro):
             # Can't pump and generate in the same hour.
             return 0, 0
         self.series_power[hour] = power
+        self.series_spilled[hour] = 0
         self.stored -= power
         if power > 0:
             self.runhours += 1
@@ -731,11 +734,13 @@ class Battery(Storage, Generator):
         if self.empty_p() or \
            hour % 24 not in self.discharge_hours:
             self.series_power[hour] = 0
+            self.series_spilled[hour] = 0
             return 0, 0
 
         assert demand > 0
         power = min(self.stored, min(self.capacity, demand)) * self.rte
         self.series_power[hour] = power
+        self.series_spilled[hour] = 0
         self.stored -= power
         if power > 0:
             self.runhours += 1
@@ -869,6 +874,7 @@ class GreenPower(Generator):
         """Step method for GreenPower."""
         power = min(self.capacity, demand)
         self.series_power[hour] = power
+        self.series_spilled[hour] = 0
         return power, 0
 
 
@@ -974,6 +980,10 @@ class Electrolyser(Storage, Generator):
         """Return 0 as this is not a generator."""
         return 0, 0
 
+    def reset(self):
+        Storage.reset(self)
+        Generator.reset(self)
+
     def store(self, _, power):
         """Store power."""
         power = min(power, self.capacity)
@@ -1014,6 +1024,7 @@ class HydrogenGT(Fuelled):
         # discharge that amount of hydrogen
         power = self.tank.discharge(hydrogen) * self.efficiency
         self.series_power[hour] = power
+        self.series_spilled[hour] = 0
         if power > 0:
             self.runhours += 1
         return power, 0
