@@ -69,6 +69,7 @@ class Generator():
 
         Arguments: installed polygon, installed capacity, descriptive label.
         """
+        assert capacity >= 0
         self.setters = [(self.set_capacity, 0, 40)]
         self.label = self.__class__.__name__ if label is None else label
         self.capacity = capacity
@@ -973,6 +974,10 @@ class Electrolyser(Storage, Generator):
     def step(self, hour, demand):
         """Return 0 as this is not a generator."""
         return 0, 0
+
+    def reset(self):
+        Storage.reset(self)
+        Generator.reset(self)
 
     def store(self, _, power):
         """Store power."""
