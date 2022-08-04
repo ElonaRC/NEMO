@@ -84,6 +84,13 @@ def run_one(bundle):
     context.verbose = args.v > 0
     print(context)
     print()
+    print('hello world')
+
+#Print some stuff in here. Save spilled generator output etc 
+# eg. 
+# spills = np.zeros((137, 8760))
+#for i, g in enumerate(c.generators):
+    #spills[i] = list(g.series_power.values())
 
     if args.plot:
         utils.plot(context, spills=args.spills, showlegend=args.no_legend)
