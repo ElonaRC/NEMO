@@ -156,6 +156,11 @@ def one_in_eachstate(gentype):
     return result
 
 
+def re100SWH_WA(context):
+    '''Adds WA into the picture'''
+    context.regions.append(regions.wa) #adds WA into the picture. 
+    re100SWH(context)
+
 def re100SWH(context):
     """100% renewable electricity with only PV, Wind, Hydro."""
     """This will populate all polygons with an empty PV and Wind genererator & """
@@ -179,9 +184,16 @@ def re100SWH_batteries(context):
     """Takes SWH and adds battery."""
     re100SWH(context)
     # discharge between 6pm and 6am daily
+<<<<<<< Updated upstream
     hrs = range(0,24)
     battery = Battery(23, 1000, 1500, discharge_hours=hrs, rte = 1)
     context.generators.insert(0, battery)
+=======
+    hrs = list(range(0, 7)) + list(range(18, 24))
+    batteryhornsdaleSA = Battery(19, 100, 1, discharge_hours=hrs, label = f'polygon 19 Battery Hornsdale SA', rte = 0.9)
+    batteryWarratahNSW = Battery(30, 700, 2, discharge_hours=hrs, label = f'polygon 30 Battery Warratah NSW', rte = 0.9)
+    context.generators = [batteryhornsdaleSA] + [batteryWarratahNSW] + context.generators
+>>>>>>> Stashed changes
 
 """ End Elonas Scenarios"""
 
@@ -286,8 +298,9 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100-nsw': re100_nsw,
                     're100-sa': re100_south_aus,
                     're100+batteries': re100_batteries,
+                    're100SWH_WA': re100SWH_WA,
                     're100SWH': re100SWH, 
-                    're100SWH+batteries': re100SWH_batteries,
+                    're100SWH_batteries': re100SWH_batteries,
                     're100+dsp': re100_dsp,
                     're100-nocst': re100_nocst,
                     'replacement': replacement}
