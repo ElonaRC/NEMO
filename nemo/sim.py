@@ -60,9 +60,9 @@ def _store_spills(context, hour, gen, generators, spl):
     for other in list(g for g in generators if g.storage_p):
         stored = other.store(hour, spl)
         spl -= stored
-        if spl < 0 and isclose(spl, 0, abs_tol=1e-6):
-            spl = 0
-        assert spl >= 0
+        if spl == 0 or (spl < 0 and isclose(spl, 0, abs_tol=1e-6)):
+            break
+        assert spl > 0
 
         # energy stored <= energy transferred, according to store's RTE
         if context.verbose:
