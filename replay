@@ -84,6 +84,7 @@ def run_one(bundle):
     nemo.run(context)
     context.verbose = args.v > 0
     print(context)
+    print("Done")
     
     #save surplus energy at every time step from each generator into CSV 
     numgens = len(context.generators)
