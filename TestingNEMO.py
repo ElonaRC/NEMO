@@ -193,8 +193,13 @@ print(c.generators[0])
 print(c.generators[0].series_spilled) #print time series of energy spilled for generator 0 (PV in this case)
 
 
+#All the different things that you can extract from evolve 
+c.__dict__.keys()
 
+#Total unserved energy 
+c.unserved_energy()
 
-
+#panda dataframe that lists all the unserved events and their time point. 
+print(c.unserved)
 
 #To consider: one battery per state and make them discharge over night as peakers 

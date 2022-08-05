@@ -90,13 +90,30 @@ def run_one(bundle):
     spills = np.zeros((numgens, 8760))
     for i, g in enumerate(context.generators):
         spills[i] = list(g.series_spilled.values())
-    np.savetxt("spillsTest.csv", spills, delimiter=",")
+    np.savetxt("spillsOutput.csv", spills, delimiter=",")
     
+    #save generation at every time step from each generator into CSV 
+    power = np.zeros((numgens, 8760))
+    for i, g in enumerate(context.generators):
+        power[i] = list(g.series_power.values())
+    np.savetxt("powerOutput.csv", power, delimiter=",")
+    
+    #save unserved time series 
+    unserved = context.unserved
+    np.savetxt("unserved.csv", unserved, delimiter=",")
+
+    #save stored energy for those generators that can store for each time step into CSV 
+    storage = np.zeros((numgens, 8760))
+    for i, g in enumerate(context.generators):
+        try:
+            storage[i] = list(g.series_charge.values())
+        except AttributeError:
+            storage[i].fill(0)
+    np.savetxt("storageOutput.csv", storage, delimiter=",")
     print()
 
     if args.plot:
         utils.plot(context, spills=args.spills, showlegend=args.no_legend)
-
 
 
 args = process_options()
