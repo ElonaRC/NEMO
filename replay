@@ -100,7 +100,7 @@ def run_one(bundle):
     
     #save unserved time series 
     unserved = context.unserved
-    np.savetxt("unserved.csv", unserved, delimiter=",")
+    unserved.to_csv("unserved.csv", sep=',')
 
     #save stored energy for those generators that can store for each time step into CSV 
     storage = np.zeros((numgens, 8760))

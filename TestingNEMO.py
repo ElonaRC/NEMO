@@ -28,8 +28,11 @@ from nemo.generators import PV, Battery, PV1Axis
 #Always set up an empty context class
 c = nemo.Context()
 
-#Select chosen scenario
-scenarios.re100SWH(c)
+#Select my chosen scenario
+#Just SWH
+scenarios.re100SWH_batteries(c)
+#SWH + battery
+#scenarios.re100_batteries(c)
 
 ## Adding in generators for solar and wind into the same polygon. 
 ## One polygon for each state.
@@ -199,7 +202,8 @@ c.__dict__.keys()
 #Total unserved energy 
 c.unserved_energy()
 
-#panda dataframe that lists all the unserved events and their time point. 
+#panda dataframe that lists all the unserved events and their time point.
+#does not yet include a full time series with zeros for no unserved and filled with unserved 
 print(c.unserved)
 
 #To consider: one battery per state and make them discharge over night as peakers 
