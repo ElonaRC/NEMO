@@ -68,6 +68,10 @@ def _store_spills(context, hour, gen, generators, spl):
         if context.verbose:
             # show the energy transferred, not stored
             print('STORE:', gen, '->', other, f'({stored:.1f})')
+
+        if spl == 0:
+            # early exit
+            break
     return spl
 
 

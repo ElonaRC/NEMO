@@ -83,6 +83,10 @@ class Generator():
         self.series_power = {}
         self.series_spilled = {}
 
+    def series(self):
+        """Return generation and spills series."""
+        return {'power': self.series_power, 'spilled': self.series_spilled}
+
     def step(self, hour, demand):
         """Step the generator by one hour."""
         raise NotImplementedError
@@ -182,6 +186,10 @@ class Storage():
         if hour not in self.series_charge:
             self.series_charge[hour] = 0
         self.series_charge[hour] += power
+
+    def series(self):
+        """Return generation and spills series."""
+        return {'charge': self.series_charge}
 
     def store(self, hour, power):
         """Abstract method to ensure that derived classes define this."""
@@ -409,6 +417,12 @@ class PumpedHydro(Storage, Hydro):
         self.stored = self.maxstorage * .5
         self.rte = rte
         self.last_run = None
+
+    def series(self):
+        dict1 = Hydro.series(self)
+        dict2 = Storage.series(self)
+        # combine dictionaries
+        return {**dict1, **dict2}
 
     def store(self, hour, power):
         """Pump water uphill for one hour."""
@@ -692,6 +706,12 @@ class Battery(Storage, Generator):
         self.runhours = 0
         self.chargehours = {}
 
+    def series(self):
+        dict1 = Generator.series(self)
+        dict2 = Storage.series(self)
+        # combine dictionaries
+        return {**dict1, **dict2}
+
     def set_capacity(self, cap):
         """Change the capacity of the generator to cap GW."""
         Generator.set_capacity(self, cap)
@@ -954,29 +974,20 @@ class Electrolyser(Storage, Generator):
         Arguments include the associated storage vessel (the 'tank'),
         the capacity of the electrolyser (in MW) and electrolysis
         conversion efficiency.
-
-        >>> e = Electrolyser(None, 1, 100, 'test')
-        Traceback (most recent call last):
-        AssertionError
-        >>> h = HydrogenStorage(400, 'test')
-        >>> e = Electrolyser(h, 1, 100, efficiency=1.0)
-        >>> print(e)
-        Electrolyser (QLD1:1), 100.00 MW
-        >>> e.step(0, 100)
-        (0, 0)
-        >>> e.store(0, 100) # store 100 MWh of hydrogen
-        100.0
-        >>> e.store(0, 100) # store another 100 MWh of hydrogen
-        100.0
-        >>> e.store(0, 100) # tank is full, none stored
-        0.0
         """
-        assert isinstance(tank, HydrogenStorage)
+        if not isinstance(tank, HydrogenStorage):
+            raise TypeError
         Storage.__init__(self)
         Generator.__init__(self, polygon, capacity, label)
         self.efficiency = efficiency
         self.tank = tank
         self.setters += [(self.tank.set_storage, 0, 10000)]
+
+    def series(self):
+        dict1 = Generator.series(self)
+        dict2 = Storage.series(self)
+        # combine dictionaries
+        return {**dict1, **dict2}
 
     def step(self, hour, demand):
         """Return 0 as this is not a generator."""
