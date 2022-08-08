@@ -1,0 +1,6 @@
+[2022-08-08 09:12:22,689] launcher  INFO    SCOOP 0.7 1.1 on darwin using Python 3.9.13 (v3.9.13:6de2ca5339, May 17 2022, 11:37:23) [Clang 13.0.0 (clang-1300.0.29.30)], API: 1013
+[2022-08-08 09:12:22,689] launcher  INFO    Deploying 10 worker(s) over 1 host(s).
+[2022-08-08 09:12:22,689] launcher  INFO    Worker distribution: 
+[2022-08-08 09:12:22,689] launcher  INFO       127.0.0.1:	9 + origin
+[2022-08-08 09:12:24,837] launcher  (127.0.0.1:64427) INFO    Root process is done.
+[2022-08-08 09:12:24,838] launcher  (127.0.0.1:64427) INFO    Finished cleaning spawned subprocesses.

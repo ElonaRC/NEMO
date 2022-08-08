@@ -1,0 +1,171 @@
+1013
+[2022-08-08 09:42:53,621] launcher  INFO    Deploying 10 worker(s) over 1 host(s).
+[2022-08-08 09:42:53,621] launcher  INFO    Worker distribution: 
+[2022-08-08 09:42:53,621] launcher  INFO       127.0.0.1:	9 + origin
+{'demand_modifier': None, 'list_scenarios': False, 'output': 'results.json', 'plot': False, 'reliability_std': 0.002, 'reserves': 0, 'supply_scenario': 're100SWH', 'carbon_price': 25, 'costs': 'GenCost2022-in2021', 'ccs_storage_costs': 27.0, 'coal_price': 1.86, 'gas_price': 11.0, 'discount_rate': 0.05, 'bioenergy_limit': 20.0, 'emissions_limit': inf, 'fossil_limit': 1.0, 'hydro_limit': 12.0, 'min_regional_generation': 0.0, 'nsp_limit': 1.0, 'lambda_': None, 'seed': 12346, 'sigma': 2.0, 'generations': 10, 'trace_file': None, 'verbose': False}
+   	      	           fitness            	           hallfame           
+   	      	------------------------------	------------------------------
+gen	nevals	gen	min        	nevals	gen	min        	nevals
+0  	16    	0  	6.71691e+14	16    	0  	6.71691e+14	16    
+1  	16    	1  	1.77062e+14	16    	1  	1.77062e+14	16    
+2  	16    	2  	1.59716e+14	16    	2  	1.59716e+14	16    
+3  	16    	3  	4.57017e+13	16    	3  	4.57017e+13	16    
+4  	16    	4  	1.00869e+13	16    	4  	1.00869e+13	16    
+5  	16    	5  	5.84285e+12	16    	5  	5.84285e+12	16    
+6  	16    	6  	1.00906e+12	16    	6  	1.00906e+12	16    
+7  	16    	7  	1.41018e+11	16    	7  	1.41018e+11	16    
+8  	16    	8  	1.23069e+11	16    	8  	1.23069e+11	16    
+9  	16    	9  	5.52193e+10	16    	9  	5.52193e+10	16    
+
+Generators:
+	polygon 3 Existing PV (QLD1:3), 50.00 MW
+	   supplied 135.65 GWh, CF 31.0%, capcost $72,050,000, opcost $850,000, LCOE $40
+	polygon 4 Existing PV (QLD1:4), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 6 Existing PV (QLD1:6), 254.47 MW
+	   supplied 706.38 GWh, CF 31.7%, capcost $366,691,270, opcost $4,325,990, LCOE $39
+	polygon 7 Existing PV (QLD1:7), 148.00 MW
+	   supplied 379.17 GWh, CF 29.2%, capcost $213,268,000, opcost $2,516,000, LCOE $43
+	polygon 11 Existing PV (QLD1:11), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 16 Existing PV (QLD1:16), 282.38 MW
+	   supplied 772.37 GWh, CF 31.2%, capcost $406,910,343, opcost $4,800,469, LCOE $40
+	polygon 17 Existing PV (QLD1:17), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 23 Existing PV (NSW1:23), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 24 Existing PV (NSW1:24), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 26 Existing PV (SA1:26), 270.00 MW
+	   supplied 760.56 GWh, CF 32.2%, capcost $389,070,000, opcost $4,590,000, LCOE $39
+	polygon 28 Existing PV (NSW1:28), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 29 Existing PV (NSW1:29), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 30 Existing PV (NSW1:30), 661.00 MW
+	   supplied 1.84 TWh, CF 31.8%, capcost $952,501,000, opcost $11,237,000, LCOE $39
+	polygon 31 Existing PV (NSW1:31), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 32 Existing PV (SA1:32), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 33 Existing PV (NSW1:33), 1177.00 MW
+	   supplied 3.23 TWh, CF 31.3%, capcost $1,696,057,000, opcost $20,009,000, LCOE $40
+	polygon 34 Existing PV (NSW1:34), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 35 Existing PV (NSW1:35), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 36 Existing PV (NSW1:36), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 37 Existing PV (VIC1:37), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 38 Existing PV (VIC1:38), 239.00 MW
+	   supplied 615.62 GWh, CF 29.4%, capcost $344,399,000, opcost $4,063,000, LCOE $42
+	polygon 39 Existing PV (VIC1:39), 143.00 MW
+	   supplied 378.04 GWh, CF 30.2%, capcost $206,063,000, opcost $2,431,000, LCOE $41
+	polygon 1 PV (QLD1:1), 2352.74 MW
+	   supplied 5.92 TWh, CF 28.7%, capcost $3,390,294,044, opcost $39,996,529, LCOE $44
+	polygon 2 PV (QLD1:2), 3364.55 MW
+	   supplied 9.57 TWh, CF 32.5%, capcost $4,848,315,883, opcost $57,197,342, LCOE $38
+	polygon 3 PV (QLD1:3), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 4 PV (QLD1:4), 1416.49 MW
+	   supplied 3.67 TWh, CF 29.5%, capcost $2,041,160,745, opcost $24,080,314, LCOE $42
+	polygon 5 PV (QLD1:5), 1297.44 MW
+	   supplied 3.63 TWh, CF 31.9%, capcost $1,869,611,967, opcost $22,056,491, LCOE $39
+	polygon 6 PV (QLD1:6), 6420.28 MW
+	   supplied 17.81 TWh, CF 31.7%, surplus 8.95 GWh, capcost $9,251,619,708, opcost $109,144,716, LCOE $39
+	polygon 7 PV (QLD1:7), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 8 PV (QLD1:8), 3032.22 MW
+	   supplied 8.25 TWh, CF 31.1%, surplus 424.52 GWh, capcost $4,369,422,587, opcost $51,547,664, LCOE $40
+	polygon 9 PV (QLD1:9), 2339.65 MW
+	   supplied 5.01 TWh, CF 24.4%, surplus 1.59 TWh, capcost $3,371,437,563, opcost $39,774,073, LCOE $51
+	polygon 1 Existing Wind (QLD1:1), 192.45 MW
+	   supplied 648.40 GWh, CF 38.5%, surplus 112.73 GWh, capcost $377,202,000, opcost $4,811,250, LCOE $45
+	polygon 6 Existing Wind (QLD1:6), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 17 Existing Wind (QLD1:17), 452.00 MW
+	   supplied 1.42 TWh, CF 35.9%, surplus 212.70 GWh, capcost $885,920,000, opcost $11,300,000, LCOE $48
+	polygon 24 Existing Wind (NSW1:24), 445.00 MW
+	   supplied 1.44 TWh, CF 37.0%, surplus 238.54 GWh, capcost $872,200,000, opcost $11,125,000, LCOE $47
+	polygon 26 Existing Wind (SA1:26), 648.75 MW
+	   supplied 1.73 TWh, CF 30.4%, surplus 292.66 GWh, capcost $1,271,550,000, opcost $16,218,750, LCOE $57
+	polygon 27 Existing Wind (SA1:27), 1086.86 MW
+	   supplied 2.92 TWh, CF 30.6%, surplus 576.09 GWh, capcost $2,130,245,600, opcost $27,171,500, LCOE $56
+	polygon 28 Existing Wind (NSW1:28), 198.94 MW
+	   supplied 479.93 GWh, CF 27.5%, surplus 94.22 GWh, capcost $389,922,400, opcost $4,973,500, LCOE $63
+	polygon 30 Existing Wind (NSW1:30), 113.00 MW
+	   supplied 292.06 GWh, CF 29.5%, surplus 66.55 GWh, capcost $221,480,000, opcost $2,825,000, LCOE $59
+	polygon 31 Existing Wind (NSW1:31), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 32 Existing Wind (SA1:32), 435.00 MW
+	   supplied 1.11 TWh, CF 29.2%, surplus 265.14 GWh, capcost $852,599,470, opcost $10,874,993, LCOE $59
+	polygon 36 Existing Wind (NSW1:36), 1441.57 MW
+	   supplied 3.79 TWh, CF 30.0%, surplus 1.06 TWh, capcost $2,825,477,200, opcost $36,039,250, LCOE $58
+	polygon 37 Existing Wind (VIC1:37), 3257.69 MW
+	   supplied 7.73 TWh, CF 27.1%, surplus 3.00 TWh, capcost $6,385,072,400, opcost $81,442,250, LCOE $64
+	polygon 38 Existing Wind (VIC1:38), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 39 Existing Wind (VIC1:39), 1018.18 MW
+	   supplied 2.36 TWh, CF 26.5%, surplus 1.06 TWh, capcost $1,995,640,640, opcost $25,454,600, LCOE $65
+	polygon 40 Existing Wind (TAS1:40), 250.00 MW
+	   supplied 608.05 GWh, CF 27.8%, surplus 311.36 GWh, capcost $490,000,000, opcost $6,250,000, LCOE $62
+	polygon 41 Existing Wind (TAS1:41), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 43 Existing Wind (TAS1:43), 148.00 MW
+	   supplied 398.85 GWh, CF 30.8%, surplus 192.67 GWh, capcost $290,080,000, opcost $3,700,000, LCOE $56
+	polygon 1 wind (QLD1:1), 9624.76 MW
+	   supplied 24.15 TWh, CF 28.6%, surplus 13.91 TWh, capcost $18,864,534,646, opcost $240,619,064, LCOE $60
+	polygon 2 wind (QLD1:2), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 3 wind (QLD1:3), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 4 wind (QLD1:4), 6500.00 MW
+	   supplied 11.80 TWh, CF 20.7%, surplus 10.46 TWh, capcost $12,740,000,000, opcost $162,500,000, LCOE $84
+	polygon 5 wind (QLD1:5), 7655.15 MW
+	   supplied 10.08 TWh, CF 15.0%, surplus 16.37 TWh, capcost $15,004,095,696, opcost $191,378,772, LCOE $115
+	polygon 6 wind (QLD1:6), 0.00 MW
+	   supplied 0.00 MWh
+	polygon 7 wind (QLD1:7), 3415.90 MW
+	   supplied 2.55 TWh, CF 8.5%, surplus 8.70 TWh, capcost $6,695,155,015, opcost $85,397,385, LCOE $204
+	polygon 8 wind (QLD1:8), 1796.03 MW
+	   supplied 1.10 TWh, CF 7.0%, surplus 3.98 TWh, capcost $3,520,210,848, opcost $44,900,649, LCOE $247
+	polygon 9 wind (QLD1:9), 0.00 MW
+	   supplied 0.00 MWh
+	poly 17 pumped-hydro (QLD1:17), 500.00 MW
+	   supplied 787.37 GWh, CF 18.0%, ran 1,680 hours, 5.00 GWh storage
+	poly 36 pumped-hydro (NSW1:36), 400.88 MW
+	   supplied 666.98 GWh, CF 19.0%, ran 1,747 hours, 15.00 GWh storage
+	poly 24 hydro (NSW1:24), 0.00 MW
+	   supplied 0.00 MWh, ran 0 hours
+	poly 31 hydro (NSW1:31), 43.00 MW
+	   supplied 71.99 GWh, CF 19.1%, ran 1,679 hours
+	poly 35 hydro (NSW1:35), 71.00 MW
+	   supplied 117.65 GWh, CF 18.9%, ran 1,667 hours
+	poly 36 hydro (NSW1:36), 2513.90 MW
+	   supplied 3.20 TWh, CF 14.5%, ran 1,648 hours
+	poly 38 hydro (VIC1:38), 450.00 MW
+	   supplied 394.63 GWh, CF 10.0%, ran 933 hours
+	poly 39 hydro (VIC1:39), 0.00 MW
+	   supplied 0.00 MWh, ran 0 hours
+	poly 40 hydro (TAS1:40), 303.89 MW
+	   supplied 246.31 GWh, CF 9.3%, ran 833 hours
+	poly 41 hydro (TAS1:41), 0.00 MW
+	   supplied 0.00 MWh, ran 0 hours
+	poly 42 hydro (TAS1:42), 590.40 MW
+	   supplied 424.07 GWh, CF 8.2%, ran 778 hours
+	poly 43 hydro (TAS1:43), 0.00 MW
+	   supplied 0.00 MWh, ran 0 hours
+Timesteps: 8760 h
+Demand energy: 145.20 TWh
+Unstored surplus energy: 61.08 TWh
+Timesteps with unused surplus energy: 6637
+Unserved energy: 1.380%
+WARNING: reliability standard exceeded
+Unserved total hours: 668
+Number of unserved energy events: 210
+Shortfalls (min, max): (7.11 MW, 13.62 GW)
+Score: 58.51 $/MWh
+Penalty: 55219250669.19 $/MWh
+Constraints violated: unserved 
+Done

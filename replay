@@ -104,13 +104,13 @@ def run_one(bundle):
     unserved.to_csv("unserved.csv", sep=',')
 
     #save stored energy for those generators that can store for each time step into CSV 
-    storage = np.zeros((numgens, 8760))
-    for i, g in enumerate(context.generators):
-        try:
-            storage[i] = list(g.series_charge.values())
-        except AttributeError:
-            storage[i].fill(0)
-    np.savetxt("storageOutput.csv", storage, delimiter=",")
+    #storage = np.zeros((numgens, 8760))
+    #for i, g in enumerate(context.generators):
+        #try:
+            #storage[i] = list(g.series_charge.values())
+        #except AttributeError:
+            #storage[i].fill(0)
+    #np.savetxt("storageOutput.csv", storage, delimiter=",")
     print()
 
     if args.plot:

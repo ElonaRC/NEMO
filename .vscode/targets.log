@@ -6,9 +6,8 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # PARTICULAR PURPOSE.
 
 # This program built for i386-apple-darwin11.3.0
- 
 
-# Make data base, printed on Thu Aug  4 11:32:17 2022
+# Make data base, printed on Tue Aug  9 08:33:49 2022
 
 # Variables
 
@@ -39,13 +38,15 @@ __CFBundleIdentifier = com.microsoft.VSCode
 # environment
 VSCODE_CWD = /
 # environment
-PATH = /opt/anaconda3/envs/myenv/bin:/opt/anaconda3/condabin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+PATH = /opt/anaconda3/envs/myenv/bin:/opt/anaconda3/condabin:/Library/Frameworks/Python.framework/Versions/3.9/bin:/Library/Frameworks/Python.framework/Versions/3.10/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+# environment
+LaunchInstanceID = B09D2870-42F9-40E9-99B5-B5C110B1F791
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.mNkR1Br2bY/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.bbnn1Px1yO/Listeners
 # automatic
 %F = $(notdir $%)
 # environment
@@ -92,6 +93,8 @@ USER = elonarey-costa
 .DEFAULT_GOAL := all
 # automatic
 %D = $(patsubst %/,%,$(dir $%))
+# makefile (from `Makefile', line 4)
+VENV = myenv
 # environment
 PROJ_LIB = /opt/anaconda3/envs/myenv/share/proj
 # environment
@@ -134,15 +137,17 @@ MAKEFILES :=
 LC_ALL = C
 # environment
 CONDA_PYTHON_EXE = /opt/anaconda3/bin/python
+# environment
+SECURITYSESSIONID = 186b1
 # automatic
 ^F = $(notdir $^)
 # default
 SUFFIXES := 
-# makefile (from `Makefile', line 64)
+# makefile (from `Makefile', line 74)
 LINTSRC = evolve replay summary $(wildcard *.py awklite/*.py nemo/*.py tests/*.py)
 # environment
 _CE_M = 
-# makefile (from `Makefile', line 3)
+# makefile (from `Makefile', line 13)
 COVRUN = coverage run -a --source=. --omit=setup.py
 # environment
 MAKELEVEL := 0
@@ -151,13 +156,13 @@ CONDA_PREFIX = /opt/anaconda3/envs/myenv
 # environment
 CONDA_PYTHONBREAKPOINT = 
 # environment
-VSCODE_PID = 93917
+VSCODE_PID = 607
 # environment
 _CE_CONDA = 
 # environment
 LANG = C
 # variable set hash-table stats:
-# Load=72/1024=7%, Rehash=0, Collisions=2/95=2%
+# Load=75/1024=7%, Rehash=0, Collisions=2/104=2%
 
 # Pattern-specific Variable Values
 
@@ -165,9 +170,9 @@ LANG = C
 
 # Directories
 
-# . (device 16777230, inode 10780725): 32 files, no impossibilities.
+# . (device 16777230, inode 10780725): 40 files, no impossibilities.
 
-# 32 files, no impossibilities in 1 directories.
+# 40 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -179,7 +184,7 @@ lineprof:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 59):
+#  commands to execute (from `Makefile', line 69):
 	kernprof -v -l stub.py
 	
 
@@ -187,20 +192,20 @@ stub.py:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 48):
+#  commands to execute (from `Makefile', line 58):
 	printf 'import nemo' > $@
 	printf 'c = nemo.Context()' >> $@
 	printf 'nemo.run(c)' >> $@
 	
 
-all:
+all: venv
 #  Command-line target.
 #  Implicit rule search has been done.
 #  File does not exist.
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
 # variable set hash-table stats:
-# Load=0/32=0%, Rehash=0, Collisions=0/0=0%
+# Load=0/32=0%, Rehash=0, Collisions=0/4=0%
 
 .PHONY:
 #  Implicit rule search has not been done.
@@ -211,7 +216,7 @@ coveralls:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 77):
+#  commands to execute (from `Makefile', line 87):
 	coveralls
 	
 
@@ -224,7 +229,7 @@ coveralls:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-07-22 10:38:05
+#  Last modified 2022-08-08 08:02:15
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
@@ -234,7 +239,7 @@ replay.json:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 36):
+#  commands to execute (from `Makefile', line 46):
 	printf "# %s\n%s\n\n" "comment line" "malformed line" >> $@
 	printf '{"options": {"carbon_price": 0, "ccs_storage_costs": 27, "gas_price": 11,' >> $@
 	printf ' "coal_price": 2, "costs": "Null", "discount_rate": 0.05, "supply_scenario": "__one_ccgt__",' >> $@
@@ -245,8 +250,8 @@ lint: flake8 pylint
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 70):
-	pylama $(LINTSRC)
+#  commands to execute (from `Makefile', line 80):
+	# pylama $(LINTSRC)
 	pylava $(LINTSRC)
 	-vulture --min-confidence=50 $(LINTSRC)
 	bandit -q -s B101 $(LINTSRC)
@@ -257,9 +262,18 @@ prof: nemo.prof
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 56):
+#  commands to execute (from `Makefile', line 66):
 	snakeviz $<
 	
+
+# Not a target:
+requirements.txt:
+#  Implicit rule search has been done.
+#  Last modified 2022-08-08 08:02:15
+#  File has been updated.
+#  Successfully updated.
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/0=0%
 
 # Not a target:
 .DEFAULT:
@@ -271,15 +285,23 @@ dist:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 80):
+#  commands to execute (from `Makefile', line 90):
 	python3 setup.py sdist bdist_wheel
 	
+
+venv: myenv/bin/activate
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/4=0%
 
 clean:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 89):
+#  commands to execute (from `Makefile', line 99):
 	-rm -r dist build *.egg-info
 	-rm -r .coverage htmlcov
 	-rm replay.json replay-noscenario.json replay-nocost.json
@@ -287,10 +309,11 @@ clean:
 	
 
 coverage: replay.json replay-noscenario.json replay-nocost.json
+ 
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 9):
+#  commands to execute (from `Makefile', line 19):
 	$(COVRUN) evolve --list-scenarios > /dev/null
 	#  these tests are needed because we need to control external
 	#  environment variables
@@ -298,7 +321,6 @@ coverage: replay.json replay-noscenario.json replay-nocost.json
 	unset NEMORC && $(COVRUN) evolve -g1 -s __one_ccgt__ > /dev/null
 	unset DISPLAY && $(COVRUN) evolve -g1 -s __one_ccgt__ > /dev/null
 	if test -f trace.out; then rm trace.out; fi
- 
 	$(COVRUN) evolve -v --lambda 2 -g1 -s __one_ccgt__ \
 	--trace-file=trace.out --emissions-limit=0 \
 	--fossil-limit=0.1 --reserves=1000 \
@@ -319,7 +341,7 @@ pdoc:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 86):
+#  commands to execute (from `Makefile', line 96):
 	pdoc3 --force --html nemo
 	
 
@@ -327,7 +349,7 @@ html:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 33):
+#  commands to execute (from `Makefile', line 43):
 	coverage html
 	
 
@@ -335,15 +357,44 @@ replay-noscenario.json: replay.json
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 42):
+#  commands to execute (from `Makefile', line 52):
 	sed 's/__one_ccgt__/noexist/' < $< > $@
+	
+
+myenv/bin/activate: requirements.txt
+#  Implicit rule search has not been done.
+#  Implicit/static pattern stem: `'
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := myenv/bin/activate
+# automatic
+# % := 
+# automatic
+# * := 
+# automatic
+# + := requirements.txt
+# automatic
+# | := 
+# automatic
+# < := requirements.txt
+# automatic
+# ^ := requirements.txt
+# automatic
+# ? := requirements.txt
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/12=8%
+#  commands to execute (from `Makefile', line 7):
+	python3.9 -m venv $(VENV)
+	./$(VENV)/bin/pip install -r requirements.txt
 	
 
 pylint:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 67):
+#  commands to execute (from `Makefile', line 77):
 	pylint --disable=E1120,E1124 --enable=useless-suppression $(LINTSRC)
 	
 
@@ -351,7 +402,7 @@ replay-nocost.json: replay.json
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 45):
+#  commands to execute (from `Makefile', line 55):
 	sed 's/Null/noexist/' < $< > $@
 	
 
@@ -359,7 +410,7 @@ flake8:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 62):
+#  commands to execute (from `Makefile', line 72):
 	flake8 evolve replay summary awklite nemo tests --ignore=N801
 	
 
@@ -367,15 +418,15 @@ check: replay.json flake8
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 6):
-	PYTHONOPTIMIZE=0 nosetests --with-doctest --with-coverage --cover-package=awklite,nemo
+#  commands to execute (from `Makefile', line 16):
+	PYTHONOPTIMIZE=0 pytest --cov=awklite --cov nemo --doctest-modules
 	
 
 upload: dist
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 83):
+#  commands to execute (from `Makefile', line 93):
 	twine upload dist/*
 	
 
@@ -383,12 +434,12 @@ nemo.prof: stub.py
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  commands to execute (from `Makefile', line 53):
+#  commands to execute (from `Makefile', line 63):
 	python3 -m cProfile -o $@ $<
 	
 
 # files hash-table stats:
-# Load=23/1024=2%, Rehash=0, Collisions=3/48=6%
+# Load=26/1024=3%, Rehash=0, Collisions=3/55=5%
 # VPATH Search Paths
 
 # No `vpath' search paths.
@@ -400,6 +451,6 @@ nemo.prof: stub.py
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Thu Aug  4 11:32:17 2022
+# Finished Make data base on Tue Aug  9 08:33:49 2022
 
  

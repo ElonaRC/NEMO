@@ -224,3 +224,10 @@ script -c "/usr/local/bin/python3.9 -m scoop evolve -s re100SWH_batteries -g50" 
 #control d to close
 #shell scripts 
  
+
+
+import nemo
+from nemo import scenarios 
+c = nemo.Context()
+scenarios.re100SWH_batteries(c)
+nemo.run(c)
