@@ -8,6 +8,7 @@
 """A testsuite for generators that have storage."""
 
 import unittest
+import pandas as pd
 from nemo import configfile
 from nemo import generators
 from nemo.polygons import WILDCARD
@@ -41,7 +42,8 @@ class TestStorage(unittest.TestCase):
         storage = generators.Storage()
         value = {0: 150}
         storage.series_charge = value
-        self.assertEqual(storage.series(), {'charge': value})
+        series = pd.Series(value, dtype=int)
+        self.assertTrue(storage.series()['charge'].equals(series))
 
     def test_store(self):
         """Test store() method."""
@@ -173,7 +175,7 @@ class TestBattery(unittest.TestCase):
         self.assertEqual(batt.rte, 1)
         self.assertEqual(batt.stored, 0)
         self.assertEqual(batt.runhours, 0)
-        self.assertEqual(len(batt.chargehours), 0)
+        self.assertEqual(len(batt.series_charge), 0)
 
     def test_series(self):
         """Test series() method."""
@@ -220,7 +222,9 @@ class TestBattery(unittest.TestCase):
             result = batt.store(hour=hour, power=50)
             # 0 if no charging permitted, 50 otherwise
             self.assertEqual(result, 0 if hour in hrs else 50)
-        self.assertEqual(batt.stored, 50 * (24 - len(hrs)))
+        nhours = 24 - len(hrs)
+        self.assertEqual(batt.stored, 50 * nhours)
+        self.assertEqual(sum(batt.series_charge.values()), 50 * nhours)
 
     def test_charge_multiple(self):
         """Test multiple calls to store()."""
@@ -251,7 +255,7 @@ class TestBattery(unittest.TestCase):
         self.assertEqual(result, 0)
         result = batt.step(hour=0, demand=400)
         self.assertEqual(result, (0, 0))
-        self.assertEqual(len(batt.chargehours), 0)
+        self.assertEqual(len(batt.series_charge), 0)
         self.assertEqual(batt.runhours, 0)
 
     def test_round_trip_efficiency(self):
