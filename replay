@@ -14,6 +14,7 @@ import json
 import re
 import sys
 import numpy as np
+import pandas as pd
 
 from gooey import Gooey
 
@@ -93,24 +94,46 @@ def run_one(bundle):
         spills[i] = list(g.series_spilled.values())
     np.savetxt("spillsOutput.csv", spills, delimiter=",")
     
+    #same thing but using panda Series and pandas dataframes
+    spills = []
+    for i, g in enumerate(context.generators):
+        d = g.series()['spilled']
+        s = pd.Series(d, name = g)
+        spills.append(s)
+    spills = pd.concat(spills, axis = 1).reindex(range(0, 8760), fill_value=0)
+    spills.to_csv('spillspandas.csv')
+
     #save generation at every time step from each generator into CSV 
     power = np.zeros((numgens, 8760))
     for i, g in enumerate(context.generators):
         power[i] = list(g.series_power.values())
     np.savetxt("powerOutput.csv", power, delimiter=",")
     
+    #same thing but using panda Series and pandas dataframes
+    power = []
+    for i, g in enumerate(context.generators):
+        d = g.series()['power']
+        s = pd.Series(d, name = g)
+        power.append(s)
+    power = pd.concat(power, axis = 1).reindex(range(0, 8760), fill_value=0)
+    power.to_csv('powerpandas.csv')
+    
     #save unserved time series 
     unserved = context.unserved
     unserved.to_csv("unserved.csv", sep=',')
 
     #save stored energy for those generators that can store for each time step into CSV 
-    #storage = np.zeros((numgens, 8760))
-    #for i, g in enumerate(context.generators):
-        #try:
-            #storage[i] = list(g.series_charge.values())
-        #except AttributeError:
-            #storage[i].fill(0)
-    #np.savetxt("storageOutput.csv", storage, delimiter=",")
+    charge = []
+    for i, g in enumerate(context.generators):
+        d = g.series()
+        if 'charge' not in d.keys():
+            s = pd.Series(0, name = g)
+        else:
+            s = pd.Series(d['charge'], name = g)
+        charge.append(s)
+    charge = pd.concat(charge, axis = 1).reindex(range(0, 8760), fill_value=0)
+    charge.to_csv('chargepandas.csv')
+    
     print()
 
     if args.plot:
