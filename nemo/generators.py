@@ -19,6 +19,7 @@ import urllib.parse
 import urllib.request
 from math import isclose
 
+import pandas as pd
 import numpy as np
 import pint
 from matplotlib.patches import Patch
@@ -85,7 +86,8 @@ class Generator():
 
     def series(self):
         """Return generation and spills series."""
-        return {'power': self.series_power, 'spilled': self.series_spilled}
+        return {'power': pd.Series(self.series_power, dtype=int),
+                'spilled': pd.Series(self.series_spilled, dtype=int)}
 
     def step(self, hour, demand):
         """Step the generator by one hour."""
@@ -189,7 +191,7 @@ class Storage():
 
     def series(self):
         """Return generation and spills series."""
-        return {'charge': self.series_charge}
+        return {'charge': pd.Series(self.series_charge, dtype=int)}
 
     def store(self, hour, power):
         """Abstract method to ensure that derived classes define this."""
@@ -704,7 +706,6 @@ class Battery(Storage, Generator):
             if discharge_hours is not None else range(18, 24)
         self.rte = rte
         self.runhours = 0
-        self.chargehours = {}
 
     def series(self):
         dict1 = Generator.series(self)
@@ -746,7 +747,7 @@ class Battery(Storage, Generator):
             energy = self.maxstorage - self.stored
         self.stored += energy
         if energy > 0:
-            self.chargehours[hour] = True
+            self.record(hour, energy)
         assert self.stored <= self.maxstorage or \
             isclose(self.stored, self.maxstorage)
         return energy
@@ -773,7 +774,6 @@ class Battery(Storage, Generator):
         """Reset the generator."""
         Generator.reset(self)
         self.runhours = 0
-        self.chargehours = {}
         self.stored = 0
 
     def capcost(self, costs):
@@ -798,7 +798,7 @@ class Battery(Storage, Generator):
         """Return a summary of the generator activity."""
         return Generator.summary(self, context) + \
             f', ran {_thousands(self.runhours)} hours' + \
-            f', charged {_thousands(len(self.chargehours))} hours' + \
+            f', charged {_thousands(len(self.series_charge))} hours' + \
             f', {self.shours}h storage'
 
 

@@ -1,9 +1,8 @@
+attrdict
 coverage
-pytest
-pytest-cov
 flake8
 pylint
-pylava
+pylama
 vulture
 bandit
 pydocstyle
@@ -15,3 +14,6 @@ pint
 Gooey>=1.0.4
 deap
 twine
+pyflakes
+pytest
+pytest-cov
