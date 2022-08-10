@@ -87,37 +87,25 @@ def run_one(bundle):
     print(context)
     print("Done")
     
-    #save surplus energy at every time step from each generator into CSV 
-    numgens = len(context.generators)
-    spills = np.zeros((numgens, 8760))
-    for i, g in enumerate(context.generators):
-        spills[i] = list(g.series_spilled.values())
-    np.savetxt("spillsOutput.csv", spills, delimiter=",")
-    
-    #same thing but using panda Series and pandas dataframes
-    spills = pd.DataFrame((numgens, 8760), dtype=int)
+    #save surplus energy at every time step from each generator into CSV    
+    spills = []
     for i, g in enumerate(context.generators):
         d = g.series()['spilled']
+        d = d.rename(g)
         d = d.reindex(range(0, 8760), fill_value=0)
-        spills.append(d, ignore_index = True)
-        #type(spills.append(d))
+        spills.append(d)
     spills = pd.concat(spills, axis = 1)
     #spillspandas = pd.DataFrame(spills)
     spills.to_csv('spillspandas.csv')
-
-    #save generation at every time step from each generator into CSV 
-    power = np.zeros((numgens, 8760))
-    for i, g in enumerate(context.generators):
-        power[i] = list(g.series_power.values())
-    np.savetxt("powerOutput.csv", power, delimiter=",")
     
-    #same thing but using panda Series and pandas dataframes
+    #save generation at every time step from each generator into CSV 
     power = []
     for i, g in enumerate(context.generators):
         d = g.series()['power']
-        s = pd.Series(d, name = g)
-        power.append(s)
-    power = pd.concat(power, axis = 1).reindex(range(0, 8760), fill_value=0)
+        d = d.rename(g)
+        d = d.reindex(range(0, 8760), fill_value=0)
+        power.append(d)
+    power = pd.concat(power, axis = 1)
     power.to_csv('powerpandas.csv')
     
     #save unserved time series 
@@ -129,13 +117,14 @@ def run_one(bundle):
     for i, g in enumerate(context.generators):
         d = g.series()
         if 'charge' not in d.keys():
-            s = pd.Series(0, name = g)
+            d = pd.Series(0, name = g)
         else:
-            s = pd.Series(d['charge'], name = g)
-        charge.append(s)
-    charge = pd.concat(charge, axis = 1).reindex(range(0, 8760), fill_value=0)
-    chargepandas = charge.astype(int)
-    chargepandas.to_csv('chargepandas.csv')
+            d = d['power']
+            d = d.rename(g)
+            d = d.reindex(range(0, 8760), fill_value=0)
+        charge.append(d)
+    charge = pd.concat(charge, axis = 1)
+    charge.to_csv('chargepandas.csv')
     
     print()
 
