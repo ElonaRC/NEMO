@@ -5,6 +5,8 @@
 import shapely
 from shapely.geometry import Point, Polygon
 from nemo import polygons
+import matplotlib.pyplot as plt
+import geopandas
 
 # AEMO 43 polygon coordinates 
 poly1 = [(144.602, -13.838),
@@ -345,10 +347,170 @@ poly43 = [(146.426, -42.033),
         (146.426, -42.033)]
 P43 = Polygon(poly43)
 
+polyA = [(129.002, -25.999),
+        (135.183, -25.999),
+        (135.187, -29.075),
+        (129.002, -29.075), 
+        (129.002, -25.999)]
+PA = Polygon(polyA)
+
+polyB = [(129.002, -25.999),
+        (131.199, -25.999), 
+        (131.199, -29.075),
+        (129.002, -29.075), 
+        (129.002, -25.999)]
+PB = Polygon(polyB)
+
+polyC = [(129.002, -29.075), 
+        (131.199, -29.075),
+        (131.199, -32.658),
+        (129.002, -32.658), 
+        (129.002, -29.075)]
+PC = Polygon(polyC)
+
+polyD = [(129.002, -29.075), 
+        (131.199, -29.075),
+        (131.199, -32.658),
+        (129.002, -32.658), 
+        (129.002, -29.075)]
+PD = Polygon(polyD)
+
+polyE = [(137.933, -20.612), 
+        (140.949, -20.612),
+        (140.949, -23.665),
+        (137.933, -23.665),
+        (137.933, -20.612)]
+PE = Polygon(polyE)
+
+polyF = [(137.933, -16.6), 
+        (140.949, -16.6), 
+        (140.949, -20.612),
+        (137.933, -20.612), 
+        (137.933, -16.6)]
+PF = Polygon(polyF)
+
+polyG = [(140.949, -10), 
+        (144.602, -10), 
+        (144.602, -13.838),
+        (143.459, -18.480),
+        (140.949, -18.099),
+        (140.949, -10)]
+PG = Polygon(polyG)
+
+polyH = [(129.002, -23.665), 
+        (137.933, -23.665),
+        (137.933, -25.996),
+        (129.002, -25.999),
+        (129.002, -23.665)]
+PH = Polygon(polyH)
+
+polyI = [(129.002, -20.612), 
+        (137.933, -20.612), 
+        (137.933, -23.665),
+        (129.002, -23.665), 
+        (129.002, -20.612)]
+PI = Polygon(polyI)
+
+polyJ = [(129.002, -16.6), 
+        (137.933, -16.6), 
+        (137.933, -20.612), 
+        (129.002, -20.612), 
+        (129.002, -16.6)]
+PJ = Polygon(polyJ)
+
+polyK = [(133.502, -10.739), 	
+        (136.757, -10.739), 	
+        (137.933, -14.032), 	
+        (137.933, -16.6), 	
+        (133.502, -16.6), 	
+        (133.502, -10.739)]	
+PK = Polygon(polyK)	
+
+polyL = [(130.002, -10.739), 		
+        (133.502, -10.739), 		
+        (133.502, -16.6), 		
+        (129.002, -16.6), 		
+        (129.002, -13.350), 		
+        (130.002, -10.739)]		
+PL = Polygon(polyL)		
+
+polyM = [(124.637, -13.350), 
+        (129.002, -13.350), 
+        (129.002, -16.6), 
+        (122.697, -16.6), 
+        (124.637, -13.350)]
+PM = Polygon(polyM)
+
+polyN = [(122.697, -16.6), 
+        (129.002, -16.6), 
+        (129.002, -20.612), 
+        (120.373, -20.612), 
+        (120.373, -18.526), 
+        (122.697, -16.6)]
+PN = Polygon(polyN)
+
+polyO = [(120.373, -20.612), 
+        (129.002, -20.612), 
+        (129.002, -25.999),
+        (120.373, -25.999), 
+        (120.373, -20.612)]
+PO = Polygon(polyO)
+
+polyP = [(120.373, -25.999), 
+        (129.002, -25.999),
+        (129.002, -29.075), 
+        (120.373, -29.075), 
+        (120.373, -25.999)]
+PP = Polygon(polyP)
+
+polyQ = [(125.354, -29.075), 
+        (129.002, -29.075), 
+        (129.002, -32.658), 
+        (125.354, -34.053), 
+        (125.354, -29.075)]
+PQ = Polygon(polyQ)
+
+polyR = [(120.373, -29.075), 
+        (125.354, -29.075), 
+        (125.354, -34.053), 
+        (120.373, -35.139), 
+        (120.373, -29.075)]
+PR = Polygon(polyR)
+
+polyS = [(114.348, -29.075), 	
+        (120.373, -29.075), 	
+        (120.373, -35.139), 	
+        (116.348, -35.139), 	
+        (114.348, -34.053), 	
+        (114.348, -29.075)]	
+PS = Polygon(polyS)	
+
+polyT = [(112.508, -23.665),
+        (120.373, -23.665), 
+        (120.373, -29.075), 
+        (114.348, -29.075), 
+        (112.508, -27.075), 
+        (112.508, -23.665)]
+PT = Polygon(polyT)
+
+polyU = [(112.508, -20.612), 
+        (120.373, -18.526), 
+        (120.373, -23.665), 
+        (112.508, -23.665), 
+        (112.508, -20.612)]
+PU = Polygon(polyU)
+
 #Put all polygons into a list
 allPoly = [P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17, 
             P18, P19, P20, P21, P22, P23, P24, P25, P26, P27, P28, P29, P30, 
-            P31, P32, P33, P34, P35, P36, P37, P38, P39, P40, P41, P42, P43]
+            P31, P32, P33, P34, P35, P36, P37, P38, P39, P40, P41, P42, P43, PA, PB, PC, PD, PE, PF, 
+            PG, PH, PI, PJ, PK, PL, PM, PN, PO, PP, PQ, PR, PS, PT, PU]
+
+#plot All polygons
+for geom in allPoly:
+    plt.plot(*geom.exterior.xy)
+plt.show()
+
 
 #All NEW solarfarms from AEMO + openCEM (USE THIS)
 #These numbers add up to 7.9 GW installed cap which matches the ISP 2022 report
@@ -1899,13 +2061,13 @@ Point(142.018439165612,-38.305278107624),
 Point(143.361722,-36.471022),
 Point(144.022463,-37.630952)]
 
-#This plots th polygons and the points for visual aid. 
-import matplotlib.pyplot as plt
-import geopandas
+#This plots the polygons and the points for visual aid. 
 
 #plotting the stupid polygons and the solar farms together 
 for geom in allPoly:
     plt.plot(*geom.exterior.xy)
+    #plt.annotate(geom, xy=geom, horizontalaligment = 'center')
+plt.show()
 x = [point.x for point in WindFarms]
 y = [point.y for point in WindFarms]
 lab = range(1,86)
@@ -1913,8 +2075,6 @@ plt.scatter(x, y)
 for i in range(len(x)):
     plt.annotate(lab[i], (x[i], y[i] + 0.2), fontsize = 10)
 plt.show()
-
-
 
 # Goes through all combinations of points and polygons to find where those polygons lie. 
 # Prints the index + 1 to get the actual solarfarm ID number in my excel spreadsheet(ish)
