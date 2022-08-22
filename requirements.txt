@@ -1,3 +1,5 @@
+attrdict3
+codespell
 coverage
 flake8
 pylint
@@ -16,3 +18,5 @@ twine
 pyflakes
 pytest
 pytest-cov
+twine
+wheel
