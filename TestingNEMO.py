@@ -212,14 +212,14 @@ print(c.unserved)
 
 #To consider: one battery per state and make them discharge over night as peakers 
 
-script -c re100SWH50runs 
-script -c "/usr/local/bin/python3.9 -m scoop evolve -s re100SWH_batteries -g50" re100SWH50runs 
+#script -c re100SWH50runs 
+#script -c "/usr/local/bin/python3.9 -m scoop evolve -s re100SWH_batteries -g50" re100SWH50runs 
 
-/usr/local/bin/python3.9 summary < re100SWH50runs
-/usr/local/bin/python3.9 replay -f results.json  
-/usr/local/bin/python3.9 replay --plot --spills  
+#/usr/local/bin/python3.9 summary < re100SWH50runs
+#/usr/local/bin/python3.9 replay -f results.json  
+#/usr/local/bin/python3.9 replay --plot --spills  
 
-/usr/local/bin/python3.9 replay -v -f results.json | /usr/local/bin/python3.9 summary
+#/usr/local/bin/python3.9 replay -v -f results.json | /usr/local/bin/python3.9 summary
 #piped replay output into summary to get 
 #control d to close
 #shell scripts 
