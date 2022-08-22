@@ -13,7 +13,7 @@ RUNFAST = 1 #changes everypoly from 44 to 10
 """Supply side scenarios."""
 
 from nemo import configfile, regions
-from nemo.generators import (CCGT, CCGT_CCS, CST, OCGT, PV, Battery, Biofuel,
+from nemo.generators import (CCGT, CCGT_CCS, CST, OCGT, Battery, Biofuel,
                              Black_Coal, CentralReceiver, Coal_CCS,
                              DemandResponse, Hydro, PumpedHydro, PV1Axis, Wind,
                              WindOffshore)
