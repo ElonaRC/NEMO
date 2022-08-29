@@ -8,7 +8,7 @@
 # (at your option) any later version.
 
 
-RUNFAST = 1 #changes everypoly from 44 to 10 
+RUNFAST = 0 #changes everypoly from 44 to 10 
 
 """Supply side scenarios."""
 
@@ -88,6 +88,7 @@ def _every_poly(gentype):
     result = []
     
     for poly in range(1, 10 if RUNFAST else 44):
+    #for poly in range(1, 44):
         if gentype == Biofuel:
             result.append(gentype(poly, 0, label=f'polygon {poly} GT'))
         elif gentype == PV1Axis:
@@ -139,6 +140,7 @@ def re100_batteries(context):
     battery = Battery(WILDCARD, 0, 4, discharge_hours=hrs)
     context.generators.insert(0, battery)
 
+""" Start Elona's Scenarios """
 
 def _existingSolarWind(gentype):
     """Add in existing solar and wind generators for each polygon. ERC Addition""" 
@@ -151,18 +153,24 @@ def _existingSolarWind(gentype):
          (16, 579), (17, 1189.5), (23, 291), (24, 301), (26, 270), (28, 53.76), (29, 110), 
          (30, 661), (31, 134), (32, 149.25), (33, 1177), (34, 693.56), (35, 358), 
          (36, 42.205), (37, 55), (38, 239), (39, 143)]:
-            result.append(gentype(poly, capacity, cfg, poly - 1,
+            g = gentype(poly, capacity, cfg, poly - 1,
                                 build_limit=capacity/1000,
-                                label=f'polygon {poly} Existing PV'))                                       
+                                label=f'polygon {poly} Existing PV')
+            g.capcost = lambda costs: 0
+            g.setters = []
+            result.append(g)           
     elif gentype == Wind:
         cfg = configfile.get('generation', 'wind-trace')
         for (poly, capacity) in [(1, 192.45), (6, 43), (17, 452), (24, 445), 
         (26, 648.75), (27, 1086.86), (28, 198.94), (30, 113), (31, 152.22), 
         (32, 615.8), (36, 1441.57), (37, 3257.69), (38, 21), (39, 1018.184), 
         (40, 250), (41, 168), (43, 148)]:
-            result.append(gentype(poly, capacity, cfg, poly - 1, 
-                                build_limit = capacity/1000, 
-                                label = f'polygon {poly} Existing Wind'))
+            g = gentype(poly, capacity, cfg, poly - 1,
+                                build_limit=capacity/1000,
+                                label=f'polygon {poly} Existing Wind')
+            g.capcost = lambda costs: 0
+            g.setters = []
+            result.append(g)     
     return result
 
 
@@ -220,6 +228,19 @@ def re100SWH_batteries(context):
     batteryhornsdaleSA = Battery(19, 100, 1, discharge_hours=hrs, label = f'polygon 19 Battery Hornsdale SA', rte = 0.9)
     batteryWarratahNSW = Battery(30, 700, 2, discharge_hours=hrs, label = f'polygon 30 Battery Warratah NSW', rte = 0.9)
     context.generators = [batteryhornsdaleSA] + [batteryWarratahNSW] + context.generators
+
+def re100SWH_batteries2(context):
+    """Takes SWH and adds battery."""
+    re100SWH(context)
+    # discharge between 6pm and 6am daily
+    hrs = list(range(0, 7)) + list(range(17, 24))
+    batteryhornsdaleSA = Battery(19, 100, 1, discharge_hours=hrs, label = f'polygon 19 Existing Battery Hornsdale SA', rte = 0.9)
+    batteryhornsdaleSA.capcost = lambda costs: 0
+    batteryhornsdaleextension = Battery(21, 100, 1, discharge_hours=hrs, label = f'polygon 21 Battery Hornsdale Ext SA', rte = 0.9)
+    batteryWarratahNSW = Battery(30, 700, 2, discharge_hours=hrs, label = f'polygon 30 Battery Warratah NSW', rte = 0.9)
+    
+    context.generators = [batteryhornsdaleSA] + [batteryhornsdaleextension]+[batteryWarratahNSW] + context.generators
+
 
 """ End Elonas Scenarios"""
 
@@ -327,6 +348,7 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100SWH_WA': re100SWH_WA,
                     're100SWH': re100SWH, 
                     're100SWH_batteries': re100SWH_batteries,
+                    're100SWH_batteries2': re100SWH_batteries2,
                     're100+dsp': re100_dsp,
                     're100-nocst': re100_nocst,
                     'replacement': replacement}

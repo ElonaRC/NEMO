@@ -229,5 +229,12 @@ print(c.unserved)
 import nemo
 from nemo import scenarios 
 c = nemo.Context()
-scenarios.re100SWH_batteries(c)
-nemo.run(c)
+scenarios.re100SWH(c)
+#scenarios.re100SWH_batteries(c)
+nemo.run(c, "01/01/2020", "01/02/2020")
+print(c)
+
+#Old code for setting new generators 
+#result.append(gentype(poly, capacity, cfg, poly - 1, 
+#                                build_limit = capacity/1000, 
+#                                label = f'polygon {poly} Existing Wind'))

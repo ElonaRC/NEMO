@@ -511,24 +511,9 @@ for geom in allPoly:
     plt.plot(*geom.exterior.xy)
 plt.show()
 
-def _centroid(vertices):
-    """Find the centroid of a polygon."""
-    # pylint: disable=invalid-name
-    # Ensure the polygon is closed
-    assert vertices[0] == vertices[-1]
-    thesum = 0
-    vsum = (0, 0)
-    for i in range(len(vertices) - 1):
-        v1 = vertices[i]
-        v2 = vertices[i + 1]
-        cross = v1[0] * v2[1] - v1[1] * v2[0]
-        thesum += cross
-        vsum = (((v1[0] + v2[0]) * cross) + vsum[0],
-                ((v1[1] + v2[1]) * cross) + vsum[1])
-        z = 1. / (3. * thesum)
-    return (vsum[0] * z, vsum[1] * z)
-
-_centroid(P1)
+gdf = geopandas.GeoDataFrame(geometry = allPoly)
+gdf.plot()
+gdf.to_file("my_file.shp") #save into shape file 
 
 #All NEW solarfarms from AEMO + openCEM (USE THIS)
 #These numbers add up to 7.9 GW installed cap which matches the ISP 2022 report
