@@ -14,9 +14,8 @@
 # pylint: disable=invalid-name
 
 import locale
-import urllib.error
-import urllib.parse
-import urllib.request
+from urllib.parse import urlencode
+from urllib.request import urlopen, Request
 from math import isclose
 
 import pandas as pd
@@ -180,6 +179,7 @@ class Storage():
     """This generator is capable of storage."""
 
     def __init__(self):
+        """Storage constructor."""
         # Time series of charges
         self.series_charge = {}
 
@@ -208,27 +208,18 @@ class TraceGenerator(Generator):
     csvfilename = None
     csvdata = None
 
-    def __init__(self, polygon, capacity, filename, column, label=None,
-                 build_limit=None):
+    def __init__(self, polygon, capacity, label=None, build_limit=None):
         """Construct a generator with a specified trace file."""
         Generator.__init__(self, polygon, capacity, label)
         if build_limit is not None:
             # Override default capacity limit with build_limit
             _, _, limit = self.setters[0]
             self.setters = [(self.set_capacity, 0, min(build_limit, limit))]
-        if self.__class__.csvfilename != filename:
-            # Optimisation:
-            # Only if the filename changes do we invoke genfromtxt.
-            with urllib.request.urlopen(filename) as urlobj:  # nosec
-                self.__class__.csvdata = np.genfromtxt(urlobj,
-                                                       encoding='UTF-8',
-                                                       delimiter=',')
-            self.__class__.csvdata = np.maximum(0, self.__class__.csvdata)
-            self.__class__.csvfilename = filename
-        self.generation = self.__class__.csvdata[::, column]
 
     def step(self, hour, demand):
         """Step method for any generator using traces."""
+        # self.generation must be defined by derived classes
+        # pylint: disable=no-member
         generation = self.generation[hour] * self.capacity
         power = min(generation, demand)
         spilled = generation - power
@@ -237,7 +228,152 @@ class TraceGenerator(Generator):
         return power, spilled
 
 
-class Wind(TraceGenerator):
+class RenewablesNinja(TraceGenerator):
+    """
+    A generator that gets its trace data from Renewables.Ninja.
+
+    The Renewables.Ninja API is documented here:
+    https://www.renewables.ninja/documentation/api
+    """
+
+    URLBASE = 'https://www.renewables.ninja/api/data'
+
+    def __init__(self, polygon, capacity, latlong, daterange, label,
+                 build_limit):
+        """Initialise a RenewablesNinja object (technology neutral)."""
+        TraceGenerator.__init__(self, polygon, capacity, label, build_limit)
+
+        if not isinstance(latlong, tuple) and len(latlong) != 2:
+            raise ValueError("latlong must be a pair (tuple)")
+
+        if not isinstance(daterange, tuple) and len(daterange) != 2:
+            raise ValueError("daternage must be a pair (tuple)")
+
+        self.latitude, self.longitude = latlong
+
+        self.params = {
+            'lat': self.latitude,
+            'lon': self.longitude,
+            # verify date range
+            'date_from': daterange[0],
+            'date_to': daterange[1],
+            'dataset': 'merra2',
+            'capacity': 1.0,
+            'format': 'csv'
+        }
+
+    @staticmethod
+    def fetch(url):
+        """Fetch the CSV data from the web server and parse it."""
+        headers = {
+            'User-Agent': 'Mozilla'
+        }
+        req = Request(url, headers=headers)
+        with urlopen(req) as urlobj:  # nosec
+            return np.genfromtxt(urlobj, usecols=(1), delimiter=',',
+                                 skip_header=4, encoding='UTF-8')
+
+    def summary(self, context):
+        """Return a summary of the generator activity."""
+        return Generator.summary(self, context) + \
+            f', location ({self.latitude:.1f}' + \
+            f', {self.longitude:.1f})'
+
+
+class NinjaPV(RenewablesNinja):
+    """A PV generator that gets its  dispatch from Renewables.Ninja."""
+
+    def __init__(self, polygon, capacity, latlong, daterange, axes,
+                 azimuth=180, tilt=None, label=None, build_limit=None):
+        """
+        Construct a PV system with trace data from Renewables.ninja.
+
+        latlong: The location must be specified as a latitude/longitude tuple.
+        daterange: The date range must be specified as a tuple.
+        axes: Whether the system is fixed, single-axis or dual-axis tracking.
+        azimuth: The azimuth angle of the system. 180 = to the equator.
+        tilt: The tilt of the PV modules (default is latitude angle).
+        """
+        RenewablesNinja.__init__(self, polygon, capacity, latlong,
+                                 daterange, label, build_limit)
+
+        if axes not in [0, 1, 2]:
+            raise ValueError("values: 0, 1 (single axis) or 2 (double axis)")
+        self.axes = axes
+        self.azimuth = azimuth
+        self.tilt = abs(self.latitude) if tilt is None else tilt
+        assert 0 <= self.tilt <= 90
+
+        # PV specific parameters
+        for key, value in (('system_loss', 0.1), ('tracking', axes),
+                           ('tilt', self.tilt), ('azim', azimuth)):
+            self.params[key] = value
+        url = self.URLBASE + '/pv?' + urlencode(self.params)
+        self.generation = self.fetch(url)
+
+    def summary(self, context):
+        """Return a summary of the generator activity."""
+        return RenewablesNinja.summary(self, context) + \
+            f', tilt {self.tilt:.0f}, azim {self.azimuth}' + \
+            f', tracking {self.axes}'
+
+
+class NinjaWind(RenewablesNinja):
+    """A wind generator that gets its trace data from Renewables.Ninja."""
+
+    def __init__(self, polygon, capacity, latlong, daterange, machine,
+                 height, label=None, build_limit=None):
+        """
+        Construct a wind turbine with trace data from Renewables.ninja.
+
+        latlong: The location must be specified as a latitude/longitude tuple.
+        daterange: The date range must be specified as a tuple.
+        machine: The wind turbine model must match those listed on the website.
+        height: The hub height in metres.
+        """
+        RenewablesNinja.__init__(self, polygon, capacity, latlong,
+                                 daterange, label, build_limit)
+
+        self.machine = machine
+        self.height = height
+        assert 10 <= height <= 150
+
+        # Wind specific parameters
+        for key, value in (('turbine', self.machine),
+                           ('height', height)):
+            self.params[key] = value
+        url = self.URLBASE + '/wind?' + urlencode(self.params)
+        self.generation = self.fetch(url)
+
+    def summary(self, context):
+        """Return a summary of the generator activity."""
+        return RenewablesNinja.summary(self, context) + \
+            f', machine {self.machine}, height {self.height}m'
+
+
+class CSVTraceGenerator(TraceGenerator):
+    """A generator that gets its hourly dispatch from a CSV trace file."""
+
+    csvfilename = None
+    csvdata = None
+
+    def __init__(self, polygon, capacity, filename, column, label=None,
+                 build_limit=None):
+        """Construct a generator with a specified trace file."""
+        TraceGenerator.__init__(self, polygon, capacity, label, build_limit)
+        if self.__class__.csvfilename != filename:
+            # Optimisation:
+            # Only if the filename changes do we invoke genfromtxt.
+            with urlopen(filename) as urlobj:  # nosec
+                self.__class__.csvdata = np.genfromtxt(urlobj,
+                                                       encoding='UTF-8',
+                                                       delimiter=',')
+            self.__class__.csvdata = np.maximum(0, self.__class__.csvdata)
+            self.__class__.csvfilename = filename
+        self.generation = self.__class__.csvdata[::, column]
+
+
+class Wind(CSVTraceGenerator):
     """Wind power."""
 
     patch = Patch(facecolor='green')
@@ -253,7 +389,7 @@ class WindOffshore(Wind):
     """Colour for plotting"""
 
 
-class PV(TraceGenerator):
+class PV(CSVTraceGenerator):
     """Solar photovoltaic (PV) model."""
 
     patch = Patch(facecolor='yellow')
@@ -278,7 +414,7 @@ class Behind_Meter_PV(PV):
     """
 
 
-class CST(TraceGenerator):
+class CST(CSVTraceGenerator):
     """Concentrating solar thermal (CST) model."""
 
     patch = Patch(facecolor='gold')
@@ -292,8 +428,8 @@ class CST(TraceGenerator):
         Arguments include capacity (in MW), sm (solar multiple) and
         shours (hours of storage).
         """
-        TraceGenerator.__init__(self, polygon, capacity, filename, column,
-                                label)
+        CSVTraceGenerator.__init__(self, polygon, capacity, filename, column,
+                                   label)
         self.maxstorage = None
         self.stored = None
         self.set_storage(shours)
@@ -421,6 +557,7 @@ class PumpedHydro(Storage, Hydro):
         self.last_run = None
 
     def series(self):
+        """Return the combined series."""
         dict1 = Hydro.series(self)
         dict2 = Storage.series(self)
         # combine dictionaries
@@ -708,6 +845,7 @@ class Battery(Storage, Generator):
         self.runhours = 0
 
     def series(self):
+        """Return the combined series."""
         dict1 = Generator.series(self)
         dict2 = Storage.series(self)
         # combine dictionaries
@@ -802,7 +940,7 @@ class Battery(Storage, Generator):
             f', {self.shours}h storage'
 
 
-class Geothermal(TraceGenerator):
+class Geothermal(CSVTraceGenerator):
     """Geothermal power plant."""
 
     patch = Patch(facecolor='brown')
@@ -984,6 +1122,7 @@ class Electrolyser(Storage, Generator):
         self.setters += [(self.tank.set_storage, 0, 10000)]
 
     def series(self):
+        """Return the combined series."""
         dict1 = Generator.series(self)
         dict2 = Storage.series(self)
         # combine dictionaries
@@ -994,6 +1133,7 @@ class Electrolyser(Storage, Generator):
         return 0, 0
 
     def reset(self):
+        """Reset the generator."""
         Storage.reset(self)
         Generator.reset(self)
 

@@ -4,7 +4,7 @@ all: venv
 VENV=myenv
 
 $(VENV)/bin/activate: requirements.txt
-	python3.9 -m venv $(VENV)
+	python3.10 -m venv $(VENV)
 	./$(VENV)/bin/pip install -r requirements.txt
 
 # env is a shortcut target
@@ -12,7 +12,7 @@ venv: $(VENV)/bin/activate
 
 COVRUN=coverage run -a --source=. --omit=setup.py
 
-check:  replay.json flake8
+check:  flake8
 	PYTHONOPTIMIZE=0 pytest --cov=awklite --cov nemo --doctest-modules
 
 coverage: replay.json replay-noscenario.json replay-nocost.json
@@ -74,11 +74,11 @@ flake8:
 LINTSRC=evolve replay summary $(wildcard *.py awklite/*.py nemo/*.py tests/*.py)
 
 pylint:
-	pylint --disable=E1120,E1124 --enable=useless-suppression $(LINTSRC)
+	pylint --enable=useless-suppression $(LINTSRC)
 
 lint:	flake8 pylint
-	# pylama $(LINTSRC)
-	pylava $(LINTSRC)
+	codespell -d -L fom,hsa,trough $(LINTSRC) || true
+	pylama $(LINTSRC)
 	-vulture --min-confidence=50 $(LINTSRC)
 	bandit -q -s B101 $(LINTSRC)
 	pydocstyle $(LINTSRC)

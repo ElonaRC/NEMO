@@ -1,8 +1,8 @@
 *.pyc
-htmlcov
-exchanges.json
-results.json
 html
 powerOutput.csv
 powerOutput.csv
 spillsOutput.csv
+htmlcov
+results.json
+myenv

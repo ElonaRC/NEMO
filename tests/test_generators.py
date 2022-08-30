@@ -8,6 +8,7 @@
 """A testsuite for the generators module."""
 
 import os
+import time
 import unittest
 import inspect
 import pandas as pd
@@ -17,25 +18,57 @@ from nemo import costs
 
 hydrogen_storage = generators.HydrogenStorage(1000, "H2 store")
 
-dummy_arguments = {'self': None,
-                   'polygon': 31,
-                   'capacity': 100,
-                   'filename': 'file:tracedata.csv',
-                   'column': 0,
-                   'label': 'a label',
+dummy_arguments = {'axes': 0,
+                   'azimuth': 180,
                    'build_limit': 1000,
-                   'maxstorage': 1000,
-                   'discharge_hours': range(18, 21),
-                   'rte': 0.8,
-                   'heatrate': 0.3,
-                   'intensity': 0.7,
+                   'capacity': 100,
                    'capture': 0.85,
-                   'solarmult': 2.5,
-                   'shours': 8,
+                   'column': 0,
                    'cost_per_mwh': 1000,
+                   'daterange': ('2020-01-01', '2020-12-31'),
+                   'discharge_hours': range(18, 21),
+                   'efficiency': 30,
+                   'filename': 'file:tracedata.csv',
+                   'heatrate': 0.3,
+                   'height': 100,
+                   'intensity': 0.7,
                    'kwh_per_litre': 10,
+                   'label': 'a label',
+                   'latlong': (-35, 149),
+                   'machine': 'Vestas V90 2000',
+                   'maxstorage': 1000,
+                   'polygon': 31,
+                   'rte': 0.8,
+                   'self': None,
+                   'shours': 8,
+                   'solarmult': 2.5,
                    'tank': hydrogen_storage,
-                   'efficiency': 30}
+                   'tilt': 0}
+
+# This list should contain every generator class in generators.py.
+# This ensures that the linters will not report any classes as unused
+# because they do not feature in any scenario (eg, GreenPower). They
+# are, however, tested below via Python introspection (and hence not
+# named explicitly in source code).
+
+classlist = [generators.Battery, generators.Behind_Meter_PV,
+             generators.Biofuel, generators.Biomass,
+             generators.Black_Coal, generators.CCGT,
+             generators.CCGT_CCS, generators.CCS, generators.CST,
+             generators.CSVTraceGenerator, generators.CentralReceiver,
+             generators.Coal_CCS, generators.DemandResponse,
+             generators.Diesel, generators.Electrolyser,
+             generators.Fossil, generators.Fuelled,
+             generators.Generator, generators.Geothermal,
+             generators.Geothermal_EGS, generators.Geothermal_HSA,
+             generators.GreenPower, generators.Hydro,
+             generators.HydrogenGT, generators.HydrogenStorage,
+             generators.OCGT, generators.PV, generators.PV1Axis,
+             generators.ParabolicTrough, generators.Patch,
+             generators.PumpedHydro, generators.RenewablesNinja,
+             generators.NinjaPV, generators.NinjaWind,
+             generators.Storage, generators.TraceGenerator,
+             generators.Wind, generators.WindOffshore]
 
 
 class TestGenerators(unittest.TestCase):
@@ -50,13 +83,21 @@ class TestGenerators(unittest.TestCase):
 
         self.years = 1
         self.costs = costs.NullCosts()
-        self.classes = inspect.getmembers(generators, inspect.isclass)
+        self.classes = [cls for cls in
+                        inspect.getmembers(generators, inspect.isclass)
+                        if cls[1].__module__ == generators.__name__]
         self.generators = []
 
         for (cls, clstype) in self.classes:
-            if cls in ['Generator', 'Storage', 'Patch', 'HydrogenStorage']:
-                # imported via matplotlib
+            # Skip abstract classes
+            if cls in ['Generator', 'TraceGenerator',
+                       'CSVTraceGenerator', 'RenewablesNinja',
+                       'Storage', 'HydrogenStorage']:
                 continue
+
+            # check that every class in generators.py is in classlist
+            self.assertIn(clstype, classlist)
+
             args = inspect.getfullargspec(clstype.__init__).args
             arglist = []
             for arg in args:
@@ -64,6 +105,8 @@ class TestGenerators(unittest.TestCase):
                     arglist.append(dummy_arguments[arg])
             obj = clstype(*arglist)
             self.generators.append(obj)
+            if cls.startswith("Ninja"):
+                time.sleep(10)  # observe 6/min rate limit
 
     def tearDown(self):
         """Remove tracefile on teardown."""
