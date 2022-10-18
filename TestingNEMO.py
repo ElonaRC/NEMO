@@ -80,7 +80,8 @@ from nemo import utils
 from datetime import datetime
 ioff()
 utils.plt.rcParams["figure.figsize"] = (12, 6)  # 12" x 6" figure
-utils.plot(c, xlim=[datetime(2010, 1, 5), datetime(2010, 1, 12)])
+utils.plot(c)
+utils.plot(c, xlim=[datetime(2018, 1, 5), datetime(2018, 1, 12)])
 
 
 #c = nemo.Context()
@@ -227,7 +228,6 @@ print(c.unserved)
 
 
 import nemo
-from nemo import scenarios 
 c = nemo.Context()
 scenarios.re100SWH(c)
 #scenarios.re100SWH_batteries(c)
@@ -238,3 +238,40 @@ print(c)
 #result.append(gentype(poly, capacity, cfg, poly - 1, 
 #                                build_limit = capacity/1000, 
 #                                label = f'polygon {poly} Existing Wind'))
+
+
+
+
+
+
+
+
+# You'll need a list of latlongs (tuples) here, indexed by polygon.
+latlongs = [None,  # no polygon zero
+            (-16.84, 145.68)
+            ]  # etc
+
+NOTRACKING = 0
+SINGLEAXIS = 1
+DUALAXIS = 2
+
+for year in [('2018-01-01', '2018-31-12')]:  # etc
+    for poly in range(1, 2):
+        # north facing, latitutde tilt
+        pv = NinjaPV(latlongs[poly], year, SINGLEAXIS)
+        pv.download(f'PV-{poly}-{year[0]}-{year[1]}-North.txt')
+
+        # west facing, latitude + 15
+        AZIM = 270
+        tilt = int(abs(latlongs[poly][0]) + 15)
+        pv2 = NinjaPV(latlongs[poly], year, SINGLEAXIS, AZIM, tilt)
+        pv2.download(f'PV-{poly}-{year[0]}-{year[1]}-West')
+
+        MACHINE = 'Vestas V90 2000'
+        HEIGHT = 100
+        wind = NinjaWind(latlongs[poly], year, MACHINE, HEIGHT)
+        wind.download(f'Wind-{poly}-{year[0]}-{year[1]}')
+
+
+read_file = pd.read_csv(r'/Users/elonarey-costa/Documents/phdCode/NEMO/Wind-1-2020-01-01-2020-12-31')
+read_file.to_csv(r'/Users/elonarey-costa/Documents/phdCode/NEMO/data/WindTraceRN', index = None)

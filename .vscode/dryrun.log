@@ -1,7 +1,6 @@
 make --dry-run --always-make --keep-going --print-directory
 make: Entering directory `/Users/elonarey-costa/Documents/phdCode/NEMO'
-python3.9 -m venv myenv
+python3.10 -m venv myenv
 ./myenv/bin/pip install -r requirements.txt
- 
 make: Leaving directory `/Users/elonarey-costa/Documents/phdCode/NEMO'
  

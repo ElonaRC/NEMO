@@ -92,7 +92,7 @@ def run_one(bundle):
     for i, g in enumerate(context.generators):
         d = g.series()['spilled']
         d = d.rename(g)
-        d = d.reindex(range(0, 8760), fill_value=0)
+        d = d.reindex(range(0, 96432), fill_value=0)
         spills.append(d)
     spills = pd.concat(spills, axis = 1)
     #spillspandas = pd.DataFrame(spills)
@@ -103,7 +103,7 @@ def run_one(bundle):
     for i, g in enumerate(context.generators):
         d = g.series()['power']
         d = d.rename(g)
-        d = d.reindex(range(0, 8760), fill_value=0)
+        d = d.reindex(range(0, 96432), fill_value=0)
         power.append(d)
     power = pd.concat(power, axis = 1)
     power.to_csv('powerpandas.csv')
@@ -121,7 +121,7 @@ def run_one(bundle):
         else:
             d = d['power']
             d = d.rename(g)
-            d = d.reindex(range(0, 8760), fill_value=0)
+            d = d.reindex(range(0, 96432), fill_value=0)
         charge.append(d)
     charge = pd.concat(charge, axis = 1)
     charge.to_csv('chargepandas.csv')

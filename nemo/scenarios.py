@@ -174,13 +174,13 @@ def _existingSolarWind(gentype):
     return result
 
 
-def re100SWH(context):
+#def re100SWH(context):
     """100% renewable electricity with only PV, Wind, Hydro. ERC Addition"""
 """ Start Elona's Scenarios """
 
 def one_in_eachstate(gentype):
     """Create one generator of type gentype (only solar and wind) in each state."""
-    """Capacity of 25 GW for each PV and Wind site = 250 GW """
+    """Capacity of 25 GW for each PV and Wind site = 25 GW """
     result = []
     for poly in range[17, 23, 37, 39, 26 ]: #Brisbane (QLD), Dubbo (NSW), Ballarat (VIC), Queenstown (TAS), Port Lincoln (SA) 
         if gentype == PV1Axis:
@@ -221,25 +221,44 @@ def re100SWH(context):
     context.generators = result
     
 def re100SWH_batteries(context):
-    """Takes SWH and adds battery."""
+    """Takes SWH and adds existing batteries only."""
     re100SWH(context)
-    # discharge between 6pm and 6am daily
-    hrs = list(range(0, 7)) + list(range(18, 24))
-    batteryhornsdaleSA = Battery(19, 100, 1, discharge_hours=hrs, label = f'polygon 19 Battery Hornsdale SA', rte = 0.9)
-    batteryWarratahNSW = Battery(30, 700, 2, discharge_hours=hrs, label = f'polygon 30 Battery Warratah NSW', rte = 0.9)
-    context.generators = [batteryhornsdaleSA] + [batteryWarratahNSW] + context.generators
+    # discharge between 5pm and 7am daily
+    hrs = list(range(0, 8)) + list(range(17, 24))
+    #Hornsdale has 150MW capacity for 1.25 hours 
+    batteryhornsdaleSA = Battery(19, 120, 1, discharge_hours=hrs, label = f'polygon 19 Existing Battery Hornsdale SA', rte = 0.9)
+    batteryhornsdaleSA.capcost = lambda costs: 0
+    batteryhornsdaleSA.setters = []
+    #Dalrymple BESS is 30MW capacity for 0.27 hrs 
+    batDalrympleSA = Battery(26, 60, 1, discharge_hours=hrs, label = f'polygon 26 Existing Battery Dalrymple SA', rte = 0.9)
+    batDalrympleSA.capcost = lambda costs: 0
+    batDalrympleSA.setters = []
+    #Ballarat EES is 30MW for 1 hr
+    batBallaratVIC = Battery(38, 30, 1, discharge_hours=hrs, label = f'polygon 38 Existing Battery Ballarat VIC', rte = 0.9)
+    batBallaratVIC.capcost = lambda costs: 0
+    batBallaratVIC.setters = []
+    #Gannawarra EES is 25MW for 1.97 hr
+    batGannawarraVIC = Battery(34, 25, 2, discharge_hours=hrs, label = f'polygon 38 Existing Battery Gannawarra VIC', rte = 0.9)
+    batGannawarraVIC.capcost = lambda costs: 0
+    batGannawarraVIC.setters = []
+    #Lake Bonney BESS1 EES is 25MW for 2.08 hr
+    batBonneySA = Battery(34, 25, 2, discharge_hours=hrs, label = f'polygon 38 Existing Battery Bonney VIC', rte = 0.9)
+    batBonneySA.capcost = lambda costs: 0
+    batBonneySA.setters = []
+
+    #batteryhornsdaleextension = Battery(21, 100, 1, discharge_hours=hrs, label = f'polygon 21 Battery Hornsdale Ext SA', rte = 0.9)
+    #batteryWarratahNSW = Battery(30, 700, 2, discharge_hours=hrs, label = f'polygon 30 Battery Warratah NSW', rte = 0.9)
+    context.generators = [batteryhornsdaleSA] + [batDalrympleSA] + [batBallaratVIC] + [batGannawarraVIC] + [batBonneySA] + context.generators
+
+
 
 def re100SWH_batteries2(context):
-    """Takes SWH and adds battery."""
-    re100SWH(context)
-    # discharge between 6pm and 6am daily
-    hrs = list(range(0, 7)) + list(range(17, 24))
-    batteryhornsdaleSA = Battery(19, 100, 1, discharge_hours=hrs, label = f'polygon 19 Existing Battery Hornsdale SA', rte = 0.9)
-    batteryhornsdaleSA.capcost = lambda costs: 0
-    batteryhornsdaleextension = Battery(21, 100, 1, discharge_hours=hrs, label = f'polygon 21 Battery Hornsdale Ext SA', rte = 0.9)
-    batteryWarratahNSW = Battery(30, 700, 2, discharge_hours=hrs, label = f'polygon 30 Battery Warratah NSW', rte = 0.9)
-    
-    context.generators = [batteryhornsdaleSA] + [batteryhornsdaleextension]+[batteryWarratahNSW] + context.generators
+    """Takes SWH and adds existing battery + one flexible battery to fill in the gaps at 5pm and 7pm that pop up in the re100SWH_batteries scenario."""
+    re100SWH_batteries(context)
+    # discharge between 5pm and 7am daily
+    hrs = list(range(0, 8)) + list(range(17, 24))
+    batteryNew = Battery(24, 100, 2, discharge_hours=hrs, label = f'polygon 24 New Added Battery NSW', rte = 0.9)
+    context.generators = [batteryNew] + context.generators
 
 
 """ End Elonas Scenarios"""
