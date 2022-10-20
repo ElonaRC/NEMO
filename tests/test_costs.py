@@ -7,9 +7,10 @@
 
 # pylint: disable=protected-access
 
-"""A testsuite for the penalties module."""
+"""A testsuite for the costs module."""
 
 import unittest
+
 from nemo import costs
 
 
@@ -54,9 +55,6 @@ class TestCosts(unittest.TestCase):
         for _, cls in self.costclasses:
             obj = cls(self.discount, self.coal_price, self.gas_price,
                       self.ccs_price)
-
-            if isinstance(obj, costs.NullCosts):
-                continue  # skip
 
             for table in [obj.capcost_per_kw, obj.fixed_om_costs,
                           obj.opcost_per_mwh]:
