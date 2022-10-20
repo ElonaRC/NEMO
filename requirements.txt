@@ -4,6 +4,7 @@ coverage
 flake8
 pylint
 pylama
+isort
 vulture
 bandit
 pydocstyle
@@ -18,5 +19,7 @@ twine
 pyflakes
 pytest
 pytest-cov
+pytest-mpl
 twine
 wheel
+requests

@@ -14,14 +14,12 @@
 # pylint: disable=invalid-name
 
 import locale
-import urllib.error
-import urllib.parse
-import urllib.request
 from math import isclose
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 import pint
+import requests
 from matplotlib.patches import Patch
 
 from nemo import polygons
@@ -190,6 +188,21 @@ class Storage():
             self.series_charge[hour] = 0
         self.series_charge[hour] += power
 
+    def charge_capacity(self, gen, hour):
+        """Return available storage capacity.
+
+        Since a storage-capable generator can be called on multiple
+        times to store energy in a single timestep, we keep track of
+        how much remaining capacity is available for charging in the
+        given timestep.
+        """
+        try:
+            result = gen.capacity - self.series_charge[hour]
+            assert result >= 0
+            return result
+        except KeyError:
+            return gen.capacity
+
     def series(self):
         """Return generation and spills series."""
         return {'charge': pd.Series(self.series_charge, dtype=float)}
@@ -239,16 +252,27 @@ class CSVTraceGenerator(TraceGenerator):
                  build_limit=None):
         """Construct a generator with a specified trace file."""
         TraceGenerator.__init__(self, polygon, capacity, label, build_limit)
-        if self.__class__.csvfilename != filename:
+        cls = self.__class__
+        if cls.csvfilename != filename:
             # Optimisation:
             # Only if the filename changes do we invoke genfromtxt.
-            with urllib.request.urlopen(filename) as urlobj:  # nosec
-                self.__class__.csvdata = np.genfromtxt(urlobj,
-                                                       encoding='UTF-8',
-                                                       delimiter=',')
-            self.__class__.csvdata = np.maximum(0, self.__class__.csvdata)
-            self.__class__.csvfilename = filename
-        self.generation = self.__class__.csvdata[::, column]
+            if not filename.startswith('http'):
+                # Local file path
+                traceinput = filename
+            else:
+                try:
+                    resp = requests.request('GET', filename, timeout=5)
+                except requests.exceptions.Timeout as exc:
+                    raise TimeoutError(f'timeout fetching {filename}') from exc
+                if not resp.ok:
+                    msg = f'HTTP {resp.status_code}: {filename}'
+                    raise ConnectionError(msg)
+                traceinput = resp.text.splitlines()
+            cls.csvdata = np.genfromtxt(traceinput, encoding='UTF-8',
+                                        delimiter=',')
+            cls.csvdata = np.maximum(0, cls.csvdata)
+            cls.csvfilename = filename
+        self.generation = cls.csvdata[::, column]
 
 
 class Wind(CSVTraceGenerator):
@@ -446,7 +470,8 @@ class PumpedHydro(Storage, Hydro):
         if self.last_run == hour:
             # Can't pump and generate in the same hour.
             return 0
-        power = min(power, self.capacity)
+        power = min(self.charge_capacity(self, hour), power,
+                    self.capacity)
         energy = power * self.rte
         if self.stored + energy > self.maxstorage:
             power = (self.maxstorage - self.stored) / self.rte
@@ -459,7 +484,7 @@ class PumpedHydro(Storage, Hydro):
 
     def step(self, hour, demand):
         """Step method for pumped hydro storage."""
-        power = min(self.stored, min(self.capacity, demand))
+        power = min(self.stored, self.capacity, demand)
         if self.last_run == hour:
             # Can't pump and generate in the same hour.
             self.series_power[hour] = 0
@@ -757,7 +782,8 @@ class Battery(Storage, Generator):
            hour % 24 in self.discharge_hours:
             return 0
 
-        power = min(power, self.capacity)
+        power = min(self.charge_capacity(self, hour), power,
+                    self.capacity)
         energy = power
         if self.stored + energy > self.maxstorage:
             energy = self.maxstorage - self.stored
@@ -777,7 +803,7 @@ class Battery(Storage, Generator):
             return 0, 0
 
         assert demand > 0
-        power = min(self.stored, min(self.capacity, demand)) * self.rte
+        power = min(self.stored, self.capacity, demand) * self.rte
         self.series_power[hour] = power
         self.series_spilled[hour] = 0
         self.stored -= power

@@ -12,7 +12,10 @@ venv: $(VENV)/bin/activate
 
 COVRUN=coverage run -a --source=. --omit=setup.py
 
-check:  flake8
+envset:
+	test -n "$$VIRTUAL_ENV" || (echo "Python env is not activated" && false)
+
+check:  envset flake8
 	PYTHONOPTIMIZE=0 pytest --cov=awklite --cov nemo --doctest-modules
 
 coverage: replay.json replay-noscenario.json replay-nocost.json
@@ -38,7 +41,8 @@ coverage: replay.json replay-noscenario.json replay-nocost.json
 	rm replay.json replay-noscenario.json replay-nocost.json
 	make html
 
-.PHONY:
+.PHONY: html
+
 html:
 	coverage html
 
@@ -68,7 +72,7 @@ prof: nemo.prof
 lineprof:
 	kernprof -v -l stub.py
 
-flake8:
+flake8: envset
 	flake8 evolve replay summary awklite nemo tests --ignore=N801
 
 LINTSRC=evolve replay summary $(wildcard *.py awklite/*.py nemo/*.py tests/*.py)
@@ -76,11 +80,12 @@ LINTSRC=evolve replay summary $(wildcard *.py awklite/*.py nemo/*.py tests/*.py)
 pylint:
 	pylint --enable=useless-suppression $(LINTSRC)
 
-lint:	flake8 pylint
-	codespell -d -L trough,hsa $(LINTSRC) || true
+lint:	envset flake8 pylint
+	codespell -d -L fom,hsa,trough $(LINTSRC) || true
+	isort --check $(LINTSRC)
 	pylama $(LINTSRC)
-	-vulture --min-confidence=50 $(LINTSRC)
-	bandit -q -s B101 $(LINTSRC)
+	-vulture --min-confidence=70 $(LINTSRC)
+	bandit -qq -s B101 $(LINTSRC)
 	pydocstyle $(LINTSRC)
 
 coveralls:

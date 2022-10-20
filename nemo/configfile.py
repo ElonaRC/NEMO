@@ -14,7 +14,8 @@ import os
 def load(filename):
     """Load a configuration file (or files)."""
     result = config.read(filename)
-    assert result, f"config file {filename} not found"
+    if not result:
+        raise FileNotFoundError(f"config file {filename} not found")
     # Verify
     config.get('generation', 'cst-trace')
     config.get('generation', 'egs-geothermal-trace')
@@ -46,6 +47,6 @@ config = configparser.ConfigParser()
 
 # If $NEMORC is set, use that as the config filename.
 if os.getenv('NEMORC') is not None:
-    load(os.getenv('NEMORC'))  # pragma: no cover
+    load(os.getenv('NEMORC'))
 else:
-    load('nemo.cfg')  # pragma: no cover
+    load('nemo.cfg')

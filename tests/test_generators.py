@@ -7,35 +7,39 @@
 
 """A testsuite for the generators module."""
 
+import inspect
 import os
 import unittest
-import inspect
-import pandas as pd
-import numpy as np
-from nemo import generators
-from nemo import costs
 
+import numpy as np
+import pandas as pd
+import tcpserver
+
+from nemo import costs, generators
+
+PORT = 9998
 hydrogen_storage = generators.HydrogenStorage(1000, "H2 store")
 
-dummy_arguments = {'self': None,
-                   'polygon': 31,
-                   'capacity': 100,
-                   'filename': 'file:tracedata.csv',
-                   'column': 0,
-                   'label': 'a label',
+dummy_arguments = {'axes': 0,
                    'build_limit': 1000,
-                   'maxstorage': 1000,
+                   'capacity': 100,
+                   'capture': 0.85,
+                   'column': 0,
+                   'cost_per_mwh': 1000,
                    'discharge_hours': range(18, 21),
-                   'rte': 0.8,
+                   'efficiency': 30,
+                   'filename': 'tracedata.csv',
                    'heatrate': 0.3,
                    'intensity': 0.7,
-                   'capture': 0.85,
-                   'solarmult': 2.5,
-                   'shours': 8,
-                   'cost_per_mwh': 1000,
                    'kwh_per_litre': 10,
-                   'tank': hydrogen_storage,
-                   'efficiency': 30}
+                   'label': 'a label',
+                   'maxstorage': 1000,
+                   'polygon': 31,
+                   'rte': 0.8,
+                   'self': None,
+                   'shours': 8,
+                   'solarmult': 2.5,
+                   'tank': hydrogen_storage}
 
 # This list should contain every generator class in generators.py.
 # This ensures that the linters will not report any classes as unused
@@ -74,14 +78,16 @@ class TestGenerators(unittest.TestCase):
 
         self.years = 1
         self.costs = costs.NullCosts()
-        self.classes = inspect.getmembers(generators, inspect.isclass)
+        self.classes = [cls for cls in
+                        inspect.getmembers(generators, inspect.isclass)
+                        if cls[1].__module__ == generators.__name__]
         self.generators = []
 
         for (cls, clstype) in self.classes:
-            # Skip abstract classes, plus Patch which is imported via
-            # matplotlib
-            if cls in ['Generator', 'TraceGenerator', 'CSVTraceGenerator',
-                       'Storage', 'Patch', 'HydrogenStorage']:
+            # Skip abstract classes
+            if cls in ['Generator', 'TraceGenerator',
+                       'CSVTraceGenerator', 'Storage',
+                       'HydrogenStorage']:
                 continue
 
             # check that every class in generators.py is in classlist
@@ -217,3 +223,39 @@ class TestGenerators(unittest.TestCase):
         """Test __repr__() method."""
         for gen in self.generators:
             repr(gen)
+
+
+class TestTraceGeneratorTimeout(unittest.TestCase):
+    """Test timeout handling for a trace generator (Wind)."""
+
+    def setUp(self):
+        """Start the simple TCP server."""
+        self.child = tcpserver.run(PORT, "block")
+        self.url = f'http://localhost:{PORT}/data.csv'
+
+    def tearDown(self):
+        """Terminate TCP server on teardown."""
+        self.child.terminate()
+
+    def test_timeout(self):
+        """Test fetching trace data from a dud server."""
+        with self.assertRaises(TimeoutError):
+            generators.Wind(1, 100, self.url, column=0)
+
+
+class TestTraceGeneratorError(unittest.TestCase):
+    """Test HTTP error handling for a trace generator."""
+
+    def setUp(self):
+        """Start the simple TCP server."""
+        self.child = tcpserver.run(PORT, "http400")
+        self.url = f'http://localhost:{PORT}/data.csv'
+
+    def tearDown(self):
+        """Terminate TCP server on teardown."""
+        self.child.terminate()
+
+    def test_timeout(self):
+        """Test fetching trace data from a dud server."""
+        with self.assertRaisesRegex(ConnectionError, "HTTP 400"):
+            generators.Wind(1, 100, self.url, column=0)
