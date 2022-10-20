@@ -7,10 +7,13 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 
+
+RUNFAST = 1 #changes everypoly from 44 to 10 
+
 """Supply side scenarios."""
 
 from nemo import configfile, regions
-from nemo.generators import (CCGT, CCGT_CCS, CST, OCGT, Battery, Biofuel,
+from nemo.generators import (CCGT, CCGT_CCS, CST, OCGT, PV, Battery, Biofuel,
                              Black_Coal, CentralReceiver, Coal_CCS,
                              DemandResponse, Hydro, PumpedHydro, PV1Axis, Wind,
                              WindOffshore)
@@ -83,7 +86,8 @@ def coal_ccs(context):
 def _every_poly(gentype):
     """Create a generator of type gentype in each of the 44 polygons."""
     result = []
-    for poly in range(1, 44):
+    
+    for poly in range(1, 10 if RUNFAST else 44):
         if gentype == Biofuel:
             result.append(gentype(poly, 0, label=f'polygon {poly} GT'))
         elif gentype == PV1Axis:
@@ -135,6 +139,89 @@ def re100_batteries(context):
     battery = Battery(WILDCARD, 0, 4, discharge_hours=hrs)
     context.generators.insert(0, battery)
 
+
+def _existingSolarWind(gentype):
+    """Add in existing solar and wind generators for each polygon. ERC Addition""" 
+    #(Total solarfarms capacity for each polygon - /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/NEM_SolarGenerators_Spatial_Cap_OPENNEM.csv )
+    #(Total windfarm capacty for each polygon - /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/NEM_WindGenerators_Spatial_Cap_OPENNEM.csv)
+    result = []
+    if gentype == PV1Axis:
+        cfg = configfile.get('generation', 'pv1axis-trace') 
+        for (poly, capacity) in [(3, 50), (4, 879.01), (6, 254.47), (7, 148), (11, 149.38),
+         (16, 579), (17, 1189.5), (23, 291), (24, 301), (26, 270), (28, 53.76), (29, 110), 
+         (30, 661), (31, 134), (32, 149.25), (33, 1177), (34, 693.56), (35, 358), 
+         (36, 42.205), (37, 55), (38, 239), (39, 143)]:
+            result.append(gentype(poly, capacity, cfg, poly - 1,
+                                build_limit=capacity/1000,
+                                label=f'polygon {poly} Existing PV'))                                       
+    elif gentype == Wind:
+        cfg = configfile.get('generation', 'wind-trace')
+        for (poly, capacity) in [(1, 192.45), (6, 43), (17, 452), (24, 445), 
+        (26, 648.75), (27, 1086.86), (28, 198.94), (30, 113), (31, 152.22), 
+        (32, 615.8), (36, 1441.57), (37, 3257.69), (38, 21), (39, 1018.184), 
+        (40, 250), (41, 168), (43, 148)]:
+            result.append(gentype(poly, capacity, cfg, poly - 1, 
+                                build_limit = capacity/1000, 
+                                label = f'polygon {poly} Existing Wind'))
+    return result
+
+
+def re100SWH(context):
+    """100% renewable electricity with only PV, Wind, Hydro. ERC Addition"""
+""" Start Elona's Scenarios """
+
+def one_in_eachstate(gentype):
+    """Create one generator of type gentype (only solar and wind) in each state."""
+    """Capacity of 25 GW for each PV and Wind site = 250 GW """
+    result = []
+    for poly in range[17, 23, 37, 39, 26 ]: #Brisbane (QLD), Dubbo (NSW), Ballarat (VIC), Queenstown (TAS), Port Lincoln (SA) 
+        if gentype == PV1Axis:
+            cfg = configfile.get('generation', 'pv1axis-trace')
+            result.append(gentype(poly, 25, cfg, poly - 1,
+                                  build_limit=pv_limit[poly],
+                                  label=f'polygon {poly} PV'))
+        elif gentype == Wind:
+            cfg = configfile.get('generation', 'wind-trace')
+            result.append(gentype(poly, 25, cfg, poly - 1,
+                                  build_limit=wind_limit[poly],
+                                  label=f'polygon {poly} wind'))
+    return result
+
+
+def re100SWH_WA(context):
+    '''Adds WA into the picture'''
+    context.regions.append(regions.wa) #adds WA into the picture. 
+    re100SWH(context)
+
+def re100SWH(context):
+    """100% renewable electricity with only PV, Wind, Hydro."""
+    """This will populate all polygons with an empty PV and Wind genererator & """
+    """Put hydro and pumped hydro where they should be located"""
+    result = []
+
+    # The following list is in merit order.
+    for g in [PV1Axis, Wind, PumpedHydro, Hydro]:
+        if g == PumpedHydro:
+            result += [h for h in _hydro() if isinstance(h, PumpedHydro)]
+        elif g == Hydro:
+            result += [h for h in _hydro() if not isinstance(h, PumpedHydro)]
+        elif g in [PV1Axis, Wind]:
+            result += _existingSolarWind(g)
+            result += _every_poly(g)
+        else:
+            raise ValueError('unhandled generator type')  # pragma: no cover
+    context.generators = result
+    
+def re100SWH_batteries(context):
+    """Takes SWH and adds battery."""
+    re100SWH(context)
+    # discharge between 6pm and 6am daily
+    hrs = list(range(0, 7)) + list(range(18, 24))
+    batteryhornsdaleSA = Battery(19, 100, 1, discharge_hours=hrs, label = f'polygon 19 Battery Hornsdale SA', rte = 0.9)
+    batteryWarratahNSW = Battery(30, 700, 2, discharge_hours=hrs, label = f'polygon 30 Battery Warratah NSW', rte = 0.9)
+    context.generators = [batteryhornsdaleSA] + [batteryWarratahNSW] + context.generators
+
+""" End Elonas Scenarios"""
 
 def _one_per_poly(region):
     """Return three lists of wind, PV and CST generators, one per polygon."""
@@ -226,7 +313,6 @@ def re100_south_aus(context):
     """100% renewables in South Australia only."""
     re100_one_region(context, regions.sa)
 
-
 supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     'ccgt': ccgt,
                     'ccgt-ccs': ccgt_ccs,
@@ -238,6 +324,9 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100-nsw': re100_nsw,
                     're100-sa': re100_south_aus,
                     're100+batteries': re100_batteries,
+                    're100SWH_WA': re100SWH_WA,
+                    're100SWH': re100SWH, 
+                    're100SWH_batteries': re100SWH_batteries,
                     're100+dsp': re100_dsp,
                     're100-nocst': re100_nocst,
                     'replacement': replacement}

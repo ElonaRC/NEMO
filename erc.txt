@@ -1,0 +1,50 @@
+WARNING: scoop not loaded
+{'demand_modifier': None, 'list_scenarios': False, 'output': 'results.json', 'plot': False, 'reliability_std': 0.002, 'reserves': 0, 'supply_scenario': 'ccgt', 'carbon_price': 25, 'costs': 'AETA2013-in2030-mid', 'ccs_storage_costs': 27.0, 'coal_price': 1.86, 'gas_price': 11.0, 'discount_rate': 0.05, 'bioenergy_limit': 20.0, 'emissions_limit': inf, 'fossil_limit': 1.0, 'hydro_limit': 12.0, 'min_regional_generation': 0.0, 'nsp_limit': 1.0, 'lambda_': None, 'seed': None, 'sigma': 2.0, 'generations': 3, 'trace_file': None, 'verbose': False}
+   	      	           fitness            	           hallfame           
+   	      	------------------------------	------------------------------
+gen	nevals	gen	min        	nevals	gen	min        	nevals
+0  	11    	0  	1.93126e+16	11    	0  	1.93126e+16	11    
+1  	11    	1  	3.40755e+15	11    	1  	3.40755e+15	11    
+2  	11    	2  	1.54624e+15	11    	2  	1.54624e+15	11    
+
+Generators:
+	CCGT (NSW1:31), 7715.66 MW
+	   supplied 67.59 TWh, CF 100.0%, capcost $8,626,106,231, opcost $6,227,717,234, LCOE $100, ran 8,760 hours, 27.04 Mt CO2
+	poly 17 pumped-hydro (QLD1:17), 500.00 MW
+	   supplied 2.50 GWh, CF 0.1%, ran 5 hours, 5.00 GWh storage
+	poly 36 pumped-hydro (NSW1:36), 641.95 MW
+	   supplied 7.50 GWh, CF 0.1%, ran 12 hours, 15.00 GWh storage
+	poly 24 hydro (NSW1:24), 42.50 MW
+	   supplied 372.30 GWh, CF 100.0%, ran 8,760 hours
+	poly 31 hydro (NSW1:31), 43.00 MW
+	   supplied 376.68 GWh, CF 100.0%, ran 8,760 hours
+	poly 35 hydro (NSW1:35), 71.00 MW
+	   supplied 621.96 GWh, CF 100.0%, ran 8,760 hours
+	poly 36 hydro (NSW1:36), 570.14 MW
+	   supplied 4.99 TWh, CF 100.0%, ran 8,760 hours
+	poly 38 hydro (VIC1:38), 259.93 MW
+	   supplied 2.28 TWh, CF 100.0%, ran 8,760 hours
+	poly 39 hydro (VIC1:39), 13.80 MW
+	   supplied 120.89 GWh, CF 100.0%, ran 8,760 hours
+	poly 40 hydro (TAS1:40), 586.60 MW
+	   supplied 5.14 TWh, CF 100.0%, ran 8,760 hours
+	poly 41 hydro (TAS1:41), 0.00 MW
+	   supplied 0.00 MWh, ran 0 hours
+	poly 42 hydro (TAS1:42), 590.40 MW
+	   supplied 5.17 TWh, CF 100.0%, ran 8,760 hours
+	poly 43 hydro (TAS1:43), 342.30 MW
+	   supplied 3.00 TWh, CF 100.0%, ran 8,760 hours
+	OCGT (NSW1:31), 5325.54 MW
+	   supplied 46.65 TWh, CF 100.0%, capcost $4,002,139,923, opcost $7,345,505,197, LCOE $163, ran 8,760 hours, 32.66 Mt CO2
+Timesteps: 8760 h
+Demand energy: 204.37 TWh
+Unstored surplus energy: 0.00 MWh
+Unserved energy: 33.295%
+WARNING: reliability standard exceeded
+Unserved total hours: 8758
+Number of unserved energy events: 2
+Shortfalls (min, max): (30.98 MW, 18.08 GW)
+Score: 70.44 $/MWh
+Penalty: 1546236290013305.75 $/MWh
+Constraints violated: unserved hydro 
+Done

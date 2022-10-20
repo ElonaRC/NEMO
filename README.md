@@ -8,3 +8,5 @@ first developed by Ben Elliston in 2011 at the [Centre for Energy and
 Environmental Markets](http://www.ceem.unsw.edu.au), University of New
 South Wales. NEMO continues to be actively developed and improved with
 a growing number of users.
+
+This is a test to make sure I can push back to github

@@ -13,6 +13,7 @@ import argparse
 import json
 import re
 import sys
+import numpy as np
 
 from gooey import Gooey
 
@@ -84,6 +85,32 @@ def run_one(bundle):
     context.verbose = args.v > 0
     print(context)
     print("Done")
+    
+    #save surplus energy at every time step from each generator into CSV 
+    numgens = len(context.generators)
+    spills = np.zeros((numgens, 8760))
+    for i, g in enumerate(context.generators):
+        spills[i] = list(g.series_spilled.values())
+    np.savetxt("spillsOutput.csv", spills, delimiter=",")
+    
+    #save generation at every time step from each generator into CSV 
+    power = np.zeros((numgens, 8760))
+    for i, g in enumerate(context.generators):
+        power[i] = list(g.series_power.values())
+    np.savetxt("powerOutput.csv", power, delimiter=",")
+    
+    #save unserved time series 
+    unserved = context.unserved
+    unserved.to_csv("unserved.csv", sep=',')
+
+    #save stored energy for those generators that can store for each time step into CSV 
+    storage = np.zeros((numgens, 8760))
+    for i, g in enumerate(context.generators):
+        try:
+            storage[i] = list(g.series_charge.values())
+        except AttributeError:
+            storage[i].fill(0)
+    np.savetxt("storageOutput.csv", storage, delimiter=",")
     print()
 
     if args.plot:
