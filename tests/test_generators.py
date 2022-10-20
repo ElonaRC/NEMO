@@ -7,43 +7,39 @@
 
 """A testsuite for the generators module."""
 
-import os
-import time
-import unittest
 import inspect
-import pandas as pd
-import numpy as np
-from nemo import generators
-from nemo import costs
+import os
+import unittest
 
+import numpy as np
+import pandas as pd
+import tcpserver
+
+from nemo import costs, generators
+
+PORT = 9998
 hydrogen_storage = generators.HydrogenStorage(1000, "H2 store")
 
 dummy_arguments = {'axes': 0,
-                   'azimuth': 180,
                    'build_limit': 1000,
                    'capacity': 100,
                    'capture': 0.85,
                    'column': 0,
                    'cost_per_mwh': 1000,
-                   'daterange': ('2019-01-01', '2019-01-07'),
                    'discharge_hours': range(18, 21),
                    'efficiency': 30,
                    'filename': 'tracedata.csv',
                    'heatrate': 0.3,
-                   'height': 100,
                    'intensity': 0.7,
                    'kwh_per_litre': 10,
                    'label': 'a label',
-                   'latlong': (-35, 149),
-                   'machine': 'Vestas V90 2000',
                    'maxstorage': 1000,
                    'polygon': 31,
                    'rte': 0.8,
                    'self': None,
                    'shours': 8,
                    'solarmult': 2.5,
-                   'tank': hydrogen_storage,
-                   'tilt': 0}
+                   'tank': hydrogen_storage}
 
 # This list should contain every generator class in generators.py.
 # This ensures that the linters will not report any classes as unused
@@ -65,10 +61,9 @@ classlist = [generators.Battery, generators.Behind_Meter_PV,
              generators.HydrogenGT, generators.HydrogenStorage,
              generators.OCGT, generators.PV, generators.PV1Axis,
              generators.ParabolicTrough, generators.Patch,
-             generators.PumpedHydro, generators.RenewablesNinja,
-             generators.NinjaPV, generators.NinjaWind,
-             generators.Storage, generators.TraceGenerator,
-             generators.Wind, generators.WindOffshore]
+             generators.PumpedHydro, generators.Storage,
+             generators.TraceGenerator, generators.Wind,
+             generators.WindOffshore]
 
 
 class TestGenerators(unittest.TestCase):
@@ -91,8 +86,8 @@ class TestGenerators(unittest.TestCase):
         for (cls, clstype) in self.classes:
             # Skip abstract classes
             if cls in ['Generator', 'TraceGenerator',
-                       'CSVTraceGenerator', 'RenewablesNinja',
-                       'Storage', 'HydrogenStorage']:
+                       'CSVTraceGenerator', 'Storage',
+                       'HydrogenStorage']:
                 continue
 
             # check that every class in generators.py is in classlist
@@ -105,8 +100,6 @@ class TestGenerators(unittest.TestCase):
                     arglist.append(dummy_arguments[arg])
             obj = clstype(*arglist)
             self.generators.append(obj)
-            if cls.startswith("Ninja"):
-                time.sleep(10)  # observe 6/min rate limit
 
     def tearDown(self):
         """Remove tracefile on teardown."""
@@ -230,3 +223,39 @@ class TestGenerators(unittest.TestCase):
         """Test __repr__() method."""
         for gen in self.generators:
             repr(gen)
+
+
+class TestTraceGeneratorTimeout(unittest.TestCase):
+    """Test timeout handling for a trace generator (Wind)."""
+
+    def setUp(self):
+        """Start the simple TCP server."""
+        self.child = tcpserver.run(PORT, "block")
+        self.url = f'http://localhost:{PORT}/data.csv'
+
+    def tearDown(self):
+        """Terminate TCP server on teardown."""
+        self.child.terminate()
+
+    def test_timeout(self):
+        """Test fetching trace data from a dud server."""
+        with self.assertRaises(TimeoutError):
+            generators.Wind(1, 100, self.url, column=0)
+
+
+class TestTraceGeneratorError(unittest.TestCase):
+    """Test HTTP error handling for a trace generator."""
+
+    def setUp(self):
+        """Start the simple TCP server."""
+        self.child = tcpserver.run(PORT, "http400")
+        self.url = f'http://localhost:{PORT}/data.csv'
+
+    def tearDown(self):
+        """Terminate TCP server on teardown."""
+        self.child.terminate()
+
+    def test_timeout(self):
+        """Test fetching trace data from a dud server."""
+        with self.assertRaisesRegex(ConnectionError, "HTTP 400"):
+            generators.Wind(1, 100, self.url, column=0)
