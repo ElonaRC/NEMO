@@ -7,12 +7,14 @@
 
 # pylint: disable=protected-access
 
-"""A testsuite for the penalties module."""
+"""A testsuite for the sim module."""
 
 import unittest
+
 import numpy as np
 import pandas as pd
-from nemo import sim, generators, configfile
+
+from nemo import configfile, generators, sim
 from nemo.context import Context
 
 
@@ -90,7 +92,7 @@ class TestSim(unittest.TestCase):
     def test_run_1(self):
         """Test run() with region not a list."""
         self.context.regions = None
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             sim.run(self.context)
 
     def test_run_2(self):
