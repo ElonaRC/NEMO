@@ -10,7 +10,7 @@ import fnmatch
 
 class RenewablesNinja():
 
-    TOKEN = '488625abc1e3414c03a2522d3552df7e6ae45aca'
+    TOKEN = ''
     URLBASE = 'https://www.renewables.ninja/api/data'
     session = requests.Session()
 
