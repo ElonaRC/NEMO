@@ -135,4 +135,3 @@ def run(context, starthour=None, endhour=None):
     unserved = agg_demand - agg_generation
     # Ignore unserved events very close to 0 (rounding errors)
     context.unserved = unserved[~np.isclose(unserved, 0)]
-    
