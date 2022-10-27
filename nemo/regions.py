@@ -46,6 +46,6 @@ sa = Region(2, 'SA1', 'South Australia')
 snowy = Region(3, 'SNOWY1', 'Snowy Mountains')
 tas = Region(4, 'TAS1', 'Tasmania')
 vic = Region(5, 'VIC1', 'Victoria')
-#wa = Region(6, 'WA1', 'Western Australia')
+# wa = Region(6, 'WA1', 'Western Australia')
 All = [nsw, qld, sa, snowy, tas, vic]
 NUMREGIONS = len(All)

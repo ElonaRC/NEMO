@@ -24,7 +24,8 @@ regions.sa.polygons = {12: 0, 13: 0, 18: 0, 19: 0, 20: 0, 25: 0,
 regions.snowy.polygons = {}
 regions.tas.polygons = {40: .2, 41: .2, 42: 0, 43: .6}
 regions.vic.polygons = {37: .2, 38: .1, 39: .7}
-#regions.wa.polygons = {44: , 45: , } #Need to add in the demand proportion for the make up polygons of WA 
+# regions.wa.polygons = {44: , 45: , } #Need to add in the
+# demand proportion for the make up polygons of WA
 # Ensure all weights sum to one.
 for r in regions.All:
     if r.polygons:
@@ -34,8 +35,8 @@ for r in regions.All:
 WILDCARD = 31
 
 # Vertices of the closed polygons (nb. must be closed)
-#Need to add in the polygons for WA
-#38a = 38, 38b = 39, 39 = 40, 40 = 41, 42 = 43
+# Need to add in the polygons for WA
+# 38a = 38, 38b = 39, 39 = 40, 40 = 41, 42 = 43
 _polygons = {
     1: (
         (144.602, -13.838),

@@ -6,10 +6,6 @@
 # under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
-
-
-RUNFAST = 0 #changes everypoly from 44 to 10 
-
 """Supply side scenarios."""
 
 from nemo import configfile, regions
@@ -20,6 +16,8 @@ from nemo.generators import (CCGT, CCGT_CCS, CST, OCGT, Battery, Biofuel,
 from nemo.polygons import (WILDCARD, cst_limit, offshore_wind_limit, pv_limit,
                            wind_limit)
 from nemo.types import UnreachableError
+
+RUNFAST = 0  # changes everypoly from 44 to 10
 
 
 def _demand_response():
@@ -87,9 +85,9 @@ def coal_ccs(context):
 def _every_poly(gentype):
     """Create a generator of type gentype in each of the 44 polygons."""
     result = []
-    
+
     for poly in range(1, 10 if RUNFAST else 44):
-    #for poly in range(1, 44):
+        # for poly in range(1, 44):
         if gentype == Biofuel:
             result.append(gentype(poly, 0, label=f'polygon {poly} GT'))
         elif gentype == PV1Axis:
@@ -141,49 +139,66 @@ def re100_batteries(context):
     battery = Battery(WILDCARD, 0, 4, discharge_hours=hrs)
     context.generators.insert(0, battery)
 
+
 """ Start Elona's Scenarios """
 
+
 def _existingSolarWind(gentype):
-    """Add in existing solar and wind generators for each polygon. ERC Addition""" 
-    #(Total solarfarms capacity for each polygon - /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/NEM_SolarGenerators_Spatial_Cap_OPENNEM.csv )
-    #(Total windfarm capacty for each polygon - /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/NEM_WindGenerators_Spatial_Cap_OPENNEM.csv)
+    """Add in existing solar and wind generators for each polygon."""
+    """ERC Addition"""
+    # (Total solarfarms capacity for each polygon -
+    # /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/
+    # NEM_SolarGenerators_Spatial_Cap_OPENNEM.csv )
+    # (Total windfarm capacty for each polygon -
+    # /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/
+    # NEM_WindGenerators_Spatial_Cap_OPENNEM.csv)
     result = []
     if gentype == PV1Axis:
-        cfg = configfile.get('generation', 'pv1axis-trace') 
-        for (poly, capacity) in [(3, 50), (4, 879.01), (6, 254.47), (7, 148), (11, 149.38),
-         (16, 579), (17, 1189.5), (23, 291), (24, 301), (26, 270), (28, 53.76), (29, 110), 
-         (30, 661), (31, 134), (32, 149.25), (33, 1177), (34, 693.56), (35, 358), 
-         (36, 42.205), (37, 55), (38, 239), (39, 143)]:
+        cfg = configfile.get('generation', 'pv1axis-trace')
+        for (poly, capacity) in [(3, 50), (4, 879.01), (6, 254.47),
+                                 (7, 148), (11, 149.38), (16, 579),
+                                 (17, 1189.5), (23, 291), (24, 301),
+                                 (26, 270), (28, 53.76), (29, 110),
+                                 (30, 661), (31, 134), (32, 149.25),
+                                 (33, 1177), (34, 693.56), (35, 358),
+                                 (36, 42.205), (37, 55), (38, 239), (39, 143)]:
             g = gentype(poly, capacity, cfg, poly - 1,
-                                build_limit=capacity/1000,
-                                label=f'polygon {poly} Existing PV')
+                        build_limit=capacity / 1000,
+                        label=f'polygon {poly} Existing PV')
             g.capcost = lambda costs: 0
             g.setters = []
-            result.append(g)           
+            result.append(g)
     elif gentype == Wind:
         cfg = configfile.get('generation', 'wind-trace')
-        for (poly, capacity) in [(1, 192.45), (6, 43), (17, 452), (24, 445), 
-        (26, 648.75), (27, 1086.86), (28, 198.94), (30, 113), (31, 152.22), 
-        (32, 615.8), (36, 1441.57), (37, 3257.69), (38, 21), (39, 1018.184), 
-        (40, 250), (41, 168), (43, 148)]:
+        for (poly, capacity) in [(1, 192.45), (6, 43), (17, 452), (24, 445),
+                                 (26, 648.75), (27, 1086.86), (28, 198.94),
+                                 (30, 113), (31, 152.22),
+                                 (32, 615.8), (36, 1441.57), (37, 3257.69),
+                                 (38, 21), (39, 1018.184),
+                                 (40, 250), (41, 168), (43, 148)]:
             g = gentype(poly, capacity, cfg, poly - 1,
-                                build_limit=capacity/1000,
-                                label=f'polygon {poly} Existing Wind')
+                        build_limit=capacity / 1000,
+                        label=f'polygon {poly} Existing Wind')
             g.capcost = lambda costs: 0
             g.setters = []
-            result.append(g)     
+            result.append(g)
     return result
 
 
-#def re100SWH(context):
-    """100% renewable electricity with only PV, Wind, Hydro. ERC Addition"""
+# def re100SWH(context):
+"""100% renewable electricity with only PV, Wind, Hydro.
+ERC Addition"""
 """ Start Elona's Scenarios """
 
+
 def one_in_eachstate(gentype):
-    """Create one generator of type gentype (only solar and wind) in each state."""
+    """Create one generator of type gentype
+    (only solar and wind) in each state."""
     """Capacity of 25 GW for each PV and Wind site = 25 GW """
     result = []
-    for poly in range[17, 23, 37, 39, 26 ]: #Brisbane (QLD), Dubbo (NSW), Ballarat (VIC), Queenstown (TAS), Port Lincoln (SA) 
+    for poly in range[17, 23, 37, 39, 26]:
+        # Brisbane (QLD), Dubbo (NSW), Ballarat (VIC),
+        # Queenstown (TAS), Port Lincoln (SA)
         if gentype == PV1Axis:
             cfg = configfile.get('generation', 'pv1axis-trace')
             result.append(gentype(poly, 25, cfg, poly - 1,
@@ -199,12 +214,14 @@ def one_in_eachstate(gentype):
 
 def re100SWH_WA(context):
     '''Adds WA into the picture'''
-    context.regions.append(regions.wa) #adds WA into the picture. 
+    context.regions.append(regions.wa)  # adds WA into the picture.
     re100SWH(context)
+
 
 def re100SWH(context):
     """100% renewable electricity with only PV, Wind, Hydro."""
-    """This will populate all polygons with an empty PV and Wind genererator & """
+    """This will populate all polygons with an empty
+    PV and Wind genererator & """
     """Put hydro and pumped hydro where they should be located"""
     result = []
 
@@ -220,37 +237,50 @@ def re100SWH(context):
         else:
             raise ValueError('unhandled generator type')  # pragma: no cover
     context.generators = result
-    
+
+
 def re100SWH_batteries(context):
     """Takes SWH and adds existing batteries only."""
     re100SWH(context)
     # discharge between 5pm and 7am daily
     hrs = list(range(0, 8)) + list(range(17, 24))
-    #Hornsdale has 150MW capacity for 1.25 hours 
-    batteryhornsdaleSA = Battery(19, 120, 1, discharge_hours=hrs, label = f'polygon 19 Existing Battery Hornsdale SA', rte = 0.9)
+    # Hornsdale has 150MW capacity for 1.25 hours
+    batteryhornsdaleSA = Battery(19, 120, 1, discharge_hours=hrs,
+                                 label=f'{"P19 Existing Batt Hornsdale SA"}',
+                                 rte=0.9)
     batteryhornsdaleSA.capcost = lambda costs: 0
     batteryhornsdaleSA.setters = []
-    #Dalrymple BESS is 30MW capacity for 0.27 hrs 
-    batDalrympleSA = Battery(26, 60, 1, discharge_hours=hrs, label = f'polygon 26 Existing Battery Dalrymple SA', rte = 0.9)
+    # Dalrymple BESS is 30MW capacity for 0.27 hrs
+    batDalrympleSA = Battery(26, 60, 1, discharge_hours=hrs,
+                             label=f'{"P26 Existing Batt Dalrymple SA"}',
+                             rte=0.9)
     batDalrympleSA.capcost = lambda costs: 0
     batDalrympleSA.setters = []
-    #Ballarat EES is 30MW for 1 hr
-    batBallaratVIC = Battery(38, 30, 1, discharge_hours=hrs, label = f'polygon 38 Existing Battery Ballarat VIC', rte = 0.9)
+    # Ballarat EES is 30MW for 1 hr
+    batBallaratVIC = Battery(38, 30, 1, discharge_hours=hrs,
+                             label=f'{"P38 Existing Batt Ballarat VIC"}',
+                             rte=0.9)
     batBallaratVIC.capcost = lambda costs: 0
     batBallaratVIC.setters = []
-    #Gannawarra EES is 25MW for 1.97 hr
-    batGannawarraVIC = Battery(34, 25, 2, discharge_hours=hrs, label = f'polygon 38 Existing Battery Gannawarra VIC', rte = 0.9)
+    # Gannawarra EES is 25MW for 1.97 hr
+    batGannawarraVIC = Battery(34, 25, 2, discharge_hours=hrs,
+                               label=f'{"P38 Existing Batt Gannawarra VIC"}',
+                               rte=0.9)
     batGannawarraVIC.capcost = lambda costs: 0
     batGannawarraVIC.setters = []
-    #Lake Bonney BESS1 EES is 25MW for 2.08 hr
-    batBonneySA = Battery(34, 25, 2, discharge_hours=hrs, label = f'polygon 38 Existing Battery Bonney VIC', rte = 0.9)
+    # Lake Bonney BESS1 EES is 25MW for 2.08 hr
+    batBonneySA = Battery(34, 25, 2, discharge_hours=hrs,
+                          label=f'{"P38 Existing Batt Bonney VIC"}',
+                          rte=0.9)
     batBonneySA.capcost = lambda costs: 0
     batBonneySA.setters = []
 
-    #batteryhornsdaleextension = Battery(21, 100, 1, discharge_hours=hrs, label = f'polygon 21 Battery Hornsdale Ext SA', rte = 0.9)
-    #batteryWarratahNSW = Battery(30, 700, 2, discharge_hours=hrs, label = f'polygon 30 Battery Warratah NSW', rte = 0.9)
-    context.generators = [batteryhornsdaleSA] + [batDalrympleSA] + [batBallaratVIC] + [batGannawarraVIC] + [batBonneySA] + context.generators
-
+    context.generators = ([batteryhornsdaleSA]
+                          + [batDalrympleSA]
+                          + [batBallaratVIC]
+                          + [batGannawarraVIC]
+                          + [batBonneySA]
+                          + context.generators)
 
 
 def re100SWH_batteries2(context):
@@ -258,11 +288,12 @@ def re100SWH_batteries2(context):
     re100SWH_batteries(context)
     # discharge between 5pm and 7am daily
     hrs = list(range(0, 8)) + list(range(17, 24))
-    batteryNew = Battery(24, 100, 2, discharge_hours=hrs, label = f'polygon 24 New Added Battery NSW', rte = 0.9)
+    batteryNew = Battery(24, 100, 2, discharge_hours=hrs, label=f'{"polygon 24 New Added Battery NSW"}', rte=0.9)
     context.generators = [batteryNew] + context.generators
 
 
 """ End Elonas Scenarios"""
+
 
 def _one_per_poly(region):
     """Return three lists of wind, PV and CST generators, one per polygon."""
@@ -354,6 +385,7 @@ def re100_south_aus(context):
     """100% renewables in South Australia only."""
     re100_one_region(context, regions.sa)
 
+
 supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     'ccgt': ccgt,
                     'ccgt-ccs': ccgt_ccs,
@@ -366,7 +398,7 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100-sa': re100_south_aus,
                     're100+batteries': re100_batteries,
                     're100SWH_WA': re100SWH_WA,
-                    're100SWH': re100SWH, 
+                    're100SWH': re100SWH,
                     're100SWH_batteries': re100SWH_batteries,
                     're100SWH_batteries2': re100SWH_batteries2,
                     're100+dsp': re100_dsp,
