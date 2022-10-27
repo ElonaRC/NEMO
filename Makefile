@@ -73,7 +73,7 @@ lineprof:
 	kernprof -v -l stub.py
 
 flake8: envset
-	flake8 evolve replay summary awklite nemo tests --ignore=N801
+	flake8 evolve replay summary awklite nemo tests --ignore=N801,W503
 
 LINTSRC=evolve replay summary $(wildcard *.py awklite/*.py nemo/*.py tests/*.py)
 

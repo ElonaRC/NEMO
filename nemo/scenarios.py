@@ -284,11 +284,14 @@ def re100SWH_batteries(context):
 
 
 def re100SWH_batteries2(context):
-    """Takes SWH and adds existing battery + one flexible battery to fill in the gaps at 5pm and 7pm that pop up in the re100SWH_batteries scenario."""
+    """Takes SWH and adds existing battery +
+    one flexible battery to fill in the gaps at 5pm and 7pm
+    that pop up in the re100SWH_batteries scenario."""
     re100SWH_batteries(context)
     # discharge between 5pm and 7am daily
     hrs = list(range(0, 8)) + list(range(17, 24))
-    batteryNew = Battery(24, 100, 2, discharge_hours=hrs, label=f'{"polygon 24 New Added Battery NSW"}', rte=0.9)
+    batteryNew = Battery(24, 100, 2, discharge_hours=hrs,
+                         label=f'{"P24 New Added Batt NSW"}', rte=0.9)
     context.generators = [batteryNew] + context.generators
 
 
