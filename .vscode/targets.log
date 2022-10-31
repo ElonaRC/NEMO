@@ -7,7 +7,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 
 # This program built for i386-apple-darwin11.3.0
 
-# Make data base, printed on Fri Oct 21 15:52:49 2022
+# Make data base, printed on Mon Oct 31 07:38:31 2022
 
 # Variables
 
@@ -168,9 +168,9 @@ LANG = C
 
 # Directories
 
-# . (device 16777234, inode 10780725): 35 files, no impossibilities.
+# . (device 16777234, inode 10780725): 41 files, no impossibilities.
 
-# 35 files, no impossibilities in 1 directories.
+# 41 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -235,7 +235,7 @@ coveralls:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-10-21 09:42:20
+#  Last modified 2022-10-31 07:34:23
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
@@ -276,7 +276,7 @@ prof: nemo.prof
 # Not a target:
 requirements.txt:
 #  Implicit rule search has been done.
-#  Last modified 2022-10-21 09:42:20
+#  Last modified 2022-10-31 07:34:24
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
@@ -372,7 +372,7 @@ replay-noscenario.json: replay.json
 myenv/bin/activate: requirements.txt
 #  Implicit rule search has not been done.
 #  Implicit/static pattern stem: `'
-#  Last modified 2022-09-08 15:40:20
+#  Last modified 2022-10-27 13:48:32
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # automatic
@@ -394,7 +394,7 @@ myenv/bin/activate: requirements.txt
 # variable set hash-table stats:
 # Load=8/32=25%, Rehash=0, Collisions=1/12=8%
 #  commands to execute (from `Makefile', line 7):
-	python3.10 -m venv $(VENV)
+	python3 -m venv $(VENV)
 	./$(VENV)/bin/pip install -r requirements.txt
 	
 
@@ -419,7 +419,7 @@ flake8: envset
 #  Modification time never checked.
 #  File has not been updated.
 #  commands to execute (from `Makefile', line 76):
-	flake8 evolve replay summary awklite nemo tests --ignore=N801
+	flake8 evolve replay summary awklite nemo tests --ignore=N801,W503
 	
 
 check: envset flake8
@@ -459,6 +459,6 @@ nemo.prof: stub.py
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Fri Oct 21 15:52:49 2022
+# Finished Make data base on Mon Oct 31 07:38:31 2022
 
  
