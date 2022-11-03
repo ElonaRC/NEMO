@@ -819,6 +819,7 @@ class Battery(Storage, Generator):
     def reset(self):
         """Reset the generator."""
         Generator.reset(self)
+        Storage.reset(self)
         self.runhours = 0
         self.stored = 0
 
