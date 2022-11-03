@@ -244,34 +244,35 @@ def re100SWH_batteries(context):
     re100SWH(context)
     # discharge between 5pm and 7am daily
     hrs = list(range(0, 8)) + list(range(17, 24))
+    rte = 1
     # Hornsdale has 150MW capacity for 1.25 hours
     batteryhornsdaleSA = Battery(19, 120, 1, discharge_hours=hrs,
                                  label=f'{"P19 Existing Batt Hornsdale SA"}',
-                                 rte=0.9)
+                                 rte=rte)
     batteryhornsdaleSA.capcost = lambda costs: 0
     batteryhornsdaleSA.setters = []
     # Dalrymple BESS is 30MW capacity for 0.27 hrs
     batDalrympleSA = Battery(26, 60, 1, discharge_hours=hrs,
                              label=f'{"P26 Existing Batt Dalrymple SA"}',
-                             rte=0.9)
+                             rte=rte)
     batDalrympleSA.capcost = lambda costs: 0
     batDalrympleSA.setters = []
     # Ballarat EES is 30MW for 1 hr
     batBallaratVIC = Battery(38, 30, 1, discharge_hours=hrs,
                              label=f'{"P38 Existing Batt Ballarat VIC"}',
-                             rte=0.9)
+                             rte=rte)
     batBallaratVIC.capcost = lambda costs: 0
     batBallaratVIC.setters = []
     # Gannawarra EES is 25MW for 1.97 hr
     batGannawarraVIC = Battery(34, 25, 2, discharge_hours=hrs,
                                label=f'{"P38 Existing Batt Gannawarra VIC"}',
-                               rte=0.9)
+                               rte=rte)
     batGannawarraVIC.capcost = lambda costs: 0
     batGannawarraVIC.setters = []
     # Lake Bonney BESS1 EES is 25MW for 2.08 hr
     batBonneySA = Battery(34, 25, 2, discharge_hours=hrs,
                           label=f'{"P38 Existing Batt Bonney VIC"}',
-                          rte=0.9)
+                          rte=rte)
     batBonneySA.capcost = lambda costs: 0
     batBonneySA.setters = []
 
