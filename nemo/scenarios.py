@@ -239,11 +239,37 @@ def re100SWH(context):
     context.generators = result
 
 
+def re100SWHB_David(context):
+    """Takes SWH and adds David Osmond Battery."""
+    re100SWH(context)
+    # discharge between 5pm and 7am daily
+    hrs = list(range(0, 8)) + list(range(16,24))
+    rte = 1
+    
+    # David Osmond Battery 1 24GW/120GWh (4 hours)
+    batteryDavid1 = Battery(19, 24000, 4, discharge_hours=hrs,
+                                 label=f'{"P19 Battery David 1 SA"}',
+                                 rte=rte)
+    batteryDavid1.capcost = lambda costs: 0
+    batteryDavid1.setters = []
+
+    # David Osmond Battery 2 24GW/120GWh (1 hours)
+    batteryDavid2 = Battery(19, 24000, 1, discharge_hours=hrs,
+                                 label=f'{"P19 Battery David 2 SA"}',
+                                 rte=rte)
+    batteryDavid2.capcost = lambda costs: 0
+    batteryDavid2.setters = []
+
+    context.generators = ([batteryDavid1] 
+                          + [batteryDavid2]
+                          + context.generators)
+
+
 def re100SWH_batteries(context):
     """Takes SWH and adds existing batteries only."""
     re100SWH(context)
     # discharge between 5pm and 7am daily
-    hrs = list(range(0, 8)) + list(range(17, 24))
+    hrs = list(range(0, 8, 2)) + list(range(16,24,2))
     rte = 1
     # Hornsdale has 150MW capacity for 1.25 hours
     batteryhornsdaleSA = Battery(19, 120, 1, discharge_hours=hrs,
@@ -295,6 +321,12 @@ def re100SWH_batteries2(context):
                          label=f'{"P24 New Added Batt NSW"}', rte=0.9)
     context.generators = [batteryNew] + context.generators
 
+
+def re100SWHB_dr(context):
+    re100SWH_batteries(context)
+    dr = DemandResponse(36, 500, 500, label = f'{"P36 Demand response NSW"}')
+    dr.setters = []
+    context.generators = [dr] + context.generators
 
 """ End Elonas Scenarios"""
 
@@ -403,8 +435,10 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100+batteries': re100_batteries,
                     're100SWH_WA': re100SWH_WA,
                     're100SWH': re100SWH,
+                    're100SWHB_David':re100SWHB_David,
                     're100SWH_batteries': re100SWH_batteries,
                     're100SWH_batteries2': re100SWH_batteries2,
+                    're100SWHB_dr': re100SWHB_dr,
                     're100+dsp': re100_dsp,
                     're100-nocst': re100_nocst,
                     'replacement': replacement}

@@ -18,7 +18,7 @@ import pandas as pd
 from gooey import Gooey
 
 import nemo
-from nemo import costs, demand, scenarios, utils
+from nemo import costs, demand, scenarios, utils, nem
 
 if len(sys.argv) > 1 and '--ignore-gooey' not in sys.argv:
     sys.argv.append('--ignore-gooey')
@@ -86,6 +86,11 @@ def run_one(bundle):
     nemo.run(context)
     context.verbose = args.v > 0
     print(context)
+
+    total_capcost = 0
+    for g in context.generators:
+        total_capcost += g.capcost(context.costs)
+    print("Total capital cost:", total_capcost)
     print("Done")
 
     # save surplus energy at every time step from each generator into CSV
@@ -112,6 +117,14 @@ def run_one(bundle):
     # save unserved time series
     unserved = context.unserved
     unserved.to_csv("unserved.csv", sep=',')
+
+    #save aggregate generation and demand
+    aggregate_generation = context.generation.sum(axis=1)
+    aggregate_generation.to_csv("generation.csv", sep = ",")
+
+    agg_demand = nem.hourly_regional_demand
+    agg_demand.to_csv("demand.csv", sep = ",")
+
 
     # save stored energy for those generators that can
     # store for each time step into CSV
