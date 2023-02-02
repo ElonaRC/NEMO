@@ -387,7 +387,7 @@ class GenCost2021:
             tech.OCGT: 10.2,
             tech.PV1Axis: 17.0,
             tech.PumpedHydro: 0,
-            tech.Wind: 25.0, 
+            tech.Wind: 25.0,
             tech.DemandResponse: 0
         }
 
