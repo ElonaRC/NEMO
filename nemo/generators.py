@@ -182,11 +182,11 @@ class Storage():
         # Time series of charges
         self.series_charge = {}
 
-    def record(self, hour, power):
+    def record(self, hour, energy):
         """Record storage."""
         if hour not in self.series_charge:
             self.series_charge[hour] = 0
-        self.series_charge[hour] += power
+        self.series_charge[hour] += energy
 
     def charge_capacity(self, gen, hour):
         """Return available storage capacity.
@@ -198,7 +198,7 @@ class Storage():
         """
         try:
             result = gen.capacity - self.series_charge[hour]
-            if result < 0 and isclose(result, 0):
+            if result < 0 or isclose(result, 0, abs_tol=1e-6):
                 result = 0
             assert result >= 0
             return result
@@ -458,7 +458,8 @@ class PumpedHydro(Storage, Hydro):
         # Half the water starts in the lower reservoir.
         self.stored = self.maxstorage * .5
         self.rte = rte
-        self.last_run = None
+        self.last_gen = None
+        self.last_pump = None
 
     def series(self):
         """Return the combined series."""
@@ -469,7 +470,7 @@ class PumpedHydro(Storage, Hydro):
 
     def store(self, hour, power):
         """Pump water uphill for one hour."""
-        if self.last_run == hour:
+        if self.last_gen == hour:
             # Can't pump and generate in the same hour.
             return 0
         power = min(self.charge_capacity(self, hour), power,
@@ -481,13 +482,14 @@ class PumpedHydro(Storage, Hydro):
         else:
             self.stored += energy
         if power > 0:
-            self.last_run = hour
+            self.record(hour, power)
+            self.last_pump = hour
         return power
 
     def step(self, hour, demand):
         """Step method for pumped hydro storage."""
         power = min(self.stored, self.capacity, demand)
-        if self.last_run == hour:
+        if self.last_pump == hour:
             # Can't pump and generate in the same hour.
             self.series_power[hour] = 0
             self.series_spilled[hour] = 0
@@ -497,21 +499,24 @@ class PumpedHydro(Storage, Hydro):
         self.stored -= power
         if power > 0:
             self.runhours += 1
-            self.last_run = hour
+            self.last_gen = hour
         return power, 0
 
     def summary(self, context):
         """Return a summary of the generator activity."""
         storage = (self.maxstorage * ureg.MWh).to_compact()
         return Generator.summary(self, context) + \
+            f', charged {_thousands(len(self.series_charge))} hours' + \
             f', ran {_thousands(self.runhours)} hours' + \
             f', {storage} storage'
 
     def reset(self):
         """Reset the generator."""
-        Fuelled.reset(self)
+        Hydro.reset(self)
+        Storage.reset(self)
         self.stored = self.maxstorage * .5
-        self.last_run = None
+        self.last_gen = None
+        self.last_pump = None
 
 
 class Biofuel(Fuelled):
@@ -804,7 +809,6 @@ class Battery(Storage, Generator):
             self.series_spilled[hour] = 0
             return 0, 0
 
-        assert demand > 0
         power = min(self.stored, self.capacity, demand) * self.rte
         self.series_power[hour] = power
         self.series_spilled[hour] = 0
@@ -817,6 +821,7 @@ class Battery(Storage, Generator):
     def reset(self):
         """Reset the generator."""
         Generator.reset(self)
+        Storage.reset(self)
         self.runhours = 0
         self.stored = 0
 
