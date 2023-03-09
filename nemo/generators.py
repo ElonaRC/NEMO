@@ -21,6 +21,7 @@ import pandas as pd
 import pint
 import requests
 from matplotlib.patches import Patch
+from math import isnan
 
 from nemo import polygons
 
@@ -240,6 +241,7 @@ class TraceGenerator(Generator):
         power = min(generation, demand)
         spilled = generation - power
         self.series_power[hour] = power
+        assert not isnan(power)
         self.series_spilled[hour] = spilled
         return power, spilled
 

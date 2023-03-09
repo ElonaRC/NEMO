@@ -602,7 +602,7 @@ class GenCost2022:
 
 
 class GenCost2022_2021(GenCost2022):
-    """GenCost 2020-21 costs for 2021 (low assumption)."""
+    """GenCost 2020-21 costs for 2021 and 2022 (low assumption)."""
 
     def __init__(self, discount, coal_price, gas_price, ccs_price):
         """Construct a cost object."""
@@ -623,7 +623,8 @@ class GenCost2022_2021(GenCost2022):
 
 
 class GenCost2022_2030Low(GenCost2022):
-    """GenCost 2021-22 costs for 2030 (low assumption)."""
+    """GenCost 2021-22 costs for 2030 (low assumption).
+    Gloabl NZE by 2050"""
 
     def __init__(self, discount, coal_price, gas_price, ccs_price):
         """Construct a cost object."""
@@ -640,11 +641,33 @@ class GenCost2022_2030Low(GenCost2022):
         table[tech.WindOffshore] = 2967
 
         table = self.totcost_per_kwh
-        table[tech.Battery] = {1: 687, 2: 452, 4: 343, 8: 298}
-
+        table[tech.Battery] = {1: 553, 2: 344, 4: 242, 8: 200}
 
 class GenCost2022_2030High(GenCost2022):
-    """GenCost 2021-22 costs for 2030 (high end of the range)."""
+    """GenCost 2021-22 costs for 2030 (low assumption).
+    Gloabl NZE post 2050"""
+
+    def __init__(self, discount, coal_price, gas_price, ccs_price):
+        """Construct a cost object."""
+        GenCost2022.__init__(self, discount, coal_price, gas_price, ccs_price)
+        table = self.capcost_per_kw
+        table[tech.Black_Coal] = 4208
+        table[tech.CCGT] = 1511
+        table[tech.CCGT_CCS] = 3784
+        table[tech.CentralReceiver] = 4657
+        table[tech.Coal_CCS] = 8747
+        table[tech.OCGT] = 741
+        table[tech.PV1Axis] = 1046
+        table[tech.Wind] = 1778
+        table[tech.WindOffshore] = 2967
+
+        table = self.totcost_per_kwh
+        table[tech.Battery] = {1: 608, 2: 390, 4: 287, 8: 244}
+
+
+class GenCost2022_2030Current(GenCost2022):
+    """GenCost 2021-22 costs for 2030 (high end of the range).
+    Current policies"""
 
     def __init__(self, discount, coal_price, gas_price, ccs_price):
         """Construct a cost object."""
@@ -765,7 +788,8 @@ cost_scenarios = {'Null': NullCosts,
                   'GenCost2021-in2050-high': GenCost2021_2050High,
                   'GenCost2022-in2021': GenCost2022_2021,
                   'GenCost2022-in2030-low': GenCost2022_2030Low,
-                  'GenCost2022-in2030-high': GenCost2022_2030High,
+                  'GenCost2022-in2030-high':GenCost2022_2030High,
+                  'GenCost2022-in2030-current': GenCost2022_2030Current,
                   'GenCost2022-in2040-low': GenCost2022_2040Low,
                   'GenCost2022-in2040-high': GenCost2022_2040High,
                   'GenCost2022-in2050-low': GenCost2022_2050Low,

@@ -118,13 +118,12 @@ def run_one(bundle):
     unserved = context.unserved
     unserved.to_csv("unserved.csv", sep=',')
 
-    #save aggregate generation and demand
+    # save aggregate generation and demand
     aggregate_generation = context.generation.sum(axis=1)
-    aggregate_generation.to_csv("generation.csv", sep = ",")
+    aggregate_generation.to_csv("generation.csv", sep=",")
 
     agg_demand = nem.hourly_regional_demand
-    agg_demand.to_csv("demand.csv", sep = ",")
-
+    agg_demand.to_csv("demand.csv", sep=",")
 
     # save stored energy for those generators that can
     # store for each time step into CSV
