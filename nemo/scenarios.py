@@ -320,6 +320,8 @@ def re100SWH_batteries(context):
                           + [batBallaratVIC]
                           + [batGannawarraVIC]
                           + [batBonneySA]
+                          + [batVicBB]
+                          + [batBulgana]
                           + context.generators)
 
 
