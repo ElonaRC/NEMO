@@ -269,6 +269,7 @@ def re100SWH_batteries(context):
     """Takes SWH and adds existing batteries only."""
     re100SWH(context)
     # discharge between 5pm and 7am daily
+    # batteries operational as of July 2022 
     hrs = list(range(0, 8, 2)) + list(range(16, 24, 2))
     rte = 1
     # Hornsdale has 150MW capacity for 1.25 hours
@@ -301,6 +302,18 @@ def re100SWH_batteries(context):
                           rte=rte)
     batBonneySA.capcost = lambda costs: 0
     batBonneySA.setters = []
+    # Victorian Big Battery is 300MW for 1.5 hr - rounded to 2 hours
+    batVicBB = Battery(39, 300, 2, discharge_hours=hrs,
+                          label=f'{"P38 Existing Batt VicBB VIC"}',
+                          rte=rte)
+    batVicBB.capcost = lambda costs: 0
+    batVicBB.setters = []
+    # Bulgana is 20MW for 1.7 hr - rounded to 2 hours
+    batBulgana = Battery(37, 20, 2, discharge_hours=hrs,
+                          label=f'{"P38 Existing Batt Bulgana VIC"}',
+                          rte=rte)
+    batBulgana.capcost = lambda costs: 0
+    batBulgana.setters = []
 
     context.generators = ([batteryhornsdaleSA]
                           + [batDalrympleSA]
