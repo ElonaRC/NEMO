@@ -51,6 +51,7 @@ class NullCosts():
 
 class APGTR2015():
     """Australian Power Generation Technology Report costs in 2015.
+
     Source: CO2CRC Australian Power Generation Technology Report (2015)
     """
 
@@ -336,6 +337,7 @@ class AETA2013_2030Mid(AETA2012_2030):
 class CEEM2016_2030(AETA2012_2030Mid):
     """
     CEEM 2016 custom costs.
+    
     These custom costs were produced by CEEM -- AETA (2013) mid costs
     with CO2CRC Power Generation Technology Report 2030 capital costs
     for utility-scale PV.
@@ -353,7 +355,7 @@ class CEEM2016_2030(AETA2012_2030Mid):
 
 class GenCost2021:
     """GenCost 2020-21 costs.
-    
+
     Source:
     CSIRO GenCost 2020-21 report
     https://data.csiro.au/collections/collection/CIcsiro:44228

@@ -387,6 +387,7 @@ for rgn in [regions.nsw, regions.qld, regions.sa, regions.tas, regions.vic]:
 def region(polygon):
     """
     Return the region a polygon resides in.
+
     >>> region(1)
     QLD1
     >>> region(40)
@@ -439,6 +440,7 @@ def _centroid(vertices):
 
 def dist(poly1, poly2):
     """Return the distance between two polygon centroids.
+    
     >>> dist(1,1)
     0
     >>> dist(1,43)
