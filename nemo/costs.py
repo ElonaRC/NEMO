@@ -353,6 +353,7 @@ class CEEM2016_2030(AETA2012_2030Mid):
 
 class GenCost2021:
     """GenCost 2020-21 costs.
+    
     Source:
     CSIRO GenCost 2020-21 report
     https://data.csiro.au/collections/collection/CIcsiro:44228
@@ -532,7 +533,7 @@ class GenCost2021_2050High(GenCost2021):
 
 class GenCost2022:
     """GenCost 2021-22 costs.
-    
+
     Source:
     CSIRO GenCost 2021-22 report
     https://data.csiro.au/collections/collection/CIcsiro:44228
