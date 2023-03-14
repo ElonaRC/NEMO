@@ -1,6 +1,6 @@
 *.csv
--results.json
--myenv
--html
--htmlcov
+results.json
+myenv
+html
+htmlcov
 *.pyc
