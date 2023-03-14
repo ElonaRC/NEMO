@@ -114,6 +114,7 @@ class APGTR2015():
 
 class APGTR2030(APGTR2015):
     """Australian Power Generation Technology Report (2015) costs in 2030.
+
     Source: CO2CRC Australian Power Generation Technology Report (2015)
     """
 
@@ -135,6 +136,7 @@ class APGTR2030(APGTR2015):
 
 class AETA2012_2030():
     """Australian Energy Technology Assessment (2012) costs for 2030.
+
     Source: BREE AETA report (2012), bree.gov.au
     """
 
@@ -530,6 +532,7 @@ class GenCost2021_2050High(GenCost2021):
 
 class GenCost2022:
     """GenCost 2021-22 costs.
+    
     Source:
     CSIRO GenCost 2021-22 report
     https://data.csiro.au/collections/collection/CIcsiro:44228
