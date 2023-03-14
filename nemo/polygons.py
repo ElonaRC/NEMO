@@ -24,6 +24,7 @@ regions.sa.polygons = {12: 0, 13: 0, 18: 0, 19: 0, 20: 0, 25: 0,
 regions.snowy.polygons = {}
 regions.tas.polygons = {40: .2, 41: .2, 42: 0, 43: .6}
 regions.vic.polygons = {37: .2, 38: .1, 39: .7}
+
 # Ensure all weights sum to one.
 for r in regions.All:
     if r.polygons:
@@ -33,7 +34,6 @@ for r in regions.All:
 WILDCARD = 31
 
 # Vertices of the closed polygons (nb. must be closed)
-# 38a = 38, 38b = 39, 39 = 40, 40 = 41, 42 = 43
 _polygons = {
     1: (
         (144.602, -13.838),
@@ -387,7 +387,6 @@ for rgn in [regions.nsw, regions.qld, regions.sa, regions.tas, regions.vic]:
 def region(polygon):
     """
     Return the region a polygon resides in.
-
     >>> region(1)
     QLD1
     >>> region(40)
@@ -440,7 +439,6 @@ def _centroid(vertices):
 
 def dist(poly1, poly2):
     """Return the distance between two polygon centroids.
-
     >>> dist(1,1)
     0
     >>> dist(1,43)
