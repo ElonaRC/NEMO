@@ -143,6 +143,18 @@ def re100_batteries(context):
 """ Start Elona's Scenarios """
 
 
+def _one_battery(context):
+    """Add in one 2 hour into the middle of NSW battery"""
+    result = []
+    # discharge between 5pm and 7am daily
+    # discharge between 5pm and 7am daily
+    hrs = list(range(0, 8)) + list(range(17, 24))
+    batteryNew = Battery(24, 100, 2, discharge_hours=hrs,
+                         label=f'{"P24 New Added Batt NSW"}', rte=0.9)
+    result.append(batteryNew)
+    return result
+
+
 def _existingSolarWind(gentype):
     """Add in existing solar and wind generators for each polygon."""
     """ERC Addition"""
@@ -234,6 +246,54 @@ def re100SWH(context):
         elif g in [PV1Axis, Wind]:
             result += _existingSolarWind(g)
             result += _every_poly(g)
+        else:
+            raise ValueError('unhandled generator type')  # pragma: no cover
+    context.generators = result
+
+
+def re100SWHBMid(context):
+    """100% renewable electricity with PV, Wind, Battery, Hydro."""
+    """This will populate all polygons with an empty
+    PV and Wind genererator & """
+    """Put a 2 hour battery into Polygon 24 in NSW"""
+    """Put hydro and pumped hydro where they should be located"""
+    result = []
+
+    # The following list is in merit order.
+    for g in [PV1Axis, Wind, Battery, PumpedHydro, Hydro]:
+        if g == PumpedHydro:
+            result += [h for h in _hydro() if isinstance(h, PumpedHydro)]
+        elif g == Hydro:
+            result += [h for h in _hydro() if not isinstance(h, PumpedHydro)]
+        elif g in [PV1Axis, Wind]:
+            result += _existingSolarWind(g)
+            result += _every_poly(g)
+        elif g == Battery:
+            result += _one_battery(g)
+        else:
+            raise ValueError('unhandled generator type')  # pragma: no cover
+    context.generators = result
+
+
+def re100SWHBLast(context):
+    """100% renewable electricity with PV, Wind, Battery, Hydro."""
+    """This will populate all polygons with an empty
+    PV and Wind genererator & """
+    """Put hydro and pumped hydro where they should be located"""
+    """Put a 2 hour battery into Polygon 24 in NSW"""
+    result = []
+
+    # The following list is in merit order.
+    for g in [PV1Axis, Wind, PumpedHydro, Hydro, Battery]:
+        if g == PumpedHydro:
+            result += [h for h in _hydro() if isinstance(h, PumpedHydro)]
+        elif g == Hydro:
+            result += [h for h in _hydro() if not isinstance(h, PumpedHydro)]
+        elif g in [PV1Axis, Wind]:
+            result += _existingSolarWind(g)
+            result += _every_poly(g)
+        elif g == Battery:
+            result += _one_battery(g)
         else:
             raise ValueError('unhandled generator type')  # pragma: no cover
     context.generators = result
@@ -451,6 +511,8 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100+batteries': re100_batteries,
                     're100SWH_WA': re100SWH_WA,
                     're100SWH': re100SWH,
+                    're100SWHBMid':re100SWHBMid,
+                    're100SWHBLast':re100SWHBLast,
                     're100SWHB_David': re100SWHB_David,
                     're100SWH_batteries': re100SWH_batteries,
                     're100SWH_batteries2': re100SWH_batteries2,
