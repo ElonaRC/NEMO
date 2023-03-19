@@ -20,8 +20,9 @@ def _sim(context, date_range):
     for gen in context.generators:
         gen.reset()
 
-    generation = np.zeros((len(date_range), len(context.generators)))
-    spill = np.zeros((len(date_range), len(context.generators)))
+    timesteps = len(date_range)
+    generation = np.zeros((timesteps, len(context.generators)))
+    spill = np.zeros((timesteps, len(context.generators)))
 
     # Extract generators in the regions of interest.
     gens = [g for g in context.generators if g.region() in context.regions]
@@ -35,19 +36,19 @@ def _sim(context, date_range):
     demand_copy = context.demand.copy().values
     residual_demand = demand_copy.sum(axis=1)
 
-    for hour, date in enumerate(date_range):
+    for hour in range(timesteps):
         hour_demand = demand_copy[hour]
         residual_hour_demand = residual_demand[hour]
 
         if context.verbose:
-            print('STEP:', date)
+            print('STEP:', date_range[hour])
             print('DEMAND:', {a: round(b, 2) for a, b in
                               enumerate(hour_demand)})
 
         _dispatch(context, hour, residual_hour_demand, gens, generation, spill)
 
         if context.verbose:
-            print('ENDSTEP:', date)
+            print('ENDSTEP:', date_range[hour])
 
     # Change the numpy arrays to dataframes for human consumption
     context.generation = pd.DataFrame(index=date_range, data=generation)
@@ -57,7 +58,10 @@ def _sim(context, date_range):
 def _store_spills(context, hour, gen, generators, spl):
     """Store spills from a generator into any storage."""
     assert spl > 0, f'{spl} is <= 0'
-    for other in list(g for g in generators if g.storage_p):
+    if context.storages is None:
+        # compute this just once and cache it in the context object
+        context.storages = list(g for g in generators if g.storage_p)
+    for other in context.storages:
         stored = other.store(hour, spl)
         spl -= stored
         if spl < 0 and isclose(spl, 0, abs_tol=1e-6):
@@ -97,12 +101,14 @@ def _dispatch(context, hour, residual_hour_demand, gens, generation, spill):
         if not generator.synchronous_p:
             async_demand -= gen
             assert async_demand > 0 or isclose(async_demand, 0, abs_tol=1e-6)
-            async_demand = max(0, async_demand)
+            # optimised version of max()
+            async_demand = async_demand if async_demand > 0 else 0
 
         residual_hour_demand -= gen
         assert residual_hour_demand > 0 or \
             isclose(residual_hour_demand, 0, abs_tol=1e-6)
-        residual_hour_demand = max(0, residual_hour_demand)
+        # optimised version of max()
+        residual_hour_demand = residual_hour_demand if residual_hour_demand > 0 else 0
 
         if context.verbose:
             print(f'GENERATOR: {generator},',
