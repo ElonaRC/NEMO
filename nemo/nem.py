@@ -33,8 +33,11 @@ else:
         raise ConnectionError(f'HTTP {resp.status_code}: {url}')
     traceinput = io.StringIO(resp.text)
 
-demand = pd.read_csv(traceinput, comment='#', sep=',',
-                     parse_dates=[['Date', 'Time']], index_col='Date_Time')
+if not url.startswith('http') and url.endswith('.pkl'):
+    demand = pd.read_pickle(traceinput)
+else:
+    demand = pd.read_csv(traceinput, comment='#', sep=',', 
+                         parse_dates=[['Date', 'Time']], index_col='Date_Time')
 
 # Check for date, time and n demand columns (for n regions).
 assert len(demand.columns) == regions.NUMREGIONS
