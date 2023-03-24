@@ -298,6 +298,18 @@ def re100SWHBLast(context):
             raise ValueError('unhandled generator type')  # pragma: no cover
     context.generators = result
 
+def re100SWHBG(context):
+    """100% renewable electricity with PV, Wind, Hydro, Pumped Hydrp, Battery, Gas."""
+    """This will populate all polygons with an empty
+    PV and Wind genererator & """
+    """Put hydro and pumped hydro where they should be located"""
+    """Put a 2 hour battery into Polygon 24 in NSW"""
+    """Put a open cycle gas turbine 6.7 GW into Polygon 24 in NSW"""
+    re100SWHBLast(context)
+    gasNew = OCGT(24, 6700, label=f'{"P24 Existing OCGT NSW"}')
+    gasNew.setters = []
+    context.generators = (context.generators + [gasNew])
+
 
 def re100SWHB_David(context):
     """Takes SWH and adds David Osmond Battery."""
@@ -375,14 +387,14 @@ def re100SWH_batteries(context):
     batBulgana.capcost = lambda costs: 0
     batBulgana.setters = []
 
-    context.generators = ([batteryhornsdaleSA]
+    context.generators = (context.generators 
+                          + [batteryhornsdaleSA]
                           + [batDalrympleSA]
                           + [batBallaratVIC]
                           + [batGannawarraVIC]
                           + [batBonneySA]
                           + [batVicBB]
-                          + [batBulgana]
-                          + context.generators)
+                          + [batBulgana])
 
 
 def re100SWH_batteries2(context):
@@ -513,6 +525,7 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100SWH': re100SWH,
                     're100SWHBMid':re100SWHBMid,
                     're100SWHBLast':re100SWHBLast,
+                    're100SWHBG':re100SWHBG, 
                     're100SWHB_David': re100SWHB_David,
                     're100SWH_batteries': re100SWH_batteries,
                     're100SWH_batteries2': re100SWH_batteries2,
