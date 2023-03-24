@@ -301,7 +301,6 @@ creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 creator.create("Individual", list, fitness=creator.FitnessMin)
 
 if __name__ == '__main__':
-    run()
     args = process_options()
     if args.list_scenarios:
         list_scenarios()
