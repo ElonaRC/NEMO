@@ -298,7 +298,46 @@ def re100SWHBLast(context):
             raise ValueError('unhandled generator type')  # pragma: no cover
     context.generators = result
 
-def re100SWHBG(context):
+
+def re100SWHB4(context):
+    """100% renewable electricity with PV, Wind, Battery, Hydro."""
+    """This will populate all polygons with an empty
+    PV and Wind genererator & """
+    """Put hydro and pumped hydro where they should be located"""
+    """Put a 1, 2, 4, 8 hour battery into Polygon 24 in NSW with a flexible capacity to test which one is least-cost"""
+    re100SWH(context)
+    # discharge between 5pm and 7am daily
+    # discharge between 5pm and 7am daily
+    hrs = list(range(0, 8)) + list(range(17, 24))
+    battery1 = Battery(24, 100, 1, discharge_hours=hrs,
+                         label=f'{"P24 New Batt 1 NSW"}', rte=0.9)
+    battery2 = Battery(24, 100, 2, discharge_hours=hrs,
+                         label=f'{"P24 New Batt 2 NSW"}', rte=0.9)
+    battery4 = Battery(24, 100, 4, discharge_hours=hrs,
+                         label=f'{"P24 New Batt 4 NSW"}', rte=0.9)
+    battery8 = Battery(24, 100, 8, discharge_hours=hrs,
+                         label=f'{"P24 New Batt 8 NSW"}', rte=0.9)
+    context.generators = (context.generators
+                          + [battery1]
+                          + [battery2]
+                          + [battery4]
+                          + [battery8])
+
+
+def re100SWHB4G(context):
+    """100% renewable electricity with PV, Wind, Battery, Hydro."""
+    """This will populate all polygons with an empty
+    PV and Wind genererator & """
+    """Put hydro and pumped hydro where they should be located"""
+    """Put a 1, 2, 4, 8 hour battery into Polygon 24 in NSW with a flexible capacity to test which one is least-cost"""
+    """Add in the gas generation fleet at the end. """
+    re100SWHB4(context)
+    gasNew = OCGT(24, 6700, label=f'{"P24 Existing OCGT NSW"}')
+    gasNew.setters = []
+    context.generators = (context.generators + [gasNew])
+    
+
+def re100SWHB1G(context):
     """100% renewable electricity with PV, Wind, Hydro, Pumped Hydrp, Battery, Gas."""
     """This will populate all polygons with an empty
     PV and Wind genererator & """
@@ -525,7 +564,9 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100SWH': re100SWH,
                     're100SWHBMid':re100SWHBMid,
                     're100SWHBLast':re100SWHBLast,
-                    're100SWHBG':re100SWHBG, 
+                    're100SWHB4':re100SWHB4,
+                    're100SWHB4G':re100SWHB4G,
+                    're100SWHB1G':re100SWHB1G, 
                     're100SWHB_David': re100SWHB_David,
                     're100SWH_batteries': re100SWH_batteries,
                     're100SWH_batteries2': re100SWH_batteries2,
