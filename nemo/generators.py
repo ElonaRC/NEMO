@@ -730,7 +730,7 @@ class Diesel(Fossil):
 class Battery(Storage, Generator):
     """Battery storage (of any type)."""
 
-    patch = Patch(facecolor='#00a2fa')
+    patch = Patch(facecolor='#800080')
     """Colour for plotting"""
     synchronous_p = False
     """Is this a synchronous generator?"""
