@@ -7,6 +7,7 @@
 
 """Utility functions (eg, plotting)."""
 
+import locale
 from datetime import timedelta
 from itertools import tee
 
@@ -18,6 +19,14 @@ from pandas.plotting import register_matplotlib_converters
 
 from nemo import configfile
 from nemo.configfile import configparser
+
+# Needed for currency formatting.
+locale.setlocale(locale.LC_ALL, '')
+
+# Default to abbreviated units when formatting.
+# Caching is not yet the default.
+ureg = pint.UnitRegistry(cache_folder=':auto:')
+ureg.default_format = '.2f~P'
 
 # The maximum number of generators before we only show a consolidated
 # list of generator types and not individual generator names.
@@ -32,8 +41,25 @@ MAX_PLOT_GENERATORS = 50
 # matplotlib converters, so do it here now.
 register_matplotlib_converters()
 
-# SI units
-ureg = pint.UnitRegistry()
+
+def thousands(value):
+    """
+    Format a value with thousands separator(s).
+
+    No doctest provided as the result will be locale specific.
+    """
+    return locale.format_string('%d', value, grouping=True)
+
+
+def currency(value):
+    """
+    Format a value into currency with thousands separator(s).
+
+    If there are zero cents, remove .00 for brevity.  No doctest
+    provided as the result will be locale specific.
+    """
+    cents = locale.localeconv()['mon_decimal_point'] + '00'
+    return locale.currency(round(value), grouping=True).replace(cents, '')
 
 
 def _generator_list(context):
@@ -156,13 +182,15 @@ def _figure(context, spills, showlegend, xlim):
 def plot(context, spills=False, filename=None, showlegend=True, xlim=None):
     """Produce a pretty plot of supply and demand."""
     if xlim is None:
+        starttime = context.demand.index[0]
         ninety_days = 24 * 90
-        if context.timesteps > ninety_days:
-            starttime = context.demand.index[0]
+        if context.timesteps() > ninety_days:
             endtime = starttime + timedelta(days=90)
-            timerange = (starttime, endtime)
+        else:
+            endtime = context.demand.index[-1]
+        timerange = (starttime, endtime)
     else:
-        timerange = None
+        timerange = xlim
 
     _figure(context, spills, showlegend, timerange)
     if not filename:
