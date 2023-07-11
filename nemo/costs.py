@@ -548,6 +548,7 @@ class GenCost2022:
     Source:
     CSIRO GenCost 2021-22 report
     https://data.csiro.au/collections/collection/CIcsiro:44228
+    note: rooftop is a weird one (Behind_the_meter O&M set to zero for now)
     """
 
     lifetime = 30
@@ -574,6 +575,7 @@ class GenCost2022:
             tech.Coal_CCS: 77.8,
             tech.Hydro: 0,
             tech.OCGT: 10.2,
+            tech.Behind_Meter_PV: 0,
             tech.PV1Axis: 17.0,
             tech.PumpedHydroPump: 0,
             tech.PumpedHydroTurbine: 0,
@@ -592,6 +594,7 @@ class GenCost2022:
             tech.Coal_CCS: 8.0,
             tech.Hydro: 0,
             tech.OCGT: 7.3,
+            tech.Behind_Meter_PV: 0,
             tech.PV1Axis: 0,
             tech.PumpedHydroPump: 0,
             tech.PumpedHydroTurbine: 0,
@@ -626,6 +629,7 @@ class GenCost2022_2021(GenCost2022):
         table[tech.CentralReceiver] = 6693
         table[tech.Coal_CCS] = 9077
         table[tech.OCGT] = 873
+        table[tech.Behind_Meter_PV] = 0
         table[tech.PV1Axis] = 1441
         table[tech.Wind] = 1960
         table[tech.WindOffshore] = 4649
@@ -647,6 +651,7 @@ class GenCost2022_2030_CP(GenCost2022):
         table[tech.CentralReceiver] = 5660
         table[tech.Coal_CCS] = 8884
         table[tech.OCGT] = 741
+        table[tech.Behind_Meter_PV] = 0
         table[tech.PV1Axis] = 1013
         table[tech.Wind] = 1897
         table[tech.WindOffshore] = 4545
@@ -668,6 +673,7 @@ class GenCost2022_2040_CP(GenCost2022):
         table[tech.CentralReceiver] = 4894
         table[tech.Coal_CCS] = 8650
         table[tech.OCGT] = 716
+        table[tech.Behind_Meter_PV] = 0
         table[tech.PV1Axis] = 733
         table[tech.Wind] = 1868
         table[tech.WindOffshore] = 4482
@@ -689,6 +695,7 @@ class GenCost2022_2050_CP(GenCost2022):
         table[tech.CentralReceiver] = 4103
         table[tech.Coal_CCS] = 7958
         table[tech.OCGT] = 691
+        table[tech.Behind_Meter_PV] = 0
         table[tech.PV1Axis] = 644
         table[tech.Wind] = 1828
         table[tech.WindOffshore] = 4431
@@ -710,6 +717,7 @@ class GenCost2022_2030_NZE2050(GenCost2022):
         table[tech.CentralReceiver] = 4657
         table[tech.Coal_CCS] = 8631
         table[tech.OCGT] = 741
+        table[tech.Behind_Meter_PV] = 0
         table[tech.PV1Axis] = 785
         table[tech.Wind] = 1633
         table[tech.WindOffshore] = 2967
@@ -731,6 +739,7 @@ class GenCost2022_2040_NZE2050(GenCost2022):
         table[tech.CentralReceiver] = 3620
         table[tech.Coal_CCS] = 7768
         table[tech.OCGT] = 716
+        table[tech.Behind_Meter_PV] = 0
         table[tech.PV1Axis] = 578
         table[tech.Wind] = 1553
         table[tech.WindOffshore] = 2653
@@ -752,6 +761,7 @@ class GenCost2022_2050_NZE2050(GenCost2022):
         table[tech.CentralReceiver] = 2911
         table[tech.Coal_CCS] = 7552
         table[tech.OCGT] = 691
+        table[tech.Behind_Meter_PV] = 0
         table[tech.PV1Axis] = 521
         table[tech.Wind] = 1521
         table[tech.WindOffshore] = 2506
@@ -773,6 +783,7 @@ class GenCost2022_2030_NZEPost2050(GenCost2022):
         table[tech.CentralReceiver] = 5236
         table[tech.Coal_CCS] = 8747
         table[tech.OCGT] = 741
+        table[tech.Behind_Meter_PV] = 0
         table[tech.PV1Axis] = 1046
         table[tech.Wind] = 1778
         table[tech.WindOffshore] = 4437
@@ -794,6 +805,7 @@ class GenCost2022_2040_NZEPost2050(GenCost2022):
         table[tech.CentralReceiver] = 4181
         table[tech.Coal_CCS] = 8025
         table[tech.OCGT] = 716
+        table[tech.Behind_Meter_PV] = 0
         table[tech.PV1Axis] = 689
         table[tech.Wind] = 1648
         table[tech.WindOffshore] = 3772
@@ -815,6 +827,7 @@ class GenCost2022_2050_NZEPost2050(GenCost2022):
         table[tech.CentralReceiver] = 3478
         table[tech.Coal_CCS] = 7792
         table[tech.OCGT] = 691
+        table[tech.Behind_Meter_PV] = 0
         table[tech.PV1Axis] = 530
         table[tech.Wind] = 1546
         table[tech.WindOffshore] = 3168

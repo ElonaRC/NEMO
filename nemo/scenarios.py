@@ -12,11 +12,11 @@
 from nemo import configfile, regions
 from nemo.generators import (CCGT, CCGT_CCS, CST, OCGT, Biofuel, Black_Coal,
                              CentralReceiver, Coal_CCS, DemandResponse, Hydro,
-                             PumpedHydroPump, PumpedHydroTurbine, PV1Axis,
-                             Wind, WindOffshore)
+                             PumpedHydroPump, PumpedHydroTurbine, PV1Axis, Behind_Meter_PV,
+                             Wind, WindOffshore, Battery, BatteryLoad)
 from nemo.polygons import (WILDCARD, cst_limit, offshore_wind_limit, pv_limit,
                            wind_limit)
-from nemo.storage import PumpedHydroStorage
+from nemo.storage import (PumpedHydroStorage, BatteryStorage)
 from nemo.types import UnreachableError
 
 RUNFAST = 0  # changes everypoly from 44 to 10
@@ -110,11 +110,11 @@ def _every_poly(gentype):
             result.append(gentype(poly, 0, cfg, poly - 1,
                                   build_limit=pv_limit[poly],
                                   label=f'polygon {poly} PV'))
-        elif gentype == CentralReceiver:
-            cfg = configfile.get('generation', 'cst-trace')
-            result.append(gentype(poly, 0, 2.0, 6, cfg, poly - 1,
-                                  build_limit=cst_limit[poly],
-                                  label=f'polygon {poly} CST'))
+        elif gentype == Behind_Meter_PV:
+            cfg = configfile.get('generation', 'rooftop-pv-trace')
+            result.append(gentype(poly, 0, cfg, poly - 1,
+                                  build_limit=pv_limit[poly],
+                                  label=f'polygon {poly} rooftop PV'))
         elif gentype == Wind:
             cfg = configfile.get('generation', 'wind-trace')
             result.append(gentype(poly, 0, cfg, poly - 1,
@@ -146,15 +146,6 @@ def re100(context):
     context.generators = result
 
 
-def re100_batteries(context):
-    """Use lots of renewables plus battery storage."""
-    re100(context)
-    # discharge between 6pm and 6am daily
-    hrs = list(range(0, 7)) + list(range(18, 24))
-    battery = Battery(WILDCARD, 0, 4, discharge_hours=hrs)
-    context.generators.insert(0, battery)
-
-
 """ Start Elona's Scenarios """
 
 
@@ -171,7 +162,7 @@ def _one_battery(context):
 
 
 def _existingSolarWind(gentype):
-    """Add in existing solar and wind generators for each polygon."""
+    """Add in existing large scale solar and wind generators for each polygon."""
     """ERC Addition"""
     # (Total solarfarms capacity for each polygon -
     # /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/
@@ -212,7 +203,70 @@ def _existingSolarWind(gentype):
     return result
 
 
-# def re100SWH(context):
+def _allSolarWind(gentype):
+    """Add in existing large sclae solar, rooftop PV, and wind generators for each polygon. All data is in MW"""
+    """ERC Addition"""
+    # (Total solarfarms capacity for each polygon -
+    # /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/
+    # NEM_SolarGenerators_Spatial_Cap_OPENNEM.csv )
+    # (Total windfarm capacty for each polygon -
+    # /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/
+    # NEM_WindGenerators_Spatial_Cap_OPENNEM.csv)
+    # Total rooftop PV capacity for each polygon - 
+    # /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/
+    # 2.0Project_Surplus/Data/RooftopPV_APVI/
+    # TotalPVCapacity_per_Polygon.xlsx
+    result = []
+    if gentype == PV1Axis:
+        cfg = configfile.get('generation', 'pv1axis-trace')
+        for (poly, capacity) in [(1, 12.5), (2, 5), (3, 50), (4, 962), (6, 205.7),
+                                 (7, 26), (11, 141.13), (16, 14.7),
+                                 (17, 302.75), (23, 267.7), (24, 20),
+                                 (26, 135), (27,4.9),(28, 53), (29, 1.2),
+                                 (30, 256.5), (31, 134.5), (32, 110.3),
+                                 (33, 868.13), (34, 617.6), (35, 121),
+                                 (36, 55.5), (37, 55), (38, 217), (39, 111.8)]:
+            g = gentype(poly, capacity, cfg, poly - 1,
+                        build_limit=capacity / 1000,
+                        label=f'polygon {poly} Existing PV')
+            g.capcost = lambda costs: 0
+            g.setters = []
+            result.append(g)
+    elif gentype == Wind:
+        cfg = configfile.get('generation', 'wind-trace')
+        for (poly, capacity) in [(1, 192.52), (24, 442.48),
+                                 (26, 355.03), (27, 1086.26), (28, 198.94),
+                                 (30, 113.19), (31, 9.9),
+                                 (32, 614.3), (36, 1137.44), (37, 2026.35),
+                                 (38, 21), (39, 874.4),
+                                 (40, 251.35), (41, 168), (43, 144)]:
+            g = gentype(poly, capacity, cfg, poly - 1,
+                        build_limit=capacity / 1000,
+                        label=f'polygon {poly} Existing Wind')
+            g.capcost = lambda costs: 0
+            g.setters = []
+            result.append(g)
+    elif gentype == Behind_Meter_PV:
+        cfg = configfile.get('generation', 'pv1axis-trace')
+        for (poly, capacity) in [(1, 373.933), (2, 5.91), (3, 11.239), 
+                                 (4, 1657.773), (5, 1.364), (6, 81.177), (7, 191.463), 
+                                 (8, 22.504), (9, 2.135), (10, 245.874), (11, 571.568), 
+                                 (14, 5.125), (15, 7.411), (16, 1240.491), (17, 4965.095), (19, 147.906), 
+                                 (21, 54.218), (22, 113.322), (23, 284.104), (24, 1295.258), 
+                                 (25, 4.74), (26, 426.236), (27, 111.214), (28, 31.744), 
+                                 (29, 132.212), (30, 886.123), (31, 3592.998), (32, 2247.75), 
+                                 (33, 1454.935), (34, 826.244), (35, 623.525), (36, 916.345), 
+                                 (37, 145.318), (38, 530.565), (39, 3819.245), (40, 47.774), 
+                                 (41, 92.129), (42, 6.101), (43, 119.205), ]:
+            g = gentype(poly, capacity, cfg, poly - 1,
+                        build_limit=capacity / 1000,
+                        label=f'polygon {poly} Existing Rooftop')
+            g.capcost = lambda costs: 0
+            g.setters = []
+            result.append(g)
+    return result
+
+
 """100% renewable electricity with only PV, Wind, Hydro.
 ERC Addition"""
 """ Start Elona's Scenarios """
@@ -253,13 +307,13 @@ def re100SWH(context):
     result = []
 
     # The following list is in merit order.
-    for g in [PV1Axis, Wind, PumpedHydro, Hydro]:
-        if g == PumpedHydro:
-            result += [h for h in _hydro() if isinstance(h, PumpedHydro)]
+    for g in [Behind_Meter_PV, PV1Axis, Wind, PumpedHydroStorage, Hydro]:
+        if g == PumpedHydroStorage:
+            result += [h for h in _hydro() if isinstance(h, PumpedHydroStorage)]
         elif g == Hydro:
-            result += [h for h in _hydro() if not isinstance(h, PumpedHydro)]
-        elif g in [PV1Axis, Wind]:
-            result += _existingSolarWind(g)
+            result += [h for h in _hydro() if not isinstance(h, PumpedHydroStorage)]
+        elif g in [Behind_Meter_PV, PV1Axis, Wind]:
+            result += _allSolarWind(g)
             result += _every_poly(g)
         else:
             raise ValueError('unhandled generator type')  # pragma: no cover
@@ -275,11 +329,11 @@ def re100SWHBMid(context):
     result = []
 
     # The following list is in merit order.
-    for g in [PV1Axis, Wind, Battery, PumpedHydro, Hydro]:
-        if g == PumpedHydro:
-            result += [h for h in _hydro() if isinstance(h, PumpedHydro)]
+    for g in [PV1Axis, Wind, Battery, PumpedHydroStorage, Hydro]:
+        if g == PumpedHydroStorage:
+            result += [h for h in _hydro() if isinstance(h, PumpedHydroStorage)]
         elif g == Hydro:
-            result += [h for h in _hydro() if not isinstance(h, PumpedHydro)]
+            result += [h for h in _hydro() if not isinstance(h, PumpedHydroStorage)]
         elif g in [PV1Axis, Wind]:
             result += _existingSolarWind(g)
             result += _every_poly(g)
@@ -298,12 +352,12 @@ def re100SWHBLast(context):
     """Put a 2 hour battery into Polygon 24 in NSW"""
     result = []
 
-    # The following list is in merit order.
-    for g in [PV1Axis, Wind, PumpedHydro, Hydro, Battery]:
-        if g == PumpedHydro:
-            result += [h for h in _hydro() if isinstance(h, PumpedHydro)]
+    # The following list is in merit order with Battery Last.
+    for g in [PV1Axis, Wind, PumpedHydroStorage, Hydro, Battery]:
+        if g == PumpedHydroStorage:
+            result += [h for h in _hydro() if isinstance(h, PumpedHydroStorage)]
         elif g == Hydro:
-            result += [h for h in _hydro() if not isinstance(h, PumpedHydro)]
+            result += [h for h in _hydro() if not isinstance(h, PumpedHydroStorage)]
         elif g in [PV1Axis, Wind]:
             result += _existingSolarWind(g)
             result += _every_poly(g)
@@ -463,6 +517,21 @@ def re100SWH_batteries2(context):
     context.generators = [batteryNew] + context.generators
 
 
+def re100SWH_batteries3(context):
+    """Takes SWH and adds one flexible battery to fill in the gaps at 5pm and 7pm."""
+    re100SWH(context)
+    # discharge between 5pm and 7am daily
+    hrs = list(range(0, 8)) + list(range(17, 24))
+
+    #Specs of the Victorian Big Battery for testing latest battery changes
+    battstorage = BatteryStorage(600) #600 MWh 
+    batt = Battery(38, 300, battstorage, label = 'P38 Vic Big Batt', 
+                   discharge_hours=hrs) #300 capacity MW
+    battload = BatteryLoad(38, 300, battstorage, hrs, rte = 0.9)
+
+    context.generators = [batt] + [battload]+ context.generators
+
+
 def re100SWHB_dr(context):
     re100SWH_batteries(context)
     dr = DemandResponse(36, 500, 500, label=f'{"P36 Demand response NSW"}')
@@ -574,7 +643,6 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100-qld': re100_qld,
                     're100-nsw': re100_nsw,
                     're100-sa': re100_south_aus,
-                    're100+batteries': re100_batteries,
                     're100SWH_WA': re100SWH_WA,
                     're100SWH': re100SWH,
                     're100SWHBMid':re100SWHBMid,
@@ -585,6 +653,7 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100SWHB_David': re100SWHB_David,
                     're100SWH_batteries': re100SWH_batteries,
                     're100SWH_batteries2': re100SWH_batteries2,
+                    're100SWH_batteries3': re100SWH_batteries3,
                     're100SWHB_dr': re100SWHB_dr,
                     're100+dsp': re100_dsp,
                     're100-nocst': re100_nocst,
