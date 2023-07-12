@@ -14,7 +14,7 @@ from nemo.generators import (CCGT, CCGT_CCS, CST, OCGT, Biofuel, Black_Coal,
                              CentralReceiver, Coal_CCS, DemandResponse, Hydro,
                              PumpedHydroPump, PumpedHydroTurbine, PV1Axis, Behind_Meter_PV,
                              Wind, WindOffshore, Battery, BatteryLoad)
-from nemo.polygons import (WILDCARD, cst_limit, offshore_wind_limit, pv_limit,
+from nemo.polygons import (WILDCARD, cst_limit, offshore_wind_limit, pv_limit, rooftop_limit,
                            wind_limit)
 from nemo.storage import (PumpedHydroStorage, BatteryStorage)
 from nemo.types import UnreachableError
@@ -259,7 +259,7 @@ def _allSolarWind(gentype):
                                  (37, 145.318), (38, 530.565), (39, 3819.245), (40, 47.774), 
                                  (41, 92.129), (42, 6.101), (43, 119.205), ]:
             g = gentype(poly, capacity, cfg, poly - 1,
-                        build_limit=capacity / 1000,
+                        build_limit=rooftop_limit[poly],
                         label=f'polygon {poly} Existing Rooftop')
             g.capcost = lambda costs: 0
             g.setters = []
