@@ -400,6 +400,8 @@ def region(polygon):
 # solar modelling for the AEMO 100% Renewables project. See
 # nemo.ozlabs.org for a link to this report.
 # numbers in GW
+# rooftop build limits from 
+# https://www.cefc.com.au/media/rcalz41c/isf-rooftop-solar-potential-report-final_.pdf
 
 wind_limit = [None, 80.3, 0, 36.9, 6.5, 15.6, 1.5, 6.9, 2.6, 0, 4.1,
               1.5, 2.1, 0.9, 30.3, 0, 0, 40.5, 0.2, 0, 49.1, 2.3, 0,

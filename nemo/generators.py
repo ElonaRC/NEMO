@@ -291,14 +291,14 @@ class PV(CSVTraceGenerator):
 class PV1Axis(PV):
     """Single-axis tracking PV."""
 
-    patch = Patch(facecolor='#fed500')
+    patch = Patch(facecolor='#FBBA06')
     """Colour for plotting"""
 
 
 class Behind_Meter_PV(PV):
     """Behind the meter PV."""
 
-    patch = Patch(facecolor='#ffe03d')
+    patch = Patch(facecolor='#F9EE00')
 
 
 class CST(CSVTraceGenerator):
