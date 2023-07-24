@@ -1,4 +1,6 @@
 *.csv
+*.pyc
+htmlcov
 results.json
 myenv
 html
