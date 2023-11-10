@@ -307,11 +307,11 @@ def re100SWH(context):
     result = []
 
     # The following list is in merit order.
-    for g in [Behind_Meter_PV, PV1Axis, Wind, PumpedHydroStorage, Hydro]:
-        if g == PumpedHydroStorage:
-            result += [h for h in _pumped_hydro() if isinstance(h, PumpedHydroStorage)]
+    for g in [Behind_Meter_PV, PV1Axis, Wind, PumpedHydroTurbine, Hydro]:
+        if g == PumpedHydroTurbine:
+            result += _pumped_hydro()
         elif g == Hydro:
-            result += [h for h in _hydro() if not isinstance(h, PumpedHydroStorage)]
+            result += _hydro()
         elif g in [Behind_Meter_PV, PV1Axis, Wind]:
             result += _allSolarWind(g)
             result += _every_poly(g)
@@ -329,11 +329,11 @@ def re100SWHBMid(context):
     result = []
 
     # The following list is in merit order.
-    for g in [PV1Axis, Wind, Battery, PumpedHydroStorage, Hydro]:
-        if g == PumpedHydroStorage:
-            result += [h for h in _hydro() if isinstance(h, PumpedHydroStorage)]
+    for g in [PV1Axis, Wind, Battery, PumpedHydroTurbine, Hydro]:
+        if g == PumpedHydroTurbine:
+            result += _pumped_hydro()
         elif g == Hydro:
-            result += [h for h in _hydro() if not isinstance(h, PumpedHydroStorage)]
+            result += _hydro()
         elif g in [PV1Axis, Wind]:
             result += _existingSolarWind(g)
             result += _every_poly(g)
@@ -353,11 +353,11 @@ def re100SWHBLast(context):
     result = []
 
     # The following list is in merit order with Battery Last.
-    for g in [PV1Axis, Wind, PumpedHydroStorage, Hydro, Battery]:
-        if g == PumpedHydroStorage:
-            result += [h for h in _hydro() if isinstance(h, PumpedHydroStorage)]
+    for g in [PV1Axis, Wind, PumpedHydroTurbine, Hydro, Battery]:
+        if g == PumpedHydroTurbine:
+            result += _pumped_hydro()
         elif g == Hydro:
-            result += [h for h in _hydro() if not isinstance(h, PumpedHydroStorage)]
+            result += _hydro()
         elif g in [PV1Axis, Wind]:
             result += _existingSolarWind(g)
             result += _every_poly(g)
