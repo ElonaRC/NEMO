@@ -309,7 +309,7 @@ def re100SWH(context):
     # The following list is in merit order.
     for g in [Behind_Meter_PV, PV1Axis, Wind, PumpedHydroStorage, Hydro]:
         if g == PumpedHydroStorage:
-            result += [h for h in _hydro() if isinstance(h, PumpedHydroStorage)]
+            result += [h for h in _pumped_hydro() if isinstance(h, PumpedHydroStorage)]
         elif g == Hydro:
             result += [h for h in _hydro() if not isinstance(h, PumpedHydroStorage)]
         elif g in [Behind_Meter_PV, PV1Axis, Wind]:
