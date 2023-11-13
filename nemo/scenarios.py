@@ -518,16 +518,16 @@ def re100SWH_batteries2(context):
 
 
 def re100SWH_batteries3(context):
-    """Takes SWH and adds one flexible battery to fill in the gaps at 5pm and 7pm."""
+    """Takes SWH and adds one one new battery to Polygon 38 with specs 600MWh, 300MW (2 hour battery)."""
     re100SWH(context)
     # discharge between 5pm and 7am daily
-    hrs = list(range(0, 8)) + list(range(17, 24))
-
+    # dischargehrs = list(range(0, 8)) + list(range(17, 24))
+    # charge between 8am and 4pm daily
+    # chargehrs = list(range(8, 16))
     #Specs of the Victorian Big Battery for testing latest battery changes
-    battstorage = BatteryStorage(600) #600 MWh 
-    batt = Battery(38, 300, battstorage, label = 'P38 Vic Big Batt', 
-                   discharge_hours=hrs) #300 capacity MW
-    battload = BatteryLoad(38, 300, battstorage, hrs, rte = 0.9)
+    battstorage = BatteryStorage(300, "Vic Big Batt 600 MWh") #600 MWh 
+    batt = Battery(38, 300, battstorage, "P38 Vic Big Batt 300MW") #300 capacity MW
+    battload = BatteryLoad(38, 300, battstorage, "Vic Big Batt 300 MW battery load")
 
     context.generators = [batt] + [battload]+ context.generators
 
