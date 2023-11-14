@@ -528,6 +528,8 @@ def re100SWH_batteries3(context):
     battstorage = BatteryStorage(300, "Vic Big Batt 600 MWh") #600 MWh 
     batt = Battery(38, 300, battstorage, "P38 Vic Big Batt 300MW") #300 capacity MW
     battload = BatteryLoad(38, 300, battstorage, "Vic Big Batt 300 MW battery load")
+    batt.setters = [] # If you want fixed capacity batteries, you need to set the batt and battload setters to []. 
+    battload.setters = [] # Otherwise, NEMO will try varying the capacity which in turn varies the full loads hours to a non-{1,2,4,8} multiple.
 
     context.generators = [batt] + [battload]+ context.generators
 
