@@ -505,31 +505,31 @@ def re100SWH_batteries(context):
                           + [batBulgana])
 
 
-def re100SWH_batteries2(context):
-    """Takes SWH and adds existing battery +
-    one flexible battery to fill in the gaps at 5pm and 7pm
-    that pop up in the re100SWH_batteries scenario."""
-    re100SWH_batteries(context)
-    # discharge between 5pm and 7am daily
-    hrs = list(range(0, 8)) + list(range(17, 24))
-    batteryNew = Battery(24, 100, 2, discharge_hours=hrs,
-                         label=f'{"P24 New Added Batt NSW"}', rte=0.9)
-    context.generators = [batteryNew] + context.generators
-
-
-def re100SWH_batteries3(context):
+def re100SWH_batteriesTEST(context):
     """Takes SWH and adds one one new battery to Polygon 38 with specs 600MWh, 300MW (2 hour battery)."""
     re100SWH(context)
-    # discharge between 5pm and 7am daily
-    # dischargehrs = list(range(0, 8)) + list(range(17, 24))
-    # charge between 8am and 4pm daily
-    # chargehrs = list(range(8, 16))
     #Specs of the Victorian Big Battery for testing latest battery changes
     battstorage = BatteryStorage(300, "Vic Big Batt 600 MWh") #600 MWh 
     batt = Battery(38, 300, battstorage, "P38 Vic Big Batt 300MW") #300 capacity MW
     battload = BatteryLoad(38, 300, battstorage, "Vic Big Batt 300 MW battery load")
     batt.setters = [] # If you want fixed capacity batteries, you need to set the batt and battload setters to []. 
     battload.setters = [] # Otherwise, NEMO will try varying the capacity which in turn varies the full loads hours to a non-{1,2,4,8} multiple.
+
+    hrs = list(range(0, 8)) + list(range(17, 24))
+    battery1 = Battery(24, 100, 1, discharge_hours=hrs,
+                         label=f'{"P24 New Batt 1 NSW"}', rte=0.9)
+    battery2 = Battery(24, 100, 2, discharge_hours=hrs,
+                         label=f'{"P24 New Batt 2 NSW"}', rte=0.9)
+    battery4 = Battery(24, 100, 4, discharge_hours=hrs,
+                         label=f'{"P24 New Batt 4 NSW"}', rte=0.9)
+    battery8 = Battery(24, 100, 8, discharge_hours=hrs,
+                         label=f'{"P24 New Batt 8 NSW"}', rte=0.9)
+    context.generators = (context.generators
+                          + [battery1]
+                          + [battery2]
+                          + [battery4]
+                          + [battery8])
+
 
     context.generators = [batt] + [battload]+ context.generators
 
@@ -654,8 +654,7 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100SWHB1G':re100SWHB1G, 
                     're100SWHB_David': re100SWHB_David,
                     're100SWH_batteries': re100SWH_batteries,
-                    're100SWH_batteries2': re100SWH_batteries2,
-                    're100SWH_batteries3': re100SWH_batteries3,
+                    're100SWH_batteriesTEST': re100SWH_batteriesTEST,
                     're100SWHB_dr': re100SWHB_dr,
                     're100+dsp': re100_dsp,
                     're100-nocst': re100_nocst,
