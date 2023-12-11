@@ -1,6 +1,7 @@
 # Copyright (C) 2012, 2013, 2014, 2022 Ben Elliston
 # Copyright (C) 2014, 2015, 2016 The University of New South Wales
 # Copyright (C) 2016 IT Power (Australia)
+# Copyright (C) 2023 Ben Elliston
 #
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -13,12 +14,13 @@ RUNFAST = 1 #changes everypoly from 44 to 10
 """Supply side scenarios."""
 
 from nemo import configfile, regions
-from nemo.generators import (CCGT, CCGT_CCS, CST, OCGT, PV, Battery, Biofuel,
-                             Black_Coal, CentralReceiver, Coal_CCS,
-                             DemandResponse, Hydro, PumpedHydro, PV1Axis, Wind,
-                             WindOffshore)
+from nemo.generators import (CCGT, CCGT_CCS, CST, OCGT, Biofuel, Black_Coal,
+                             CentralReceiver, Coal_CCS, DemandResponse, Hydro,
+                             PumpedHydroPump, PumpedHydroTurbine, PV1Axis,
+                             Wind, WindOffshore)
 from nemo.polygons import (WILDCARD, cst_limit, offshore_wind_limit, pv_limit,
                            wind_limit)
+from nemo.storage import PumpedHydroStorage
 from nemo.types import UnreachableError
 
 
@@ -28,6 +30,23 @@ def _demand_response():
     dr2 = DemandResponse(WILDCARD, 1000, 500, "DR500")
     dr3 = DemandResponse(WILDCARD, 1000, 1000, "DR1000")
     return [dr1, dr2, dr3]
+
+
+def _pumped_hydro():
+    """Return a list of existing pumped hydro generators."""
+    # QLD: Wivenhoe (http://www.csenergy.com.au/content-%28168%29-wivenhoe.htm)
+    psh17stg = PumpedHydroStorage(5000, label='poly 17 pumped storage')
+    psh17pump = PumpedHydroPump(17, 500, psh17stg, label='poly 17 PSH pump')
+    psh17turb = PumpedHydroTurbine(17, 500, psh17stg,
+                                   label='poly 17 PSH generator')
+
+    # NSW: Tumut 3 (6x250), Bendeela (2x80) and Kangaroo Valley (2x40)
+    psh36stg = PumpedHydroStorage(15000, label='Tumut 3 storage')
+    psh36pump = PumpedHydroPump(36, 600, psh36stg, label='Tumut 3 pump')
+    psh36turb = PumpedHydroTurbine(36, 1800, psh36stg,
+                                   label='Tumut 3 generator')
+
+    return [psh17pump, psh36pump, psh17turb, psh36turb]
 
 
 def _hydro():
@@ -43,20 +62,15 @@ def _hydro():
     hydro42 = Hydro(42, 590.4, label='poly 42 hydro')
     hydro43 = Hydro(43, 462.5, label='poly 43 hydro')
 
-    # Pumped hydro
-    # QLD: Wivenhoe (http://www.csenergy.com.au/content-%28168%29-wivenhoe.htm)
-    psh17 = PumpedHydro(17, 500, 5000, label='poly 17 pumped-hydro')
-    # NSW: Tumut 3 (6x250), Bendeela (2x80) and Kangaroo Valley (2x40)
-    psh36 = PumpedHydro(36, 1740, 15000, label='poly 36 pumped-hydro')
-    return [psh17, psh36] + \
-        [hydro24, hydro31, hydro35, hydro36, hydro38, hydro39] + \
-        [hydro40, hydro41, hydro42, hydro43]
+    return [hydro24, hydro31, hydro35, hydro36, hydro38, hydro39,
+            hydro40, hydro41, hydro42, hydro43]
 
 
 def replacement(context):
     """Replace the current NEM fleet, more or less."""
     context.generators = \
-        [Black_Coal(WILDCARD, 0)] + _hydro() + [OCGT(WILDCARD, 0)]
+        [Black_Coal(WILDCARD, 0)] + _pumped_hydro() + _hydro() + \
+        [OCGT(WILDCARD, 0)]
 
 
 def _one_ccgt(context):
@@ -66,7 +80,8 @@ def _one_ccgt(context):
 
 def ccgt(context):
     """All gas scenario."""
-    context.generators = [CCGT(WILDCARD, 0)] + _hydro() + [OCGT(WILDCARD, 0)]
+    context.generators = [CCGT(WILDCARD, 0)] + _pumped_hydro() + \
+        _hydro() + [OCGT(WILDCARD, 0)]
 
 
 def ccgt_ccs(context):
@@ -74,14 +89,14 @@ def ccgt_ccs(context):
     # pylint: disable=redefined-outer-name
     ccgt = CCGT_CCS(WILDCARD, 0)
     ocgt = OCGT(WILDCARD, 0)
-    context.generators = [ccgt] + _hydro() + [ocgt]
+    context.generators = [ccgt] + _pumped_hydro() + _hydro() + [ocgt]
 
 
 def coal_ccs(context):
     """Coal CCS scenario."""
     coal = Coal_CCS(WILDCARD, 0)
     ocgt = OCGT(WILDCARD, 0)
-    context.generators = [coal] + _hydro() + [ocgt]
+    context.generators = [coal] + _pumped_hydro() + _hydro() + [ocgt]
 
 
 def _every_poly(gentype):
@@ -113,12 +128,12 @@ def re100(context):
     """100% renewable electricity."""
     result = []
     # The following list is in merit order.
-    for g in [PV1Axis, Wind, WindOffshore, PumpedHydro, Hydro,
+    for g in [PV1Axis, Wind, WindOffshore, PumpedHydroTurbine, Hydro,
               CentralReceiver, Biofuel]:
-        if g == PumpedHydro:
-            result += [h for h in _hydro() if isinstance(h, PumpedHydro)]
+        if g == PumpedHydroTurbine:
+            result += _pumped_hydro()
         elif g == Hydro:
-            result += [h for h in _hydro() if not isinstance(h, PumpedHydro)]
+            result += _hydro()
         elif g == WindOffshore:
             cfg = configfile.get('generation', 'offshore-wind-trace')
             for column, poly in enumerate([31, 36, 38, 40]):

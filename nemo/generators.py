@@ -13,43 +13,15 @@
 # We use class names here that upset Pylint.
 # pylint: disable=invalid-name
 
-import locale
-from math import isclose
+from math import inf, isclose
 
 import numpy as np
 import pandas as pd
-import pint
 import requests
 from matplotlib.patches import Patch
 
-from nemo import polygons
-
-# Needed for currency formatting.
-locale.setlocale(locale.LC_ALL, '')
-
-# Default to abbreviated units when formatting
-ureg = pint.UnitRegistry()
-ureg.default_format = '.2f~P'
-
-
-def _thousands(value):
-    """
-    Format a value with thousands separator(s).
-
-    No doctest provided as the result will be locale specific.
-    """
-    return locale.format_string('%d', value, grouping=True)
-
-
-def _currency(value):
-    """
-    Format a value into currency with thousands separator(s).
-
-    If there are zero cents, remove .00 for brevity.  No doctest
-    provided as the result will be locale specific.
-    """
-    cents = locale.localeconv()['mon_decimal_point'] + '00'
-    return locale.currency(round(value), grouping=True).replace(cents, '')
+from nemo import polygons, storage
+from nemo.utils import currency, thousands, ureg
 
 
 class Generator():
@@ -96,7 +68,7 @@ class Generator():
         return polygons.region(self.polygon)
 
     def capcost(self, costs):
-        """Return the annual capital cost."""
+        """Return the capital cost."""
         return costs.capcost_per_kw[type(self)] * self.capacity * 1000
 
     def opcost(self, costs):
@@ -135,7 +107,7 @@ class Generator():
         if supplied > 0:
             cost_per_mwh = total_cost / supplied
             return cost_per_mwh
-        return np.inf
+        return inf
 
     def summary(self, context):
         """Return a summary of the generator activity."""
@@ -149,12 +121,12 @@ class Generator():
             spilled = sum(self.series_spilled.values()) * ureg.MWh
             string += f', surplus {spilled.to_compact()}'
         if self.capcost(costs) > 0:
-            string += f', capcost {_currency(self.capcost(costs))}'
+            string += f', capcost {currency(self.capcost(costs))}'
         if self.opcost(costs) > 0:
-            string += f', opcost {_currency(self.opcost(costs))}'
-        lcoe = self.lcoe(costs, context.years)
+            string += f', opcost {currency(self.opcost(costs))}'
+        lcoe = self.lcoe(costs, context.years())
         if np.isfinite(lcoe) and lcoe > 0:
-            string += f', LCOE {_currency(int(lcoe))}'
+            string += f', LCOE {currency(int(lcoe))}'
         return string
 
     def set_capacity(self, cap):
@@ -171,6 +143,9 @@ class Generator():
         return self.__str__()
 
 
+# This class is not to be confused with storage.py.
+# This class will go away soon.
+
 class Storage():
     """A class to give a generator storage capability."""
 
@@ -181,12 +156,18 @@ class Storage():
         """Storage constructor."""
         # Time series of charges
         self.series_charge = {}
+        self.series_soc = {}
+
+    def soc(self):
+        """Return the storage SOC (state of charge)."""
+        raise NotImplementedError
 
     def record(self, hour, energy):
         """Record storage."""
         if hour not in self.series_charge:
             self.series_charge[hour] = 0
         self.series_charge[hour] += energy
+        self.series_soc[hour] = self.soc()
 
     def charge_capacity(self, gen, hour):
         """Return available storage capacity.
@@ -207,7 +188,8 @@ class Storage():
 
     def series(self):
         """Return generation and spills series."""
-        return {'charge': pd.Series(self.series_charge, dtype=float)}
+        return {'charge': pd.Series(self.series_charge, dtype=float),
+                'soc': pd.Series(self.series_soc, dtype=float)}
 
     def store(self, hour, power):
         """Abstract method to ensure that derived classes define this."""
@@ -216,13 +198,11 @@ class Storage():
     def reset(self):
         """Reset a generator with storage."""
         self.series_charge.clear()
+        self.series_soc.clear()
 
 
 class TraceGenerator(Generator):
-    """A generator that gets its hourly dispatch from a CSV trace file."""
-
-    csvfilename = None
-    csvdata = None
+    """A generator that gets its hourly dispatch from a trace."""
 
     def __init__(self, polygon, capacity, label=None, build_limit=None):
         """Construct a generator with a specified trace file."""
@@ -237,7 +217,9 @@ class TraceGenerator(Generator):
         # self.generation must be defined by derived classes
         # pylint: disable=no-member
         generation = self.generation[hour] * self.capacity
-        power = min(generation, demand)
+        # optimised version of min() because TraceGenerator is a
+        # heavily used class
+        power = generation if generation < demand else demand
         spilled = generation - power
         self.series_power[hour] = power
         self.series_spilled[hour] = spilled
@@ -273,6 +255,9 @@ class CSVTraceGenerator(TraceGenerator):
             cls.csvdata = np.genfromtxt(traceinput, encoding='UTF-8',
                                         delimiter=',')
             cls.csvdata = np.maximum(0, cls.csvdata)
+            # check all elements are not NaNs
+            assert np.all(~np.isnan(cls.csvdata)), \
+                f'Trace file {filename} contains NaNs; inspect file'
             cls.csvfilename = filename
         self.generation = cls.csvdata[::, column]
 
@@ -280,7 +265,7 @@ class CSVTraceGenerator(TraceGenerator):
 class Wind(CSVTraceGenerator):
     """Wind power."""
 
-    patch = Patch(facecolor='green')
+    patch = Patch(facecolor='#417505')
     """Patch for plotting"""
     synchronous_p = False
     """Is this a synchronous generator?"""
@@ -296,32 +281,27 @@ class WindOffshore(Wind):
 class PV(CSVTraceGenerator):
     """Solar photovoltaic (PV) model."""
 
-    patch = Patch(facecolor='yellow')
-    """Colour for plotting"""
     synchronous_p = False
     """Is this a synchronous generator?"""
 
 
 class PV1Axis(PV):
-    """
-    Single-axis tracking PV.
+    """Single-axis tracking PV."""
 
-    This stub class allows differentiated PV costs in costs.py.
-    """
+    patch = Patch(facecolor='#fed500')
+    """Colour for plotting"""
 
 
 class Behind_Meter_PV(PV):
-    """
-    Behind the meter PV.
+    """Behind the meter PV."""
 
-    This stub class allows differentiated PV costs in costs.py.
-    """
+    patch = Patch(facecolor='#ffe03d')
 
 
 class CST(CSVTraceGenerator):
     """Concentrating solar thermal (CST) model."""
 
-    patch = Patch(facecolor='gold')
+    patch = Patch(facecolor='orange')
     """Colour for plotting"""
 
     def __init__(self, polygon, capacity, solarmult, shours, filename,
@@ -428,13 +408,13 @@ class Fuelled(Generator):
     def summary(self, context):
         """Return a summary of the generator activity."""
         return Generator.summary(self, context) + \
-            f', ran {_thousands(self.runhours)} hours'
+            f', ran {thousands(self.runhours)} hours'
 
 
 class Hydro(Fuelled):
     """Hydro power stations."""
 
-    patch = Patch(facecolor='lightskyblue')
+    patch = Patch(facecolor='#4582b4')
     """Colour for plotting"""
 
     def __init__(self, polygon, capacity, label=None):
@@ -444,79 +424,97 @@ class Hydro(Fuelled):
         self.setters = [(self.set_capacity, 0, capacity / 1000.)]
 
 
-class PumpedHydro(Storage, Hydro):
-    """Pumped storage hydro (PSH) model."""
+class PumpedHydroPump(Storage, Generator):
+    """Pumped hydro (pump side) model."""
 
-    patch = Patch(facecolor='powderblue')
+    patch = Patch(facecolor='darkblue')
     """Colour for plotting"""
 
-    def __init__(self, polygon, capacity, maxstorage, rte=0.8, label=None):
+    def __init__(self, polygon, capacity, reservoirs, rte=0.8, label=None):
         """Construct a pumped hydro storage generator."""
-        Hydro.__init__(self, polygon, capacity, label)
+        if not isinstance(reservoirs, storage.PumpedHydroStorage):
+            raise TypeError
         Storage.__init__(self)
-        self.maxstorage = maxstorage
-        # Half the water starts in the lower reservoir.
-        self.stored = self.maxstorage * .5
+        Generator.__init__(self, polygon, capacity, label)
+        self.reservoirs = reservoirs
         self.rte = rte
-        self.last_gen = None
-        self.last_pump = None
+
+    def step(self, hour, demand):
+        """Return 0 as this is not a generator."""
+        return 0, 0
 
     def series(self):
         """Return the combined series."""
         dict1 = Hydro.series(self)
         dict2 = Storage.series(self)
-        # combine dictionaries
-        return {**dict1, **dict2}
+        dict1.update(dict2)
+        return dict1
+
+    def soc(self):
+        """Return the pumped hydro SOC (state of charge)."""
+        return self.reservoirs.soc()
 
     def store(self, hour, power):
         """Pump water uphill for one hour."""
-        if self.last_gen == hour:
+        if self.reservoirs.last_gen == hour:
             # Can't pump and generate in the same hour.
             return 0
         power = min(self.charge_capacity(self, hour), power,
                     self.capacity)
-        energy = power * self.rte
-        if self.stored + energy > self.maxstorage:
-            power = (self.maxstorage - self.stored) / self.rte
-            self.stored = self.maxstorage
-        else:
-            self.stored += energy
+
+        stored = self.reservoirs.charge(power * self.rte)
+        if stored < power * self.rte:
+            power = (self.reservoirs.maxstorage - self.reservoirs.storage) \
+                / self.rte
+
         if power > 0:
             self.record(hour, power)
-            self.last_pump = hour
+            self.reservoirs.last_pump = hour
         return power
+
+    def reset(self):
+        """Reset the generator."""
+        Generator.reset(self)
+        Storage.reset(self)
+        self.reservoirs.reset()
+
+    def summary(self, context):
+        """Return a summary of the generator activity."""
+        stg = (self.reservoirs.maxstorage * ureg.MWh).to_compact()
+        return Generator.summary(self, context) + \
+            f', charged {thousands(len(self.series_charge))} hours' + \
+            f', {stg} storage'
+
+
+class PumpedHydroTurbine(Hydro):
+    """Pumped storage hydro (generator side) model."""
+
+    patch = Patch(facecolor='powderblue')
+    """Colour for plotting"""
+
+    def __init__(self, polygon, capacity, reservoirs, label=None):
+        """Construct a pumped hydro storage generator."""
+        if not isinstance(reservoirs, storage.PumpedHydroStorage):
+            raise TypeError
+        Hydro.__init__(self, polygon, capacity, label)
+        self.reservoirs = reservoirs
 
     def step(self, hour, demand):
         """Step method for pumped hydro storage."""
-        power = min(self.stored, self.capacity, demand)
-        if self.last_pump == hour:
+        power = min(self.reservoirs.storage, self.capacity, demand)
+        if self.reservoirs.last_pump == hour:
             # Can't pump and generate in the same hour.
             self.series_power[hour] = 0
             self.series_spilled[hour] = 0
             return 0, 0
+
+        self.reservoirs.discharge(power)
         self.series_power[hour] = power
         self.series_spilled[hour] = 0
-        self.stored -= power
         if power > 0:
             self.runhours += 1
-            self.last_gen = hour
+            self.reservoirs.last_gen = hour
         return power, 0
-
-    def summary(self, context):
-        """Return a summary of the generator activity."""
-        storage = (self.maxstorage * ureg.MWh).to_compact()
-        return Generator.summary(self, context) + \
-            f', charged {_thousands(len(self.series_charge))} hours' + \
-            f', ran {_thousands(self.runhours)} hours' + \
-            f', {storage} storage'
-
-    def reset(self):
-        """Reset the generator."""
-        Hydro.reset(self)
-        Storage.reset(self)
-        self.stored = self.maxstorage * .5
-        self.last_gen = None
-        self.last_pump = None
 
 
 class Biofuel(Fuelled):
@@ -530,7 +528,7 @@ class Biofuel(Fuelled):
         Fuelled.__init__(self, polygon, capacity, label)
 
     def capcost(self, costs):
-        """Return the annual capital cost (of an OCGT)."""
+        """Return the capital cost (of an OCGT)."""
         return costs.capcost_per_kw[OCGT] * self.capacity * 1000
 
     def fixed_om_costs(self, costs):
@@ -547,7 +545,7 @@ class Biofuel(Fuelled):
 class Biomass(Fuelled):
     """Model of steam turbine burning solid biomass."""
 
-    patch = Patch(facecolor='greenyellow')
+    patch = Patch(facecolor='#1d7a7a')
     """Colour for plotting"""
 
     def __init__(self, polygon, capacity, label=None, heatrate=0.3):
@@ -565,7 +563,7 @@ class Biomass(Fuelled):
 class Fossil(Fuelled):
     """Base class for GHG emitting power stations."""
 
-    patch = Patch(facecolor='brown')
+    patch = Patch(facecolor='grey')
     """Colour for plotting"""
 
     def __init__(self, polygon, capacity, intensity, label=None):
@@ -588,7 +586,7 @@ class Fossil(Fuelled):
 class Black_Coal(Fossil):
     """Black coal power stations with no CCS."""
 
-    patch = Patch(facecolor='black')
+    patch = Patch(facecolor='#121212')
     """Colour for plotting"""
 
     def __init__(self, polygon, capacity, intensity=0.773, label=None):
@@ -606,7 +604,7 @@ class Black_Coal(Fossil):
 class OCGT(Fossil):
     """Open cycle gas turbine (OCGT) model."""
 
-    patch = Patch(facecolor='purple')
+    patch = Patch(facecolor='#ffcd96')
     """Colour for plotting"""
 
     def __init__(self, polygon, capacity, intensity=0.7, label=None):
@@ -624,7 +622,7 @@ class OCGT(Fossil):
 class CCGT(Fossil):
     """Combined cycle gas turbine (CCGT) model."""
 
-    patch = Patch(facecolor='purple')
+    patch = Patch(facecolor='#fdb462')
     """Colour for plotting"""
 
     def __init__(self, polygon, capacity, intensity=0.4, label=None):
@@ -709,7 +707,7 @@ class CCGT_CCS(CCS):
 class Diesel(Fossil):
     """Diesel genset model."""
 
-    patch = Patch(facecolor='dimgrey')
+    patch = Patch(facecolor='#f35020')
     """Colour for plotting"""
 
     def __init__(self, polygon, capacity, intensity=1.0, kwh_per_litre=3.3,
@@ -727,118 +725,156 @@ class Diesel(Fossil):
         return total_opcost
 
 
-class Battery(Storage, Generator):
-    """Battery storage (of any type)."""
+class BatteryLoad(Storage, Generator):
+    """Battery storage (load side)."""
 
-    patch = Patch(facecolor='grey')
+    patch = Patch(facecolor='#b2daef')
     """Colour for plotting"""
     synchronous_p = False
     """Is this a synchronous generator?"""
 
-    def __init__(self, polygon, capacity, shours, label=None,
+    def __init__(self, polygon, capacity, battery, label=None,
                  discharge_hours=None, rte=0.95):
         """
-        Construct a battery generator.
+        Construct a battery load (battery charging).
 
-        Storage (shours) is specified in duration hours at full power.
-        Discharge hours is a list of hours when discharging can occur.
-        Round-trip efficiency (rte) defaults to 95% for good Li-ion.
+        battery must be an instance of storage.BatteryStorage.
+        discharge_hours is a list of hours when discharging can occur
+          (or, rather, when charging cannot occur).
         """
         Storage.__init__(self)
         Generator.__init__(self, polygon, capacity, label)
-        self.stored = 0
+        if not isinstance(battery, storage.BatteryStorage):
+            raise TypeError
+        self.battery = battery
+        self.rte = rte
+        shours = battery.maxstorage / capacity
         assert shours in [1, 2, 4, 8]
-        self.set_storage(shours)
         self.discharge_hours = discharge_hours \
             if discharge_hours is not None else range(18, 24)
-        self.rte = rte
-        self.runhours = 0
 
-    def series(self):
-        """Return the combined series."""
-        dict1 = Generator.series(self)
-        dict2 = Storage.series(self)
-        # combine dictionaries
-        return {**dict1, **dict2}
-
-    def set_capacity(self, cap):
-        """Change the capacity of the generator to cap GW."""
-        Generator.set_capacity(self, cap)
-        self.set_storage(self.shours)
-
-    def set_storage(self, shours):
-        """Vary the full load hours of battery storage."""
-        assert shours in [1, 2, 4, 8]
-        self.shours = shours
-        self.maxstorage = self.capacity * shours
-        self.stored = 0
-
-    def empty_p(self):
-        """Return True if the storage is empty."""
-        return self.stored == 0
-
-    def full_p(self):
-        """Return True if the storage is full."""
-        return self.maxstorage == self.stored
+    def step(self, hour, demand):
+        """Return 0 as this is not a generator."""
+        return 0, 0
 
     def store(self, hour, power):
         """Store power."""
         assert power > 0, f'{power} is <= 0'
 
-        if self.full_p() or \
+        if self.battery.full_p() or \
            hour % 24 in self.discharge_hours:
             return 0
 
         power = min(self.charge_capacity(self, hour), power,
                     self.capacity)
-        energy = power
-        if self.stored + energy > self.maxstorage:
-            energy = self.maxstorage - self.stored
-        self.stored += energy
-        if energy > 0:
-            self.record(hour, energy)
-        assert self.stored <= self.maxstorage or \
-            isclose(self.stored, self.maxstorage)
-        return energy
-
-    def step(self, hour, demand):
-        """Specialised step method for batteries."""
-        if self.empty_p() or \
-           hour % 24 not in self.discharge_hours:
-            self.series_power[hour] = 0
-            self.series_spilled[hour] = 0
-            return 0, 0
-
-        assert demand > 0
-        power = min(self.stored, self.capacity, demand) * self.rte
-        self.series_power[hour] = power
-        self.series_spilled[hour] = 0
-        self.stored -= power
+        stored = self.battery.charge(power * self.rte)
         if power > 0:
-            self.runhours += 1
-        assert self.stored >= 0 or isclose(self.stored, 0)
-        return power, 0
+            self.record(hour, stored / self.rte)
+        return stored / self.rte
 
     def reset(self):
         """Reset the generator."""
         Generator.reset(self)
         Storage.reset(self)
-        self.runhours = 0
-        self.stored = 0
+        self.battery.reset()
 
+    def series(self):
+        """Return the combined series."""
+        dict1 = Generator.series(self)
+        dict2 = Storage.series(self)
+        dict1.update(dict2)
+        return dict1
+
+    def soc(self):
+        """Return the battery SOC (state of charge)."""
+        return self.battery.soc()
+
+    # Battery costs are all calculated on the discharge side.
     def capcost(self, costs):
-        """Return the annual capital cost."""
-        assert self.shours in [1, 2, 4, 8]
-        cost_per_kwh = costs.totcost_per_kwh[type(self)][self.shours]
-        capcost = cost_per_kwh * self.shours
-        return capcost * self.capacity * 1000
+        """Return the capital cost."""
+        return 0
 
     def fixed_om_costs(self, costs):
         """Return the fixed O&M costs."""
         return 0
 
     def opcost_per_mwh(self, costs):
-        """Return the variable O&M costs.
+        """Return the variable O&M costs."""
+        return 0
+
+    def summary(self, context):
+        """Return a summary of the generator activity."""
+        mwh = self.battery.maxstorage * ureg.MWh
+        return Generator.summary(self, context) + \
+            f', charged {thousands(len(self.series_charge))} hours' + \
+            f', {mwh.to_compact()} storage'
+
+
+class Battery(Generator):
+    """Battery storage (of any type)."""
+
+    patch = Patch(facecolor='#00a2fa')
+    """Colour for plotting"""
+
+    def __init__(self, polygon, capacity, battery, label=None,
+                 discharge_hours=None):
+        """
+        Construct a battery generator.
+
+        battery must be an instance of storage.BatteryStorage.
+        discharge_hours is a list of hours when discharging can occur.
+        """
+        if not isinstance(battery, storage.BatteryStorage):
+            raise TypeError
+        Generator.__init__(self, polygon, capacity, label)
+        self.battery = battery
+        self.runhours = 0
+        self.discharge_hours = discharge_hours \
+            if discharge_hours is not None else range(18, 24)
+
+    def step(self, hour, demand):
+        """Specialised step method for batteries."""
+        if self.battery.empty_p() or \
+           hour % 24 not in self.discharge_hours:
+            self.series_power[hour] = 0
+            self.series_spilled[hour] = 0
+            return 0, 0
+
+        power = min(self.battery.storage, self.capacity, demand)
+        self.battery.discharge(power)
+        self.series_power[hour] = power
+        self.series_spilled[hour] = 0
+        if power > 0:
+            self.runhours += 1
+        return power, 0
+
+    def reset(self):
+        """Reset the generator."""
+        Generator.reset(self)
+        self.battery.reset()
+
+    def soc(self):
+        """Return the battery SOC (state of charge)."""
+        return self.battery.soc()
+
+    def capcost(self, costs):
+        """Return the capital cost."""
+        kwh = self.battery.maxstorage * 1000
+        if self.capacity == 0:
+            shours = inf
+        else:
+            shours = self.battery.maxstorage / self.capacity
+        assert shours in [1, 2, 4, 8]
+        cost_per_kwh = costs.totcost_per_kwh[type(self)][shours]
+        return kwh * cost_per_kwh
+
+    def fixed_om_costs(self, costs):
+        """Return the fixed O&M costs."""
+        return 0
+
+    def opcost_per_mwh(self, costs):
+        """
+        Return the variable O&M costs.
 
         Per-kWh costs for batteries are included in the capital cost.
         """
@@ -847,15 +883,13 @@ class Battery(Storage, Generator):
     def summary(self, context):
         """Return a summary of the generator activity."""
         return Generator.summary(self, context) + \
-            f', ran {_thousands(self.runhours)} hours' + \
-            f', charged {_thousands(len(self.series_charge))} hours' + \
-            f', {self.shours}h storage'
+            f', ran {thousands(self.runhours)} hours'
 
 
 class Geothermal(CSVTraceGenerator):
     """Geothermal power plant."""
 
-    patch = Patch(facecolor='brown')
+    patch = Patch(facecolor='indianred')
     """Colour for plotting"""
 
     def step(self, hour, demand):
@@ -933,11 +967,11 @@ class DemandResponse(Generator):
         """Return a summary of the generator activity."""
         return Generator.summary(self, context) + \
             f', max response {self.maxresponse} MW' + \
-            f', ran {_thousands(self.runhours)} hours'
+            f', ran {thousands(self.runhours)} hours'
 
 
-class GreenPower(Generator):
-    """A simple block GreenPower generator."""
+class Block(Generator):
+    """A simple block generator."""
 
     patch = Patch(facecolor='darkgreen')
     """Colour for plotting"""
@@ -950,71 +984,10 @@ class GreenPower(Generator):
         return power, 0
 
 
-class HydrogenStorage():
-    """A simple hydrogen storage vessel."""
-
-    def __init__(self, maxstorage, label=None):
-        """Construct a hydrogen storage vessel.
-
-        The storage capacity (in MWh) is specified by maxstorage.
-        """
-        # initialise these for good measure
-        self.maxstorage = None
-        self.storage = None
-        self.set_storage(maxstorage)
-        self.label = label
-
-    def set_storage(self, maxstorage):
-        """
-        Change the storage capacity.
-
-        >>> h = HydrogenStorage(1000, 'test')
-        >>> h.set_storage(1200)
-        >>> h.maxstorage
-        1200
-        >>> h.storage
-        600.0
-        """
-        self.maxstorage = maxstorage
-        self.storage = self.maxstorage / 2
-
-    def charge(self, amt):
-        """
-        Charge the storage by amt.
-
-        >>> h = HydrogenStorage(1000, 'test')
-        >>> h.charge(100)
-        100
-        >>> h.charge(600)
-        400.0
-        >>> h.storage == h.maxstorage
-        True
-        """
-        assert amt >= 0
-        delta = min(self.maxstorage - self.storage, amt)
-        self.storage = min(self.maxstorage, self.storage + amt)
-        return delta
-
-    def discharge(self, amt):
-        """
-        Discharge the storage by 'amt'.
-
-        >>> h = HydrogenStorage(1000, 'test')
-        >>> h.discharge(100)
-        100
-        >>> h.discharge(600)
-        400.0
-        """
-        assert amt >= 0
-        delta = min(self.storage, amt)
-        self.storage = max(0, self.storage - amt)
-        return delta
-
-
 class Electrolyser(Storage, Generator):
     """A hydrogen electrolyser."""
 
-    patch = Patch()
+    patch = Patch(facecolor='teal')
     """Colour for plotting"""
 
     def __init__(self, tank, polygon, capacity, efficiency=0.8, label=None):
@@ -1025,7 +998,7 @@ class Electrolyser(Storage, Generator):
         the capacity of the electrolyser (in MW) and electrolysis
         conversion efficiency.
         """
-        if not isinstance(tank, HydrogenStorage):
+        if not isinstance(tank, storage.HydrogenStorage):
             raise TypeError
         Storage.__init__(self)
         Generator.__init__(self, polygon, capacity, label)
@@ -1033,12 +1006,16 @@ class Electrolyser(Storage, Generator):
         self.tank = tank
         self.setters += [(self.tank.set_storage, 0, 10000)]
 
+    def soc(self):
+        """Return the hydrogen tank state of charge (SOC)."""
+        return self.tank.soc()
+
     def series(self):
         """Return the combined series."""
         dict1 = Generator.series(self)
         dict2 = Storage.series(self)
-        # combine dictionaries
-        return {**dict1, **dict2}
+        dict1.update(dict2)
+        return dict1
 
     def step(self, hour, demand):
         """Return 0 as this is not a generator."""
@@ -1066,7 +1043,7 @@ class HydrogenGT(Fuelled):
         """
         Construct a HydrogenGT object.
 
-        >>> h = HydrogenStorage(1000, 'test')
+        >>> h = storage.HydrogenStorage(1000, 'test')
         >>> gt = HydrogenGT(h, 1, 100, efficiency=0.5)
         >>> print(gt)
         HydrogenGT (QLD1:1), 100.00 MW
@@ -1077,7 +1054,7 @@ class HydrogenGT(Fuelled):
         >>> h.storage == (1000 / 2.) - (200 / gt.efficiency)
         True
         """
-        assert isinstance(tank, HydrogenStorage)
+        assert isinstance(tank, storage.HydrogenStorage)
         Fuelled.__init__(self, polygon, capacity, label)
         self.tank = tank
         self.efficiency = efficiency
@@ -1095,7 +1072,7 @@ class HydrogenGT(Fuelled):
         return power, 0
 
     def capcost(self, costs):
-        """Return the annual capital cost (of an OCGT)."""
+        """Return the capital cost (of an OCGT)."""
         return costs.capcost_per_kw[OCGT] * self.capacity * 1000
 
     def fixed_om_costs(self, costs):

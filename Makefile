@@ -15,8 +15,10 @@ COVRUN=coverage run -a --source=. --omit=setup.py
 envset:
 	test -n "$$VIRTUAL_ENV" || (echo "Python env is not activated" && false)
 
-check:  envset flake8
-	PYTHONOPTIMIZE=0 pytest --cov=awklite --cov nemo --doctest-modules
+check:  envset flake8 ruff test
+
+test:	envset
+	PYTHONPATH=. pytest --mpl --cov=nemo --doctest-modules
 
 coverage: replay.json replay-noscenario.json replay-nocost.json
 	$(COVRUN) evolve --list-scenarios > /dev/null
@@ -29,8 +31,7 @@ coverage: replay.json replay-noscenario.json replay-nocost.json
 	$(COVRUN) evolve -v --lambda 2 -g1 -s __one_ccgt__ \
 		--trace-file=trace.out --emissions-limit=0 \
 		--fossil-limit=0.1 --reserves=1000 \
-		--reliability-std=0.002 --min-regional-generation=0.5 \
-		-d scale:10 -d scaletwh:100 -d scalex:0:6:10 > /dev/null
+		--reliability-std=0.002 --min-regional-generation=0.5 > /dev/null
 	test -f trace.out && rm trace.out
 	$(COVRUN) replay -f replay.json -v -v > /dev/null
 	$(COVRUN) replay -f replay-noscenario.json -v > /dev/null || true
@@ -50,7 +51,7 @@ replay.json:
 	printf "# %s\n%s\n\n" "comment line" "malformed line" >> $@
 	printf '{"options": {"carbon_price": 0, "ccs_storage_costs": 27, "gas_price": 11,' >> $@
 	printf ' "coal_price": 2, "costs": "Null", "discount_rate": 0.05, "supply_scenario": "__one_ccgt__",' >> $@
-	printf ' "nsp_limit": 0.75, "demand_modifier": ["unchanged"]}, "parameters": [1]}\n' >> $@
+	printf ' "nsp_limit": 0.75, "parameters": [1]}\n' >> $@
 
 replay-noscenario.json: replay.json
 	sed 's/__one_ccgt__/noexist/' < $< > $@
@@ -59,9 +60,9 @@ replay-nocost.json: replay.json
 	sed 's/Null/noexist/' < $< > $@
 
 stub.py:
-	printf 'import nemo' > $@
-	printf 'c = nemo.Context()' >> $@
-	printf 'nemo.run(c)' >> $@
+	printf 'import nemo\n' > $@
+	printf 'c = nemo.Context()\n' >> $@
+	printf 'nemo.run(c)\n' >> $@
 
 nemo.prof: stub.py
 	python3 -m cProfile -o $@ $<
@@ -69,18 +70,21 @@ nemo.prof: stub.py
 prof: nemo.prof
 	snakeviz $<
 
-lineprof:
+lineprof: stub.py
 	kernprof -v -l stub.py
 
-flake8: envset
-	flake8 evolve replay summary awklite nemo tests --ignore=N801
-
 LINTSRC=evolve replay summary $(wildcard *.py awklite/*.py nemo/*.py tests/*.py)
+
+flake8: envset
+	flake8 $(LINTSRC) --ignore=N801
+
+ruff:	envset
+	ruff check $(LINTSRC)
 
 pylint:
 	pylint --enable=useless-suppression $(LINTSRC)
 
-lint:	envset flake8 pylint
+lint:	envset flake8 ruff pylint
 	codespell -d -L fom,hsa,trough $(LINTSRC) || true
 	isort --check $(LINTSRC)
 	pylama $(LINTSRC)

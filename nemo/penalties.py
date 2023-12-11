@@ -34,7 +34,7 @@ def _calculate_reserve(gen, time):
     Note: except pumped hydro and CST -- tricky to calculate capacity.
     """
     if isinstance(gen, generators.Fuelled) and not \
-       isinstance(gen, generators.PumpedHydro) and not \
+       isinstance(gen, generators.PumpedHydroTurbine) and not \
        isinstance(gen, generators.CST):
         return gen.capacity - gen.series_power[time]
     return 0
@@ -43,7 +43,7 @@ def _calculate_reserve(gen, time):
 def reserves(ctx, args):
     """Penalty: minimum reserves."""
     pen, reas = 0, 0
-    for time in range(ctx.timesteps):
+    for time in range(ctx.timesteps()):
         reserve, spilled = 0, 0
         for gen in ctx.generators:
             try:
@@ -98,7 +98,7 @@ def emissions(ctx, args):
     for gen in ctx.generators:
         if hasattr(gen, 'intensity'):
             total_emissions += sum(gen.series_power.values()) * gen.intensity
-    emissions_limit = args.emissions_limit * pow(10, 6) * ctx.years
+    emissions_limit = args.emissions_limit * pow(10, 6) * ctx.years()
     # exceedance in tonnes CO2-e
     emissions_exceedance = max(0, total_emissions - emissions_limit)
     reason = reasons['emissions'] if emissions_exceedance > 0 else 0
@@ -111,7 +111,7 @@ def fossil(ctx, args):
     for gen in ctx.generators:
         if isinstance(gen, generators.Fossil):
             fossil_energy += sum(gen.series_power.values())
-    fossil_limit = ctx.total_demand() * args.fossil_limit * ctx.years
+    fossil_limit = ctx.total_demand() * args.fossil_limit * ctx.years()
     fossil_exceedance = max(0, fossil_energy - fossil_limit)
     reason = reasons['fossil'] if fossil_exceedance > 0 else 0
     return pow(fossil_exceedance, 3), reason
@@ -123,7 +123,7 @@ def bioenergy(ctx, args):
     for gen in ctx.generators:
         if isinstance(gen, generators.Biofuel):
             biofuel_energy += sum(gen.series_power.values())
-    biofuel_limit = args.bioenergy_limit * _twh * ctx.years
+    biofuel_limit = args.bioenergy_limit * _twh * ctx.years()
     biofuel_exceedance = max(0, biofuel_energy - biofuel_limit)
     reason = reasons['bioenergy'] if biofuel_exceedance > 0 else 0
     return pow(biofuel_exceedance, 3), reason
@@ -134,9 +134,9 @@ def hydro(ctx, args):
     hydro_energy = 0
     for gen in ctx.generators:
         if isinstance(gen, generators.Hydro) and \
-           not isinstance(gen, generators.PumpedHydro):
+           not isinstance(gen, generators.PumpedHydroTurbine):
             hydro_energy += sum(gen.series_power.values())
-    hydro_limit = args.hydro_limit * _twh * ctx.years
+    hydro_limit = args.hydro_limit * _twh * ctx.years()
     hydro_exceedance = max(0, hydro_energy - hydro_limit)
     reason = reasons['hydro'] if hydro_exceedance > 0 else 0
     return pow(hydro_exceedance, 3), reason

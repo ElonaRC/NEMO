@@ -17,13 +17,10 @@ simulation runs.
 
 import numpy as np
 import pandas as pd
-import pint
 
 from nemo import configfile, costs, generators, polygons, regions
 from nemo.nem import hourly_demand, hourly_regional_demand, startdate
-
-ureg = pint.UnitRegistry()
-ureg.default_format = '.2f~P'
+from nemo.utils import ureg
 
 
 class Context():
@@ -37,20 +34,26 @@ class Context():
         self.startdate = startdate
         # Number of timesteps is determined by the number of demand rows.
         self.hours = len(hourly_regional_demand)
-        # Calculate the number of years from the number of simulation hours.
-        self.years = self.hours / (365 * 24)
 
         self.relstd = 0.002  # 0.002% unserved energy
         self.generators = [generators.CCGT(polygons.WILDCARD, 20000),
                            generators.OCGT(polygons.WILDCARD, 20000)]
+        self.storages = None
         self.demand = hourly_demand.copy()
-        self.timesteps = len(self.demand)
         self.spill = pd.DataFrame()
         self.generation = pd.DataFrame()
         self.unserved = pd.DataFrame()
         # System non-synchronous penetration limit
         self.nsp_limit = float(configfile.get('limits', 'nonsync-penetration'))
         self.costs = costs.NullCosts()
+
+    def years(self):
+        """Return the number of years from the number of simulation hours."""
+        return self.hours / (365 * 24)
+
+    def timesteps(self):
+        """Return the number of timesteps."""
+        return len(self.demand)
 
     def total_demand(self):
         """Return the total demand from the data frame."""

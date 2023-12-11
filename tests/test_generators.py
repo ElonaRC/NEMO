@@ -15,12 +15,15 @@ import numpy as np
 import pandas as pd
 import tcpserver
 
-from nemo import costs, generators
+from nemo import costs, generators, storage
 
 PORT = 9998
-hydrogen_storage = generators.HydrogenStorage(1000, "H2 store")
+battery_storage = storage.BatteryStorage(400, "Li-ion store")
+hydrogen_storage = storage.HydrogenStorage(1000, "H2 store")
+pumped_storage = storage.PumpedHydroStorage(1000, "PSH store")
 
 dummy_arguments = {'axes': 0,
+                   'battery': battery_storage,
                    'build_limit': 1000,
                    'capacity': 100,
                    'capture': 0.85,
@@ -35,6 +38,7 @@ dummy_arguments = {'axes': 0,
                    'label': 'a label',
                    'maxstorage': 1000,
                    'polygon': 31,
+                   'reservoirs': pumped_storage,
                    'rte': 0.8,
                    'self': None,
                    'shours': 8,
@@ -47,21 +51,22 @@ dummy_arguments = {'axes': 0,
 # are, however, tested below via Python introspection (and hence not
 # named explicitly in source code).
 
-classlist = [generators.Battery, generators.Behind_Meter_PV,
-             generators.Biofuel, generators.Biomass,
-             generators.Black_Coal, generators.CCGT,
-             generators.CCGT_CCS, generators.CCS, generators.CST,
+classlist = [generators.Battery, generators.BatteryLoad,
+             generators.Behind_Meter_PV, generators.Biofuel,
+             generators.Biomass, generators.Black_Coal,
+             generators.Block, generators.CCGT, generators.CCGT_CCS,
+             generators.CCS, generators.CST,
              generators.CSVTraceGenerator, generators.CentralReceiver,
              generators.Coal_CCS, generators.DemandResponse,
              generators.Diesel, generators.Electrolyser,
              generators.Fossil, generators.Fuelled,
              generators.Generator, generators.Geothermal,
              generators.Geothermal_EGS, generators.Geothermal_HSA,
-             generators.GreenPower, generators.Hydro,
-             generators.HydrogenGT, generators.HydrogenStorage,
-             generators.OCGT, generators.PV, generators.PV1Axis,
+             generators.Hydro, generators.HydrogenGT, generators.OCGT,
+             generators.PV, generators.PV1Axis,
              generators.ParabolicTrough, generators.Patch,
-             generators.PumpedHydro, generators.Storage,
+             generators.PumpedHydroPump,
+             generators.PumpedHydroTurbine, generators.Storage,
              generators.TraceGenerator, generators.Wind,
              generators.WindOffshore]
 
@@ -74,9 +79,9 @@ class TestGenerators(unittest.TestCase):
         self.tracefile = 'tracedata.csv'
         with open(self.tracefile, 'w', encoding='utf-8') as tracefile:
             for i in range(100):
-                print(f'{0.01 * i:.2f},', file=tracefile)
+                print(f'{0.01 * i:.2f}, 0', file=tracefile)
 
-        self.years = 1
+        self.years = lambda: 1
         self.costs = costs.NullCosts()
         self.classes = [cls for cls in
                         inspect.getmembers(generators, inspect.isclass)
@@ -86,8 +91,7 @@ class TestGenerators(unittest.TestCase):
         for (cls, clstype) in self.classes:
             # Skip abstract classes
             if cls in ['Generator', 'TraceGenerator',
-                       'CSVTraceGenerator', 'Storage',
-                       'HydrogenStorage']:
+                       'CSVTraceGenerator', 'Storage']:
                 continue
 
             # check that every class in generators.py is in classlist
@@ -158,7 +162,7 @@ class TestGenerators(unittest.TestCase):
         for gen in self.generators:
             # 10 MWh for 10 hours = 100 MWh
             gen.series_power = {n: 10 for n in range(10)}
-            gen.lcoe(self.costs, self.years)
+            gen.lcoe(self.costs, self.years())
 
     def test_reset(self):
         """Test reset() method."""
@@ -177,7 +181,10 @@ class TestGenerators(unittest.TestCase):
             """A mocked up Context class."""
 
             costs = self.costs
-            years = self.years
+
+            def years(self):
+                """A mocked up version of the Context years() method."""
+                return 1
 
         context = MyContext()
         for gen in self.generators:
@@ -208,11 +215,6 @@ class TestGenerators(unittest.TestCase):
                 self.assertEqual(gen.shours, testvalue)
                 self.assertEqual(gen.maxstorage, gen.capacity * testvalue)
                 self.assertEqual(gen.stored, 0.5 * gen.maxstorage)
-            elif isinstance(gen, generators.Battery):
-                testvalue = 4
-                gen.set_storage(testvalue)
-                self.assertEqual(gen.maxstorage, gen.capacity * testvalue)
-                self.assertEqual(gen.stored, 0)
 
     def test_str(self):
         """Test __str__() method."""
