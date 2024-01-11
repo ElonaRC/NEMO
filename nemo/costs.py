@@ -865,26 +865,26 @@ class GenCost2023(Common):
         self.totcost_per_kwh = {}
 
 
-class GenCost2023_2022(GenCost2023):
-    """GenCost 2022-23 costs for 2022 (low assumption)."""
+class GenCost2023_2023(GenCost2023):
+    """GenCost 2022-23 costs for 2023 (low assumption)."""
 
     def __init__(self, discount, coal_price, gas_price, ccs_price):
         """Construct a cost object."""
         GenCost2023.__init__(self, discount, coal_price, gas_price, ccs_price)
         table = self.capcost_per_kw
-        table[tech.Black_Coal] = 5398
-        table[tech.CCGT] = 1766
-        table[tech.CCGT_CCS] = 4354
-        table[tech.CentralReceiver] = 6525
-        table[tech.Coal_CCS] = 11040
-        table[tech.OCGT] = 943
-        table[tech.Behind_Meter_PV] = 1454
-        table[tech.PV1Axis] = 1572
-        table[tech.Wind] = 2642
-        table[tech.WindOffshore] = 5682
+        table[tech.Black_Coal] = 4964
+        table[tech.CCGT] = 1706
+        table[tech.CCGT_CCS] = 4340
+        table[tech.CentralReceiver] = 6368
+        table[tech.Coal_CCS] = 10513
+        table[tech.OCGT] = 1002
+        table[tech.Behind_Meter_PV] = 1400
+        table[tech.PV1Axis] = 1516
+        table[tech.Wind] = 2644
+        table[tech.WindOffshore] = 5480
 
         table = self.totcost_per_kwh
-        table[tech.Battery] = {1: 931, 2: 673, 4: 546, 8: 485}
+        table[tech.Battery] = {1: 936, 2: 677, 4: 549, 8: 488}
 
 
 class GenCost2023_2030_CP(GenCost2023):
@@ -966,7 +966,7 @@ class GenCost2023_2030_NZE2050(GenCost2023):
         table[tech.CentralReceiver] = 4917
         table[tech.Coal_CCS] = 9639
         table[tech.OCGT] = 828
-        table[tech.Behind_Meter_PV] = 988
+        table[tech.Behind_Meter_PV] = 692 #988 = gencost price, 692 = 30% govt rebate, 494 = 50% govt rebate
         table[tech.PV1Axis] = 1071
         table[tech.Wind] = 1913
         table[tech.WindOffshore] = 2755
@@ -1110,7 +1110,7 @@ cost_scenarios = {'Null': NullCosts,
                   'GenCost2022-in2050-CP': GenCost2022_2050_CP,
                   'GenCost2022-in2050-NZE2050': GenCost2022_2050_NZE2050,
                   'GenCost2022-in2050-NZE2050+': GenCost2022_2050_NZEPost2050,
-                  'GenCost2023-in2022': GenCost2023_2022,
+                  'GenCost2023-in2022': GenCost2023_2023,
                   'GenCost2023-in2030-CP': GenCost2023_2030_CP,
                   'GenCost2023-in2030-NZE2050': GenCost2023_2030_NZE2050,
                   'GenCost2023-in2030-NZE2050+': GenCost2023_2030_NZEPost2050,
