@@ -21,6 +21,13 @@ from nemo.types import UnreachableError
 
 RUNFAST = 0  # changes everypoly from 44 to 10
 
+class DualSetter:
+    def __init__(self, setter1, setter2):
+        self.setters = [setter1[0], setter2[0]]
+
+    def set_capacity(self, cap):
+        for setter in self.setters:
+            setter(cap)
 
 def _demand_response():
     """Return a list of DR 'generators'."""
@@ -248,16 +255,16 @@ def _allSolarWind(gentype):
             result.append(g)
     elif gentype == Behind_Meter_PV:
         cfg = configfile.get('generation', 'pv1axis-trace')
-        for (poly, capacity) in [(1, 373.933), (2, 5.91), (3, 11.239), 
-                                 (4, 1657.773), (5, 1.364), (6, 81.177), (7, 191.463), 
-                                 (8, 22.504), (9, 2.135), (10, 245.874), (11, 571.568), 
-                                 (14, 5.125), (15, 7.411), (16, 1240.491), (17, 4965.095), (19, 147.906), 
-                                 (21, 54.218), (22, 113.322), (23, 284.104), (24, 1295.258), 
-                                 (25, 4.74), (26, 426.236), (27, 111.214), (28, 31.744), 
-                                 (29, 132.212), (30, 886.123), (31, 3592.998), (32, 2247.75), 
-                                 (33, 1454.935), (34, 826.244), (35, 623.525), (36, 916.345), 
-                                 (37, 145.318), (38, 530.565), (39, 3819.245), (40, 47.774), 
-                                 (41, 92.129), (42, 6.101), (43, 119.205)]:
+        for (poly, capacity) in [(1, 184.5), (2, 1.2), (3, 7.4), 
+                                 (4, 296.8), (5, 0.6), (6, 2.9), (7, 141.11), 
+                                 (8, 2.2), (9, 1.1), (10, 16.2), (11, 219.8), 
+                                 (14, 0.9), (15, 4.2), (16, 39.5), (17, 3005.6), (19, 3.6), 
+                                 (21, 0.8), (22, 6.2), (23, 46.2), (24, 428.2), 
+                                 (25, 3.1), (26, 106.8), (27, 39.1), (28, 20.6), 
+                                 (29, 5.9), (30, 86.3), (31, 2147.2), (32, 1330.1), 
+                                 (33, 53.6), (34, 45.4), (35, 166.9), (36, 566.2), 
+                                 (37, 94.8), (38, 190.1), (39, 2434.1), (40, 34.8), 
+                                 (41, 65.7), (42, 5), (43, 95.8)]:
             g = gentype(poly, capacity, cfg, poly - 1,
                         build_limit=rooftop_limit[poly],
                         label=f'polygon {poly} Existing Rooftop')
@@ -508,30 +515,43 @@ def re100SWH_batteries(context):
 def re100SWH_batteriesTEST(context):
     """Takes SWH and adds one one new battery to Polygon 38 with specs 600MWh, 300MW (2 hour battery)."""
     re100SWH(context)
-    #Specs of the Victorian Big Battery for testing latest battery changes
-    battstorage = BatteryStorage(300, "Vic Big Batt 600 MWh") #600 MWh 
-    batt = Battery(38, 300, battstorage, "P38 Vic Big Batt 300MW") #300 capacity MW
-    battload = BatteryLoad(38, 300, battstorage, "Vic Big Batt 300 MW battery load")
-    batt.setters = [] # If you want fixed capacity batteries, you need to set the batt and battload setters to []. 
-    battload.setters = [] # Otherwise, NEMO will try varying the capacity which in turn varies the full loads hours to a non-{1,2,4,8} multiple.
 
-    hrs = list(range(0, 8)) + list(range(17, 24))
-    battery1 = Battery(24, 100, 1, discharge_hours=hrs,
-                         label=f'{"P24 New Batt 1 NSW"}', rte=0.9)
-    battery2 = Battery(24, 100, 2, discharge_hours=hrs,
-                         label=f'{"P24 New Batt 2 NSW"}', rte=0.9)
-    battery4 = Battery(24, 100, 4, discharge_hours=hrs,
-                         label=f'{"P24 New Batt 4 NSW"}', rte=0.9)
-    battery8 = Battery(24, 100, 8, discharge_hours=hrs,
-                         label=f'{"P24 New Batt 8 NSW"}', rte=0.9)
-    context.generators = (context.generators
-                          + [battery1]
-                          + [battery2]
-                          + [battery4]
-                          + [battery8])
+    #1 hour battery that NEMO can vary
+    battstorage1 = BatteryStorage(100, "Battery Storage 1 hours") #Storage MWh
+    batt1 = Battery(38, 100, 1, battstorage1, "P38 Battery Discharge 1hr") #Capacity MW
+    battload1 = BatteryLoad(38, 100, battstorage1, "P38 Battery Charge 1hr") #Capacity MW
+    dual1 = DualSetter(battload1.setters[0], batt1.setters[0])
+    battload1.setters = []
+    batt1.setters = [(dual1.set_capacity, 0, 40)]
+    
+    #2 hour battery that NEMO can vary
+    battstorage2 = BatteryStorage(200, "Battery Storage 2 hours") #Storage MWh 
+    batt2 = Battery(38, 100, 2, battstorage2, "P38 Battery Discharge 2hrs") #Capacity MW
+    battload2 = BatteryLoad(38, 100, battstorage2, "P38 Battery Charge 2hrs") #Capacity MW
+    dual2 = DualSetter(battload2.setters[0], batt2.setters[0])
+    battload2.setters = []
+    batt2.setters = [(dual2.set_capacity, 0, 40)]
+    
+    #4 hour battery that NEMO can vary
+    battstorage4 = BatteryStorage(400, "Battery Storage 4 hours") #Storage MWh
+    batt4 = Battery(38, 100, 4, battstorage4, "P38 Battery Discharge 4hrs") #Capacity MW
+    battload4 = BatteryLoad(38, 100, battstorage4, "P38 Battery Charge 4hrs") #Capacity MW
+    dual4 = DualSetter(battload4.setters[0], batt4.setters[0])
+    battload4.setters = []
+    batt4.setters = [(dual4.set_capacity, 0, 40)]
 
+    #8 hour battery that NEMO can vary
+    battstorage8 = BatteryStorage(800, "Battery Storage 8 hours") #Storage MWh
+    batt8 = Battery(38, 100, 8, battstorage8, "P38 Battery Discharge 8hrs") #Capacity MW
+    battload8 = BatteryLoad(38, 100, battstorage8, "P38 Battery Charge 8hrs") #Capacity MW
+    dual8 = DualSetter(battload8.setters[0], batt8.setters[0])
+    battload8.setters = []
+    batt8.setters = [(dual8.set_capacity, 0, 40)]
 
-    context.generators = [batt] + [battload]+ context.generators
+    #battload.setters = batt.setters
+    #batt.setters = [] # If you want fixed capacity batteries, you need to set the batt and battload setters to []. 
+    #battload.setters = [] # Otherwise, NEMO will try varying the capacity which in turn varies the full loads hours to a non-{1,2,4,8} multiple.
+    context.generators = [batt1] + [battload1] + [batt2] + [battload2] + [batt4] + [battload4] + [batt8] + [battload8] + context.generators
 
 
 def re100SWHB_dr(context):
