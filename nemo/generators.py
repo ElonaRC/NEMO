@@ -259,6 +259,8 @@ class CSVTraceGenerator(TraceGenerator):
             assert np.all(~np.isnan(cls.csvdata)), \
                 f'Trace file {filename} contains NaNs; inspect file'
             cls.csvfilename = filename
+        # pylint limitation: https://github.com/pylint-dev/pylint/issues/9250
+        # pylint: disable=unsubscriptable-object
         self.generation = cls.csvdata[::, column]
 
 
@@ -436,6 +438,8 @@ class PumpedHydroPump(Storage, Generator):
             raise TypeError
         Storage.__init__(self)
         Generator.__init__(self, polygon, capacity, label)
+        # capacity is in MW, but build limit is in GW
+        self.setters = [(self.set_capacity, 0, capacity / 1000.)]
         self.reservoirs = reservoirs
         self.rte = rte
 
