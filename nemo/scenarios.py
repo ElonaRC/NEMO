@@ -451,33 +451,33 @@ def re100SWHB_2(context):
     re100SWH_2(context)
 
     #1 hour battery that NEMO can vary
-    battstorage1 = BatteryStorage(100, "Battery Storage 1 hours") #Storage MWh
-    batt1 = Battery(38, 100, 1, battstorage1, "P38 Battery Discharge 1hr") #Capacity MW
-    battload1 = BatteryLoad(38, 100, battstorage1, "P38 Battery Charge 1hr") #Capacity MW
+    battstorage1 = BatteryStorage(100, "P24 New Batt Storage 1 NSW") #Storage MWh
+    batt1 = Battery(24, 100, 1, battstorage1, "P24 Batt Discharge 1 NSW") #Capacity MW
+    battload1 = BatteryLoad(24, 100, battstorage1, "P24 Batt Charge 1 NSW") #Capacity MW
     dual1 = DualSetter(battload1.setters[0], batt1.setters[0])
     battload1.setters = []
     batt1.setters = [(dual1.set_capacity, 0, 40)]
     
     #2 hour battery that NEMO can vary
-    battstorage2 = BatteryStorage(200, "Battery Storage 2 hours") #Storage MWh 
-    batt2 = Battery(38, 100, 2, battstorage2, "P38 Battery Discharge 2hrs") #Capacity MW
-    battload2 = BatteryLoad(38, 100, battstorage2, "P38 Battery Charge 2hrs") #Capacity MW
+    battstorage2 = BatteryStorage(200, "P24 New Batt Storage 2 NSW") #Storage MWh 
+    batt2 = Battery(24, 100, 2, battstorage2, "P24 New Batt Discharge 2 NSW") #Capacity MW
+    battload2 = BatteryLoad(24, 100, battstorage2, "P24 New Batt Charge 2 NSW") #Capacity MW
     dual2 = DualSetter(battload2.setters[0], batt2.setters[0])
     battload2.setters = []
     batt2.setters = [(dual2.set_capacity, 0, 40)]
     
     #4 hour battery that NEMO can vary
-    battstorage4 = BatteryStorage(400, "Battery Storage 4 hours") #Storage MWh
-    batt4 = Battery(38, 100, 4, battstorage4, "P38 Battery Discharge 4hrs") #Capacity MW
-    battload4 = BatteryLoad(38, 100, battstorage4, "P38 Battery Charge 4hrs") #Capacity MW
+    battstorage4 = BatteryStorage(400, "P24 New Batt Storage 4 NSW") #Storage MWh
+    batt4 = Battery(24, 100, 4, battstorage4, "P24 New Batt Discharge 4 NSW") #Capacity MW
+    battload4 = BatteryLoad(24, 100, battstorage4, "P24 New Batt Charge 4 NSW") #Capacity MW
     dual4 = DualSetter(battload4.setters[0], batt4.setters[0])
     battload4.setters = []
     batt4.setters = [(dual4.set_capacity, 0, 40)]
 
     #8 hour battery that NEMO can vary
-    battstorage8 = BatteryStorage(800, "Battery Storage 8 hours") #Storage MWh
-    batt8 = Battery(38, 100, 8, battstorage8, "P38 Battery Discharge 8hrs") #Capacity MW
-    battload8 = BatteryLoad(38, 100, battstorage8, "P38 Battery Charge 8hrs") #Capacity MW
+    battstorage8 = BatteryStorage(800, "P24 New Batt Storage 8 NSW") #Storage MWh
+    batt8 = Battery(24, 100, 8, battstorage8, "P24 New Batt Discharge 8 NSW") #Capacity MW
+    battload8 = BatteryLoad(24, 100, battstorage8, "P24 New Batt Charge 8 NSW") #Capacity MW
     dual8 = DualSetter(battload8.setters[0], batt8.setters[0])
     battload8.setters = []
     batt8.setters = [(dual8.set_capacity, 0, 40)]
