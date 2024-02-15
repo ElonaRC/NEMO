@@ -33,11 +33,13 @@ else:
         raise ConnectionError(f'HTTP {resp.status_code}: {url}')
     traceinput = io.StringIO(resp.text)
 
-if not url.startswith('http') and url.endswith('.pkl'):
-    demand = pd.read_pickle(traceinput)
-else:
-    demand = pd.read_csv(traceinput, comment='#', sep=',', 
-                         parse_dates=[['Date', 'Time']], index_col='Date_Time')
+demand = pd.read_csv(traceinput, comment='#', sep=',')
+# combine Date and Time columns into a new Date_Time column, make this
+# the index column and then drop the original Date and Time columns
+demand['Date_Time'] = \
+    pd.to_datetime(demand['Date'] + ' ' + demand['Time'])
+demand.set_index('Date_Time', inplace=True)
+demand.drop(columns=['Date', 'Time'], inplace=True)
 
 # Check for date, time and n demand columns (for n regions).
 assert len(demand.columns) == regions.NUMREGIONS
@@ -50,7 +52,7 @@ assert (startdate.hour, startdate.minute, startdate.second) == (0, 30, 0), \
     'demand data must start at midnight'
 
 # Calculate hourly demand, averaging half-hours n and n+1.
-hourly_regional_demand = demand.resample('H', closed='right').mean()
+hourly_regional_demand = demand.resample('h', closed='right').mean()
 
 # Now put the demand into polygon resolution according to the load
 # apportioning figures given in each region's polygons field.
