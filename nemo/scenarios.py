@@ -326,6 +326,25 @@ def re100SWH(context):
             raise ValueError('unhandled generator type')  # pragma: no cover
     context.generators = result
 
+def re100SWH_COMPARE(context):
+    """100% renewable electricity with only PV, Wind, Hydro."""
+    """This will populate all polygons with an empty
+    PV and Wind genererator & """
+    """Put hydro and pumped hydro where they should be located"""
+    result = []
+
+    # The following list is in merit order.
+    for g in [PV1Axis, Wind, PumpedHydroTurbine, Hydro]:
+        if g == PumpedHydroTurbine:
+            result += _pumped_hydro()
+        elif g == Hydro:
+            result += _hydro()
+        elif g in [PV1Axis, Wind]:
+            result += _existingSolarWind(g)
+            result += _every_poly(g)
+        else:
+            raise ValueError('unhandled generator type')  # pragma: no cover
+    context.generators = result
 
 def re100SWHBMid(context):
     """100% renewable electricity with PV, Wind, Battery, Hydro."""
@@ -513,7 +532,7 @@ def re100SWH_batteries(context):
 
 
 def re100SWH_batteriesTEST(context):
-    """Takes SWH and adds one one new battery to Polygon 38 with specs 600MWh, 300MW (2 hour battery)."""
+    """PAPER 2 SCENARIO."""
     re100SWH(context)
 
     #1 hour battery that NEMO can vary
@@ -551,7 +570,49 @@ def re100SWH_batteriesTEST(context):
     #battload.setters = batt.setters
     #batt.setters = [] # If you want fixed capacity batteries, you need to set the batt and battload setters to []. 
     #battload.setters = [] # Otherwise, NEMO will try varying the capacity which in turn varies the full loads hours to a non-{1,2,4,8} multiple.
-    context.generators = [batt1] + [battload1] + [batt2] + [battload2] + [batt4] + [battload4] + [batt8] + [battload8] + context.generators
+    context.generators = context.generators + [batt1] + [battload1] + [batt2] + [battload2] + [batt4] + [battload4] + [batt8] + [battload8] 
+
+def re100SWH_batteriesTEST_COMPARE(context):
+    """PAPER 2 SCENARIO MODIFIED TO MATCH re100SWHB4 FROM PAPER 1"""
+    re100SWH_COMPARE(context)
+    # discharge between 5pm and 7am daily
+    hrs = list(range(0, 8)) + list(range(17, 24))
+    #1 hour battery that NEMO can vary
+    battstorage1 = BatteryStorage(100, "Battery Storage 1 hours") #Storage MWh
+    batt1 = Battery(38, 100, 1, battstorage1, "P38 Battery Discharge 1hr", discharge_hours = hrs) #Capacity MW
+    battload1 = BatteryLoad(38, 100, battstorage1, "P38 Battery Charge 1hr", discharge_hours = hrs, rte=0.9) #Capacity MW
+    dual1 = DualSetter(battload1.setters[0], batt1.setters[0])
+    battload1.setters = []
+    batt1.setters = [(dual1.set_capacity, 0, 40)]
+    
+    #2 hour battery that NEMO can vary
+    battstorage2 = BatteryStorage(200, "Battery Storage 2 hours") #Storage MWh 
+    batt2 = Battery(38, 100, 2, battstorage2, "P38 Battery Discharge 2hrs", discharge_hours = hrs) #Capacity MW
+    battload2 = BatteryLoad(38, 100, battstorage2, "P38 Battery Charge 2hrs", discharge_hours = hrs, rte=0.9) #Capacity MW
+    dual2 = DualSetter(battload2.setters[0], batt2.setters[0])
+    battload2.setters = []
+    batt2.setters = [(dual2.set_capacity, 0, 40)]
+    
+    #4 hour battery that NEMO can vary
+    battstorage4 = BatteryStorage(400, "Battery Storage 4 hours") #Storage MWh
+    batt4 = Battery(38, 100, 4, battstorage4, "P38 Battery Discharge 4hrs", discharge_hours = hrs) #Capacity MW
+    battload4 = BatteryLoad(38, 100, battstorage4, "P38 Battery Charge 4hrs", discharge_hours = hrs, rte=0.9) #Capacity MW
+    dual4 = DualSetter(battload4.setters[0], batt4.setters[0])
+    battload4.setters = []
+    batt4.setters = [(dual4.set_capacity, 0, 40)]
+
+    #8 hour battery that NEMO can vary
+    battstorage8 = BatteryStorage(800, "Battery Storage 8 hours") #Storage MWh
+    batt8 = Battery(38, 100, 8, battstorage8, "P38 Battery Discharge 8hrs", discharge_hours = hrs) #Capacity MW
+    battload8 = BatteryLoad(38, 100, battstorage8, "P38 Battery Charge 8hrs", discharge_hours = hrs, rte=0.9) #Capacity MW
+    dual8 = DualSetter(battload8.setters[0], batt8.setters[0])
+    battload8.setters = []
+    batt8.setters = [(dual8.set_capacity, 0, 40)]
+
+    #battload.setters = batt.setters
+    #batt.setters = [] # If you want fixed capacity batteries, you need to set the batt and battload setters to []. 
+    #battload.setters = [] # Otherwise, NEMO will try varying the capacity which in turn varies the full loads hours to a non-{1,2,4,8} multiple.
+    context.generators = context.generators + [batt1] + [battload1] + [batt2] + [battload2] + [batt4] + [battload4] + [batt8] + [battload8] 
 
 
 def re100SWHB_dr(context):
@@ -667,6 +728,7 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100-sa': re100_south_aus,
                     're100SWH_WA': re100SWH_WA,
                     're100SWH': re100SWH,
+                    're100SWH_COMPARE': re100SWH_COMPARE,
                     're100SWHBMid':re100SWHBMid,
                     're100SWHBLast':re100SWHBLast,
                     're100SWHB4':re100SWHB4,
@@ -675,6 +737,7 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100SWHB_David': re100SWHB_David,
                     're100SWH_batteries': re100SWH_batteries,
                     're100SWH_batteriesTEST': re100SWH_batteriesTEST,
+                    're100SWH_batteriesTEST_COMPARE': re100SWH_batteriesTEST_COMPARE,
                     're100SWHB_dr': re100SWHB_dr,
                     're100+dsp': re100_dsp,
                     're100-nocst': re100_nocst,
