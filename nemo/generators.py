@@ -815,7 +815,7 @@ class BatteryLoad(Storage, Generator):
 class Battery(Generator):
     """Battery storage (of any type)."""
 
-    patch = Patch(facecolor='#00a2fa')
+    patch = Patch(facecolor='#f51ddf')
     """Colour for plotting"""
 
     def __init__(self, polygon, capacity, shours, battery,
