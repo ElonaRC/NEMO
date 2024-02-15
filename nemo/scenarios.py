@@ -156,20 +156,9 @@ def re100(context):
 """ Start Elona's Scenarios """
 
 
-def _one_battery(context):
-    """Add in one 2 hour into the middle of NSW battery"""
-    result = []
-    # discharge between 5pm and 7am daily
-    # discharge between 5pm and 7am daily
-    hrs = list(range(0, 8)) + list(range(17, 24))
-    batteryNew = Battery(24, 100, 2, discharge_hours=hrs,
-                         label=f'{"P24 New Added Batt NSW"}', rte=0.9)
-    result.append(batteryNew)
-    return result
-
-
 def _existingSolarWind(gentype):
     """Add in existing large scale solar and wind generators for each polygon."""
+    """NO ROOFTOP SOLAR HERE"""
     """ERC Addition"""
     # (Total solarfarms capacity for each polygon -
     # /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/
@@ -211,7 +200,8 @@ def _existingSolarWind(gentype):
 
 
 def _allSolarWind(gentype):
-    """Add in existing large sclae solar, rooftop PV, and wind generators for each polygon. All data is in MW"""
+    """Add in existing large scale solar, rooftop PV, and wind generators for each polygon. All data is in MW"""
+    """INCLUDES ROOFTOP SOLAR HERE"""
     """ERC Addition"""
     # (Total solarfarms capacity for each polygon -
     # /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/
@@ -279,58 +269,17 @@ ERC Addition"""
 """ Start Elona's Scenarios """
 
 
-def one_in_eachstate(gentype):
-    """Create one generator of type gentype
-    (only solar and wind) in each state."""
-    """Capacity of 25 GW for each PV and Wind site = 25 GW """
-    result = []
-    for poly in range[17, 23, 37, 39, 26]:
-        # Brisbane (QLD), Dubbo (NSW), Ballarat (VIC),
-        # Queenstown (TAS), Port Lincoln (SA)
-        if gentype == PV1Axis:
-            cfg = configfile.get('generation', 'pv1axis-trace')
-            result.append(gentype(poly, 25, cfg, poly - 1,
-                                  build_limit=pv_limit[poly],
-                                  label=f'polygon {poly} PV'))
-        elif gentype == Wind:
-            cfg = configfile.get('generation', 'wind-trace')
-            result.append(gentype(poly, 25, cfg, poly - 1,
-                                  build_limit=wind_limit[poly],
-                                  label=f'polygon {poly} wind'))
-    return result
-
-
-def re100SWH_WA(context):
-    '''Adds WA into the picture'''
-    context.regions.append(regions.wa)  # adds WA into the picture.
-    re100SWH(context)
-
-
 def re100SWH(context):
+    """This scenario is the original Re100SWH scenario that was used in paper 1"""
+    """IT ASSUMES: """
     """100% renewable electricity with only PV, Wind, Hydro."""
-    """This will populate all polygons with an empty
-    PV and Wind genererator & """
-    """Put hydro and pumped hydro where they should be located"""
-    result = []
+    """NO ROOFTOP SOLAR"""
+    """Existing capacity for PV and Wind are as of June 2022"""
+    """Existing Hydro and Pumped Hydro are placed where they are located IRL"""
+    """Adds a new PV and Wind generator to each polygon"""
 
-    # The following list is in merit order.
-    for g in [Behind_Meter_PV, PV1Axis, Wind, PumpedHydroTurbine, Hydro]:
-        if g == PumpedHydroTurbine:
-            result += _pumped_hydro()
-        elif g == Hydro:
-            result += _hydro()
-        elif g in [Behind_Meter_PV, PV1Axis, Wind]:
-            result += _allSolarWind(g)
-            result += _every_poly(g)
-        else:
-            raise ValueError('unhandled generator type')  # pragma: no cover
-    context.generators = result
+    """Note: PumpedHydroTurbine used to be called PumpedHydro in paper 1 but the code for these generators has since changed"""
 
-def re100SWH_COMPARE(context):
-    """100% renewable electricity with only PV, Wind, Hydro."""
-    """This will populate all polygons with an empty
-    PV and Wind genererator & """
-    """Put hydro and pumped hydro where they should be located"""
     result = []
 
     # The following list is in merit order.
@@ -346,60 +295,18 @@ def re100SWH_COMPARE(context):
             raise ValueError('unhandled generator type')  # pragma: no cover
     context.generators = result
 
-def re100SWHBMid(context):
-    """100% renewable electricity with PV, Wind, Battery, Hydro."""
-    """This will populate all polygons with an empty
-    PV and Wind genererator & """
-    """Put a 2 hour battery into Polygon 24 in NSW"""
-    """Put hydro and pumped hydro where they should be located"""
-    result = []
-
-    # The following list is in merit order.
-    for g in [PV1Axis, Wind, Battery, PumpedHydroTurbine, Hydro]:
-        if g == PumpedHydroTurbine:
-            result += _pumped_hydro()
-        elif g == Hydro:
-            result += _hydro()
-        elif g in [PV1Axis, Wind]:
-            result += _existingSolarWind(g)
-            result += _every_poly(g)
-        elif g == Battery:
-            result += _one_battery(g)
-        else:
-            raise ValueError('unhandled generator type')  # pragma: no cover
-    context.generators = result
-
-
-def re100SWHBLast(context):
-    """100% renewable electricity with PV, Wind, Battery, Hydro."""
-    """This will populate all polygons with an empty
-    PV and Wind genererator & """
-    """Put hydro and pumped hydro where they should be located"""
-    """Put a 2 hour battery into Polygon 24 in NSW"""
-    result = []
-
-    # The following list is in merit order with Battery Last.
-    for g in [PV1Axis, Wind, PumpedHydroTurbine, Hydro, Battery]:
-        if g == PumpedHydroTurbine:
-            result += _pumped_hydro()
-        elif g == Hydro:
-            result += _hydro()
-        elif g in [PV1Axis, Wind]:
-            result += _existingSolarWind(g)
-            result += _every_poly(g)
-        elif g == Battery:
-            result += _one_battery(g)
-        else:
-            raise ValueError('unhandled generator type')  # pragma: no cover
-    context.generators = result
-
 
 def re100SWHB4(context):
-    """100% renewable electricity with PV, Wind, Battery, Hydro."""
-    """This will populate all polygons with an empty
-    PV and Wind genererator & """
-    """Put hydro and pumped hydro where they should be located"""
+    """This scenario is the original Re100SWHB scenario that was used in paper 1"""
+    """IT ASSUMES: """
+    """100% renewable electricity with only PV, Wind, Hydro."""
+    """NO ROOFTOP SOLAR"""
+    """Existing capacity for PV and Wind are as of June 2022"""
+    """Existing Hydro and Pumped Hydro are placed where they are located IRL"""
+    """Adds a new PV and Wind generator to each polygon"""
     """Put a 1, 2, 4, 8 hour battery into Polygon 24 in NSW with a flexible capacity to test which one is least-cost"""
+    """BATTERY AT THE END OF MERIT ORDER"""
+
     re100SWH(context)
     # discharge between 5pm and 7am daily
     # discharge between 5pm and 7am daily
@@ -420,59 +327,27 @@ def re100SWHB4(context):
 
 
 def re100SWHB4G(context):
-    """100% renewable electricity with PV, Wind, Battery, Hydro."""
-    """This will populate all polygons with an empty
-    PV and Wind genererator & """
-    """Put hydro and pumped hydro where they should be located"""
+    """This scenario is the original Re100SWHB+ (gas scenario) scenario that was used in paper 1"""
+    """IT ASSUMES: """
+    """100% renewable electricity with only PV, Wind, Hydro."""
+    """NO ROOFTOP SOLAR"""
+    """Existing capacity for PV and Wind are as of June 2022"""
+    """Existing Hydro and Pumped Hydro are placed where they are located IRL"""
+    """Adds a new PV and Wind generator to each polygon"""
     """Put a 1, 2, 4, 8 hour battery into Polygon 24 in NSW with a flexible capacity to test which one is least-cost"""
-    """Add in the gas generation fleet at the end. """
+    """Add in the gas generation fleet at the end that is the size of the existing OCGT fleet."""
+
     re100SWHB4(context)
     gasNew = OCGT(24, 6700, label=f'{"P24 Existing OCGT NSW"}')
     gasNew.setters = []
     context.generators = (context.generators + [gasNew])
-    
-
-def re100SWHB1G(context):
-    """100% renewable electricity with PV, Wind, Hydro, Pumped Hydrp, Battery, Gas."""
-    """This will populate all polygons with an empty
-    PV and Wind genererator & """
-    """Put hydro and pumped hydro where they should be located"""
-    """Put a 2 hour battery into Polygon 24 in NSW"""
-    """Put a open cycle gas turbine 6.7 GW into Polygon 24 in NSW"""
-    re100SWHBLast(context)
-    gasNew = OCGT(24, 6700, label=f'{"P24 Existing OCGT NSW"}')
-    gasNew.setters = []
-    context.generators = (context.generators + [gasNew])
 
 
-def re100SWHB_David(context):
-    """Takes SWH and adds David Osmond Battery."""
-    re100SWH(context)
-    # discharge between 5pm and 7am daily
-    hrs = list(range(0, 8)) + list(range(16, 24))
-    rte = 1
+def re100SWH_existingbatteries(context):
+    """This scenario is an original testing scenario but it was never used for paper 1"""
+    """It takes scenario re100SWH but adds in the NEM existing battery fleet"""
+    """I am leaving it here for the data on existing battery fleet as of 2023"""
 
-    # David Osmond Battery 1 24GW/120GWh (4 hours)
-    batteryDavid1 = Battery(19, 24000, 4, discharge_hours=hrs,
-                            label=f'{"P19 Battery David 1 SA"}',
-                            rte=rte)
-    batteryDavid1.capcost = lambda costs: 0
-    batteryDavid1.setters = []
-
-    # David Osmond Battery 2 24GW/120GWh (1 hours)
-    batteryDavid2 = Battery(19, 24000, 1, discharge_hours=hrs,
-                            label=f'{"P19 Battery David 2 SA"}',
-                            rte=rte)
-    batteryDavid2.capcost = lambda costs: 0
-    batteryDavid2.setters = []
-
-    context.generators = ([batteryDavid1]
-                          + [batteryDavid2]
-                          + context.generators)
-
-
-def re100SWH_batteries(context):
-    """Takes SWH and adds existing batteries only."""
     re100SWH(context)
     # discharge between 5pm and 7am daily
     # batteries operational as of July 2022 
@@ -531,9 +406,49 @@ def re100SWH_batteries(context):
                           + [batBulgana])
 
 
-def re100SWH_batteriesTEST(context):
-    """PAPER 2 SCENARIO."""
-    re100SWH(context)
+def re100SWH_2(context):
+    """This scenario is the original Re100SWH scenario that was used in paper 2"""
+    """We do not use it explicitly in paper 2 BUT we use it inside of re100SWHB_2"""
+    
+    """It is the same as for paper 1 but ADDS in rooftop solar"""
+    """IT ASSUMES: """
+    """100% renewable electricity with only Large Scale PV, Rooftop PV, Wind, Hydro."""
+    """Existing capacity for Large Scale PV and Wind are as of June 2022"""
+    """Existing capacity for Rooftop Solar PV are as of September 2023"""
+    """Existing Hydro and Pumped Hydro are placed where they are located IRL"""
+    """Adds a new rooftop, largescale PV and Wind generator to each polygon"""
+
+    """To Note: The code for battery and hydro generators has changed between Paper 1 and Paper 2"""
+        
+    result = []
+
+    # The following list is in merit order.
+    for g in [Behind_Meter_PV, PV1Axis, Wind, PumpedHydroTurbine, Hydro]:
+        if g == PumpedHydroTurbine:
+            result += _pumped_hydro()
+        elif g == Hydro:
+            result += _hydro()
+        elif g in [Behind_Meter_PV, PV1Axis, Wind]:
+            result += _allSolarWind(g)
+            result += _every_poly(g)
+        else:
+            raise ValueError('unhandled generator type')  # pragma: no cover
+    context.generators = result
+
+
+def re100SWHB_2(context):
+    """This scenario is the original Re100SWHB scenario that was used in paper 2"""    
+    """It is the same as for paper 1 but ADDS in rooftop solar and changes the config of battery storage and load"""
+    """IT ASSUMES: """
+    """100% renewable electricity with only Large Scale PV, Rooftop PV, Wind, Hydro."""
+    """Existing capacity for Large Scale PV and Wind are as of June 2022"""
+    """Existing capacity for Rooftop Solar PV are as of September 2023"""
+    """Existing Hydro and Pumped Hydro are placed where they are located IRL"""
+    """Adds a new rooftop, largescale PV and Wind generator to each polygon"""
+
+    """To Note: The code for battery and hydro generators has changed between Paper 1 and Paper 2"""
+
+    re100SWH_2(context)
 
     #1 hour battery that NEMO can vary
     battstorage1 = BatteryStorage(100, "Battery Storage 1 hours") #Storage MWh
@@ -572,9 +487,13 @@ def re100SWH_batteriesTEST(context):
     #battload.setters = [] # Otherwise, NEMO will try varying the capacity which in turn varies the full loads hours to a non-{1,2,4,8} multiple.
     context.generators = context.generators + [batt1] + [battload1] + [batt2] + [battload2] + [batt4] + [battload4] + [batt8] + [battload8] 
 
-def re100SWH_batteriesTEST_COMPARE(context):
-    """PAPER 2 SCENARIO MODIFIED TO MATCH re100SWHB4 FROM PAPER 1"""
-    re100SWH_COMPARE(context)
+
+def re100SWHB_2_COMPARE_1(context):
+    """THIS IS A TESTING SCENARIO"""
+    """Here, we are comparing the original re100SWHB4 to re100SWHB4_2"""
+    """This is because the code has changed for battery generators between paper 1 and 2"""
+
+    re100SWH(context)
     # discharge between 5pm and 7am daily
     hrs = list(range(0, 8)) + list(range(17, 24))
     #1 hour battery that NEMO can vary
@@ -613,13 +532,6 @@ def re100SWH_batteriesTEST_COMPARE(context):
     #batt.setters = [] # If you want fixed capacity batteries, you need to set the batt and battload setters to []. 
     #battload.setters = [] # Otherwise, NEMO will try varying the capacity which in turn varies the full loads hours to a non-{1,2,4,8} multiple.
     context.generators = context.generators + [batt1] + [battload1] + [batt2] + [battload2] + [batt4] + [battload4] + [batt8] + [battload8] 
-
-
-def re100SWHB_dr(context):
-    re100SWH_batteries(context)
-    dr = DemandResponse(36, 500, 500, label=f'{"P36 Demand response NSW"}')
-    dr.setters = []
-    context.generators = [dr] + context.generators
 
 
 """ End Elonas Scenarios"""
@@ -726,19 +638,12 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100-qld': re100_qld,
                     're100-nsw': re100_nsw,
                     're100-sa': re100_south_aus,
-                    're100SWH_WA': re100SWH_WA,
                     're100SWH': re100SWH,
-                    're100SWH_COMPARE': re100SWH_COMPARE,
-                    're100SWHBMid':re100SWHBMid,
-                    're100SWHBLast':re100SWHBLast,
                     're100SWHB4':re100SWHB4,
                     're100SWHB4G':re100SWHB4G,
-                    're100SWHB1G':re100SWHB1G, 
-                    're100SWHB_David': re100SWHB_David,
-                    're100SWH_batteries': re100SWH_batteries,
-                    're100SWH_batteriesTEST': re100SWH_batteriesTEST,
-                    're100SWH_batteriesTEST_COMPARE': re100SWH_batteriesTEST_COMPARE,
-                    're100SWHB_dr': re100SWHB_dr,
+                    're100SWH_existingbatteries': re100SWH_existingbatteries,
+                    're100SWHB_2': re100SWHB_2,
+                    're100SWHB_2_COMPARE_1': re100SWHB_2_COMPARE_1,
                     're100+dsp': re100_dsp,
                     're100-nocst': re100_nocst,
                     'replacement': replacement}
