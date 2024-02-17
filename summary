@@ -65,8 +65,13 @@ def addcap(tech, flds):
     av.last = tech
 
 
-MERIT = "battery rooftop HSA EGS PV wind CST Coal Coal-CCS CCGT CCGT-CCS hydro "
-MERIT += "PSH GT OCGT diesel DR"
+def warn(flds):
+    """Warn if a line is not matched in the pattern dictionary."""
+    print("WARNING: unmatched:", ' '.join(flds))
+
+
+MERIT = "battery HSA EGS PV wind offshore CST Coal Coal-CCS CCGT CCGT-CCS "
+MERIT += "hydro PSH GT OCGT diesel DR"
 MERIT = MERIT.split()
 
 # A namespace for AWK-like variables
@@ -78,36 +83,41 @@ scenario_num = 0  # pylint: disable=invalid-name
 
 patterns = {
     '[Rr]ooftop.*[kMG]W.?$': lambda f: addcap("rooftop", f),
-    '[Bb]att(ery)?.*[kMG]W.?$': lambda f: addcap("battery", f),
-    'HSA.*[kMG]W.?$': lambda f: addcap("HSA", f),
-    'EGS.*[kMG]W.?$': lambda f: addcap("EGS", f),
-    'PV.*[kMG]W.?$': lambda f: addcap("PV", f),
-    '[Ww]ind.*[kMG]W.?$': lambda f: addcap("wind", f),
-    ' S?CST.*[kMG]W.?$': lambda f: addcap("CST", f),
-    ' hydro.*[kMG]W.?$': lambda f: addcap("hydro", f),
-    'pumped-hydro.*[kMG]W.?$': lambda f: addcap("PSH", f),
-    'Tumut 3 generator.*[kMG]W.?$': lambda f: addcap("PSH", f),
-    'Tumut 3 pump.*[kMG]W.?$': lambda f: addcap("PSH", f),
-    'PSH.*[kMG]W.?$': lambda f: addcap("PSH", f),
-    ' GT.*[kMG]W.?$': lambda f: addcap("GT", f),
-    'CCGT-CCS.*[kMG]W.?$': lambda f: addcap("CCGT-CCS", f),
-    'CCGT .*[kMG]W.?$': lambda f: addcap("CCGT", f),
-    'coal.*[kMG]W.?$': lambda f: addcap("Coal", f),
-    'Coal-CCS.*[kMG]W.?$': lambda f: addcap("Coal-CCS", f),
-    'OCGT.*[kMG]W.?$': lambda f: addcap("OCGT", f),
-    'diesel.*[kMG]W.?$': lambda f: addcap("diesel", f),
-    '(DR|demand, f).*[kMG]W.?$': lambda f: addcap("DR", f),
-    'HydrogenGT.*[kMG]W.?$': lambda f: addcap("HydrogenGT", f)
+    # don't count battery loads
+    '[Bb]att(ery) ([Ll]oad|[Cc]harger)?.*[kMG]W$': lambda f: None,
+    '[Bb]att(ery)?.*[kMG]W$': lambda f: addcap("battery", f),
+    'HSA.*[kMG]W$': lambda f: addcap("HSA", f),
+    'EGS.*[kMG]W$': lambda f: addcap("EGS", f),
+    'PV.*[kMG]W$': lambda f: addcap("PV", f),
+    '[Ww]ind.*[kMG]W$': lambda f: addcap("wind", f),
+    'offshore.*[kMG]W$': lambda f: addcap("offshore", f),
+    ' S?CST.*[kMG]W$': lambda f: addcap("CST", f),
+    ' hydro.*[kMG]W$': lambda f: addcap("hydro", f),
+    'pumped-hydro.*[kMG]W$': lambda f: addcap("PSH", f),
+    'PSH generator.*[kMG]W$': lambda f: addcap("PSH", f),
+    # don't count pumped hydro pumps
+    'PSH pump.*[kMG]W$': lambda f: None,
+    ' GT.*[kMG]W$': lambda f: addcap("GT", f),
+    'CCGT-CCS.*[kMG]W$': lambda f: addcap("CCGT-CCS", f),
+    'CCGT .*[kMG]W$': lambda f: addcap("CCGT", f),
+    'coal.*[kMG]W$': lambda f: addcap("Coal", f),
+    'Coal-CCS.*[kMG]W$': lambda f: addcap("Coal-CCS", f),
+    'OCGT.*[kMG]W$': lambda f: addcap("OCGT", f),
+    'diesel.*[kMG]W$': lambda f: addcap("diesel", f),
+    '(DR|demand, f).*[kMG]W$': lambda f: addcap("DR", f),
+    'HydrogenGT.*[kMG]W$': lambda f: addcap("HydrogenGT", f),
+    '[kMG]W$': warn
 }
 
 for line in sys.stdin:  # noqa: C901
-    fields = awklite.Fields(line.split())
+    fields = awklite.Fields(line.strip().split())
     nf = len(fields)
 
     # AWK-style processing loop
     for pattern, action in patterns.items():
         if search(pattern, line):
             action(fields)
+            break
 
     if search(r'supplied [\d\.]+ [MGTP]Wh', line):
         fld3 = fields[3]
