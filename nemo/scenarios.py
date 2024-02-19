@@ -123,7 +123,7 @@ def _every_poly(gentype):
             cfg = configfile.get('generation', 'rooftop-pv-trace')
             result.append(gentype(poly, 0, cfg, poly - 1,
                                   build_limit=pv_limit[poly],
-                                  label=f'polygon {poly} rooftop PV'))
+                                  label=f'polygon {poly} rooftop'))
         elif gentype == Wind:
             cfg = configfile.get('generation', 'wind-trace')
             result.append(gentype(poly, 0, cfg, poly - 1,
@@ -487,7 +487,8 @@ def re100SWHB_2(context):
     #battload.setters = batt.setters
     #batt.setters = [] # If you want fixed capacity batteries, you need to set the batt and battload setters to []. 
     #battload.setters = [] # Otherwise, NEMO will try varying the capacity which in turn varies the full loads hours to a non-{1,2,4,8} multiple.
-    context.generators = context.generators + [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] 
+    #context.generators = context.generators + [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] 
+    context.generators = [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] + context.generators + [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] 
 
 
 def re100SWHB_2_COMPARE_1(context):
