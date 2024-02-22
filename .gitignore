@@ -1,8 +1,7 @@
-
-*.pyc
 htmlcov
 results.json
 myenv
 html
 htmlcov
 *.pyc
+*nemo/_pycache
