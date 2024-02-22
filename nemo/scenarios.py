@@ -487,8 +487,93 @@ def re100SWHB_2(context):
     #battload.setters = batt.setters
     #batt.setters = [] # If you want fixed capacity batteries, you need to set the batt and battload setters to []. 
     #battload.setters = [] # Otherwise, NEMO will try varying the capacity which in turn varies the full loads hours to a non-{1,2,4,8} multiple.
+    context.generators = context.generators + [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] 
+    #context.generators = [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] + context.generators + [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] 
+
+
+def re100SWHB_2_BattStartEnd(context):
+    """This scenario is the original Re100SWHB scenario that was used in paper 2"""    
+    """It is the same as for paper 1 but ADDS in rooftop solar and changes the config of battery storage and load"""
+    """IT ASSUMES: """
+    """100% renewable electricity with only Large Scale PV, Rooftop PV, Wind, Hydro."""
+    """Existing capacity for Large Scale PV and Wind are as of June 2022"""
+    """Existing capacity for Rooftop Solar PV are as of September 2023"""
+    """Existing Hydro and Pumped Hydro are placed where they are located IRL"""
+    """Adds a new rooftop, largescale PV and Wind generator to each polygon"""
+
+    """To Note: The code for battery and hydro generators has changed between Paper 1 and Paper 2"""
+
+    re100SWH_2(context)
+
+    #1 hour battery that NEMO can vary
+    battstorage1 = BatteryStorage(100, "P24 New Batt Storage 1 NSW") #Storage MWh
+    batt1 = Battery(24, 100, 1, battstorage1, "P24 Batt Discharge 1 NSW") #Capacity MW
+    battload1 = BatteryLoad(24, 100, battstorage1, "P24 Batt Charge 1 NSW") #Capacity MW
+    dual1 = DualSetter(battload1.setters[0], batt1.setters[0])
+    battload1.setters = []
+    batt1.setters = [(dual1.set_capacity, 0, 40)]
+    
+    #2 hour battery that NEMO can vary
+    battstorage2 = BatteryStorage(200, "P24 New Batt Storage 2 NSW") #Storage MWh 
+    batt2 = Battery(24, 100, 2, battstorage2, "P24 New Batt Discharge 2 NSW") #Capacity MW
+    battload2 = BatteryLoad(24, 100, battstorage2, "P24 New Batt Charge 2 NSW") #Capacity MW
+    dual2 = DualSetter(battload2.setters[0], batt2.setters[0])
+    battload2.setters = []
+    batt2.setters = [(dual2.set_capacity, 0, 40)]
+    
+    #4 hour battery that NEMO can vary
+    battstorage4 = BatteryStorage(400, "P24 New Batt Storage 4 NSW") #Storage MWh
+    batt4 = Battery(24, 100, 4, battstorage4, "P24 New Batt Discharge 4 NSW") #Capacity MW
+    battload4 = BatteryLoad(24, 100, battstorage4, "P24 New Batt Charge 4 NSW") #Capacity MW
+    dual4 = DualSetter(battload4.setters[0], batt4.setters[0])
+    battload4.setters = []
+    batt4.setters = [(dual4.set_capacity, 0, 40)]
+
+    #8 hour battery that NEMO can vary
+    battstorage8 = BatteryStorage(800, "P24 New Batt Storage 8 NSW") #Storage MWh
+    batt8 = Battery(24, 100, 8, battstorage8, "P24 New Batt Discharge 8 NSW") #Capacity MW
+    battload8 = BatteryLoad(24, 100, battstorage8, "P24 New Batt Charge 8 NSW") #Capacity MW
+    dual8 = DualSetter(battload8.setters[0], batt8.setters[0])
+    battload8.setters = []
+    batt8.setters = [(dual8.set_capacity, 0, 40)]
+
+    #1 hour battery that NEMO can vary
+    battstorage11 = BatteryStorage(100, "P24 New Batt Storage 11 NSW") #Storage MWh
+    batt11 = Battery(24, 100, 1, battstorage11, "P24 Batt Discharge 11 NSW") #Capacity MW
+    battload11 = BatteryLoad(24, 100, battstorage11, "P24 Batt Charge 11 NSW") #Capacity MW
+    dual11 = DualSetter(battload11.setters[0], batt11.setters[0])
+    battload11.setters = []
+    batt11.setters = [(dual11.set_capacity, 0, 40)]
+    
+    #2 hour battery that NEMO can vary
+    battstorage22 = BatteryStorage(200, "P24 New Batt Storage 22 NSW") #Storage MWh 
+    batt22 = Battery(24, 100, 2, battstorage22, "P24 New Batt Discharge 22 NSW") #Capacity MW
+    battload22 = BatteryLoad(24, 100, battstorage22, "P24 New Batt Charge 22 NSW") #Capacity MW
+    dual22 = DualSetter(battload22.setters[0], batt22.setters[0])
+    battload22.setters = []
+    batt22.setters = [(dual22.set_capacity, 0, 40)]
+    
+    #4 hour battery that NEMO can vary
+    battstorage44 = BatteryStorage(400, "P24 New Batt Storage 44 NSW") #Storage MWh
+    batt44 = Battery(24, 100, 4, battstorage44, "P24 New Batt Discharge 44 NSW") #Capacity MW
+    battload44 = BatteryLoad(24, 100, battstorage44, "P24 New Batt Charge 44 NSW") #Capacity MW
+    dual44 = DualSetter(battload44.setters[0], batt44.setters[0])
+    battload44.setters = []
+    batt44.setters = [(dual44.set_capacity, 0, 40)]
+
+    #8 hour battery that NEMO can vary
+    battstorage88 = BatteryStorage(800, "P24 New Batt Storage 88 NSW") #Storage MWh
+    batt88 = Battery(24, 100, 8, battstorage88, "P24 New Batt Discharge 88 NSW") #Capacity MW
+    battload88 = BatteryLoad(24, 100, battstorage88, "P24 New Batt Charge 88 NSW") #Capacity MW
+    dual88 = DualSetter(battload88.setters[0], batt88.setters[0])
+    battload88.setters = []
+    batt88.setters = [(dual88.set_capacity, 0, 40)]
+
+    #battload.setters = batt.setters
+    #batt.setters = [] # If you want fixed capacity batteries, you need to set the batt and battload setters to []. 
+    #battload.setters = [] # Otherwise, NEMO will try varying the capacity which in turn varies the full loads hours to a non-{1,2,4,8} multiple.
     #context.generators = context.generators + [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] 
-    context.generators = [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] + context.generators + [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] 
+    context.generators = [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] + context.generators + [batt11, battload11, batt22, battload22, batt44, battload44, batt88, battload88] 
 
 
 def re100SWHB_2_COMPARE_1(context):
@@ -646,6 +731,7 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100SWHB4G':re100SWHB4G,
                     're100SWH_existingbatteries': re100SWH_existingbatteries,
                     're100SWHB_2': re100SWHB_2,
+                    're100SWHB_2_BattStartEnd': re100SWHB_2_BattStartEnd,
                     're100SWHB_2_COMPARE_1': re100SWHB_2_COMPARE_1,
                     're100+dsp': re100_dsp,
                     're100-nocst': re100_nocst,
