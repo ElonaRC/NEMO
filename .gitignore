@@ -5,3 +5,8 @@ html
 htmlcov
 *.pyc
 nemo/__pycache
+.Rhistory
+.DS_Store
+.coverage
+.idea
+.vscode
