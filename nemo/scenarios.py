@@ -50,9 +50,9 @@ def _pumped_hydro():
     # Tumut 3 is 600 MW pumping and 1800 MW generating
     psh36stg = PumpedHydroStorage(15000, label='poly 36 pumped storage')
     psh36pump = PumpedHydroPump(36, 1740, psh36stg,
-                                label='poly 36 PSH pump')
+                                label='poly 36 PSH pump') ##Paper 1 has cap at 1740. Paper 2 had it as 600 + 160 + 80
     psh36turb = PumpedHydroTurbine(36, 1740, psh36stg,
-                                   label='poly 36 PSH generator')
+                                   label='poly 36 PSH generator') ##Paper 1 has cap at 1740 Paper 2 had it as 1800 + 160 + 80
 
     return [psh17pump, psh36pump, psh17turb, psh36turb]
 
