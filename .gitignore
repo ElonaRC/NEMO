@@ -4,4 +4,4 @@ myenv
 html
 htmlcov
 *.pyc
-*nemo/_pycache
+nemo/__pycache
