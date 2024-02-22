@@ -49,9 +49,9 @@ def _pumped_hydro():
     # NSW: Tumut 3, Bendeela (2x80 MW) and Kangaroo Valley (2x40 MW)
     # Tumut 3 is 600 MW pumping and 1800 MW generating
     psh36stg = PumpedHydroStorage(15000, label='poly 36 pumped storage')
-    psh36pump = PumpedHydroPump(36, 600 + 160 + 80, psh36stg,
+    psh36pump = PumpedHydroPump(36, 1740, psh36stg,
                                 label='poly 36 PSH pump')
-    psh36turb = PumpedHydroTurbine(36, 1800 + 160 + 80, psh36stg,
+    psh36turb = PumpedHydroTurbine(36, 1740, psh36stg,
                                    label='poly 36 PSH generator')
 
     return [psh17pump, psh36pump, psh17turb, psh36turb]
