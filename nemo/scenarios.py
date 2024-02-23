@@ -123,7 +123,7 @@ def _every_poly(gentype):
         elif gentype == Behind_Meter_PV:
             cfg = configfile.get('generation', 'rooftop-pv-trace')
             result.append(gentype(poly, 0, cfg, poly - 1,
-                                  build_limit=pv_limit[poly],
+                                  build_limit=rooftop_limit[poly],
                                   label=f'polygon {poly} rooftop'))
         elif gentype == Wind:
             cfg = configfile.get('generation', 'wind-trace')
@@ -259,7 +259,7 @@ def _allSolarWind(gentype):
                                  (37, 94.8), (38, 190.1), (39, 2434.1), (40, 34.8), 
                                  (41, 65.7), (42, 5), (43, 95.8)]:
             g = gentype(poly, capacity, cfg, poly - 1,
-                        build_limit=rooftop_limit[poly],
+                        build_limit=capacity / 1000,
                         label=f'polygon {poly} Existing Rooftop')
             g.capcost = lambda costs: 0
             g.setters = []
