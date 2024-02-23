@@ -247,7 +247,7 @@ def _allSolarWind(gentype):
             g.setters = []
             result.append(g)
     elif gentype == Behind_Meter_PV:
-        cfg = configfile.get('generation', 'pv1axis-trace')
+        cfg = configfile.get('generation', 'rooftop-pv-trace')
         for (poly, capacity) in [(1, 184.5), (2, 1.2), (3, 7.4), 
                                  (4, 296.8), (5, 0.6), (6, 2.9), (7, 141.11), 
                                  (8, 2.2), (9, 1.1), (10, 16.2), (11, 219.8), 
