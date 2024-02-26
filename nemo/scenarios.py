@@ -160,49 +160,6 @@ def re100(context):
 
 
 def _existingSolarWind(gentype):
-    """Add in existing large scale solar and wind generators for each polygon."""
-    """NO ROOFTOP SOLAR HERE"""
-    """ERC Addition"""
-    # (Total solarfarms capacity for each polygon -
-    # /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/
-    # NEM_SolarGenerators_Spatial_Cap_OPENNEM.csv )
-    # (Total windfarm capacty for each polygon -
-    # /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/
-    # NEM_WindGenerators_Spatial_Cap_OPENNEM.csv)
-    result = []
-    if gentype == PV1Axis:
-        cfg = configfile.get('generation', 'pv1axis-trace')
-        for (poly, capacity) in [(1, 12.5), (2, 5), (3, 50), (4, 962), (6, 205.7),
-                                 (7, 26), (11, 141.13), (16, 14.7),
-                                 (17, 302.75), (23, 267.7), (24, 20),
-                                 (26, 135), (27,4.9),(28, 53), (29, 1.2),
-                                 (30, 256.5), (31, 134.5), (32, 110.3),
-                                 (33, 868.13), (34, 617.6), (35, 121),
-                                 (36, 55.5), (37, 55), (38, 217), (39, 111.8)]:
-            g = gentype(poly, capacity, cfg, poly - 1,
-                        build_limit=capacity / 1000,
-                        label=f'polygon {poly} Existing PV')
-            g.capcost = lambda costs: 0
-            g.setters = []
-            result.append(g)
-    elif gentype == Wind:
-        cfg = configfile.get('generation', 'wind-trace')
-        for (poly, capacity) in [(1, 192.52), (24, 442.48),
-                                 (26, 355.03), (27, 1086.26), (28, 198.94),
-                                 (30, 113.19), (31, 9.9),
-                                 (32, 614.3), (36, 1137.44), (37, 2026.35),
-                                 (38, 21), (39, 874.4),
-                                 (40, 251.35), (41, 168), (43, 144)]:
-            g = gentype(poly, capacity, cfg, poly - 1,
-                        build_limit=capacity / 1000,
-                        label=f'polygon {poly} Existing Wind')
-            g.capcost = lambda costs: 0
-            g.setters = []
-            result.append(g)
-    return result
-
-
-def _allSolarWind(gentype):
     """Add in existing large scale solar, rooftop PV, and wind generators for each polygon. All data is in MW"""
     """INCLUDES ROOFTOP SOLAR HERE"""
     """ERC Addition"""
@@ -432,7 +389,7 @@ def re100SWH_2(context):
         elif g == Hydro:
             result += _hydro()
         elif g in [Behind_Meter_PV, PV1Axis, Wind]:
-            result += _allSolarWind(g)
+            result += _existingSolarWind(g)
             result += _every_poly(g)
         else:
             raise ValueError('unhandled generator type')  # pragma: no cover
@@ -488,11 +445,7 @@ def re100SWHB_2(context):
     battload8.setters = []
     batt8.setters = [(dual8.set_capacity, 0, 40)]
 
-    #battload.setters = batt.setters
-    #batt.setters = [] # If you want fixed capacity batteries, you need to set the batt and battload setters to []. 
-    #battload.setters = [] # Otherwise, NEMO will try varying the capacity which in turn varies the full loads hours to a non-{1,2,4,8} multiple.
     context.generators = context.generators + [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] 
-    #context.generators = [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] + context.generators + [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] 
 
 
 def re100SWHB_2_BattStartEnd(context):
