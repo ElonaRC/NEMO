@@ -156,6 +156,26 @@ def re100(context):
     context.generators = result
 
 
+def _batterySet(polygon, capacity, shours, comment):
+   """
+   Generate and return a pair of battery generator objects: one for the charging
+   side and one for the discharging side.
+
+   capacity is the initial generating capacity (in MW)
+   shours is the number of full load storage hours
+   comment is the prefix for the object titles (eg. "P24 battery")
+   """
+   # discharge between 5pm and 7am daily
+   hrs = list(range(0, 8)) + list(range(17, 24))
+   storage = BatteryStorage(capacity * shours, f"{comment} Storage")
+   batt = Battery(polygon, capacity, shours, storage, f"{comment} Discharge", discharge_hours=hrs)
+   load = BatteryLoad(polygon, capacity, storage, f"{comment} Charge", discharge_hours=hrs, rte=0.9)
+   dual = DualSetter(batt.setters[0], load.setters[0])
+   load.setters = []
+   batt.setters = [(dual.set_capacity, 0, 40)]
+   return (batt, load)
+
+
 """ Start Elona's Scenarios """
 
 
@@ -414,36 +434,13 @@ def re100SWHB_2(context):
     hrs = list(range(0, 8)) + list(range(17, 24))
 
     #1 hour battery that NEMO can vary
-    battstorage1 = BatteryStorage(100, "P24 New Batt Storage 1 NSW") #Storage MWh
-    batt1 = Battery(24, 100, 1, battstorage1, "P24 Batt Discharge 1 NSW", discharge_hours=hrs) #Capacity MW
-    battload1 = BatteryLoad(24, 100, battstorage1, "P24 Batt Charge 1 NSW", discharge_hours=hrs, rte = 0.9) #Capacity MW
-    dual1 = DualSetter(battload1.setters[0], batt1.setters[0])
-    battload1.setters = []
-    batt1.setters = [(dual1.set_capacity, 0, 40)]
-    
+    batt1, battload1 = _batterySet(24, 100, 1, "P24 Battery 1")
     #2 hour battery that NEMO can vary
-    battstorage2 = BatteryStorage(200, "P24 New Batt Storage 2 NSW") #Storage MWh 
-    batt2 = Battery(24, 100, 2, battstorage2, "P24 New Batt Discharge 2 NSW", discharge_hours=hrs) #Capacity MW
-    battload2 = BatteryLoad(24, 100, battstorage2, "P24 New Batt Charge 2 NSW", discharge_hours=hrs, rte = 0.9) #Capacity MW
-    dual2 = DualSetter(battload2.setters[0], batt2.setters[0])
-    battload2.setters = []
-    batt2.setters = [(dual2.set_capacity, 0, 40)]
-    
+    batt2, battload2 = _batterySet(24, 100, 2, "P24 Battery 2")
     #4 hour battery that NEMO can vary
-    battstorage4 = BatteryStorage(400, "P24 New Batt Storage 4 NSW") #Storage MWh
-    batt4 = Battery(24, 100, 4, battstorage4, "P24 New Batt Discharge 4 NSW", discharge_hours=hrs) #Capacity MW
-    battload4 = BatteryLoad(24, 100, battstorage4, "P24 New Batt Charge 4 NSW", discharge_hours=hrs, rte = 0.9) #Capacity MW
-    dual4 = DualSetter(battload4.setters[0], batt4.setters[0])
-    battload4.setters = []
-    batt4.setters = [(dual4.set_capacity, 0, 40)]
-
+    batt4, battload4 = _batterySet(24, 100, 4, "P24 Battery 4")
     #8 hour battery that NEMO can vary
-    battstorage8 = BatteryStorage(800, "P24 New Batt Storage 8 NSW") #Storage MWh
-    batt8 = Battery(24, 100, 8, battstorage8, "P24 New Batt Discharge 8 NSW", discharge_hours=hrs) #Capacity MW
-    battload8 = BatteryLoad(24, 100, battstorage8, "P24 New Batt Charge 8 NSW", discharge_hours=hrs, rte = 0.9) #Capacity MW
-    dual8 = DualSetter(battload8.setters[0], batt8.setters[0])
-    battload8.setters = []
-    batt8.setters = [(dual8.set_capacity, 0, 40)]
+    batt8, battload8 = _batterySet(24, 100, 8, "P24 Battery 8")
 
     context.generators = context.generators + [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] 
 
