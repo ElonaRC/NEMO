@@ -943,7 +943,7 @@ class GenCost2023_2030_NZE2050(GenCost2023):
         table[tech.CentralReceiver] = 4917
         table[tech.Coal_CCS] = 9639
         table[tech.OCGT] = 828
-        table[tech.Behind_Meter_PV] = 692 #988 = gencost price, 692 = 30% govt rebate, 494 = 50% govt rebate
+        table[tech.Behind_Meter_PV] = 988
         table[tech.PV1Axis] = 1071
         table[tech.Wind] = 1913
         table[tech.WindOffshore] = 2755
