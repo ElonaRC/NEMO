@@ -582,7 +582,7 @@ class GenCost2022_2021(GenCost2022):
         table[tech.CentralReceiver] = 6693
         table[tech.Coal_CCS] = 9077
         table[tech.OCGT] = 873
-        table[tech.Behind_Meter_PV] = 0
+        table[tech.Behind_Meter_PV] = 1333
         table[tech.PV1Axis] = 1441
         table[tech.Wind] = 1960
         table[tech.WindOffshore] = 4649
@@ -604,7 +604,7 @@ class GenCost2022_2030_CP(GenCost2022):
         table[tech.CentralReceiver] = 5660
         table[tech.Coal_CCS] = 8884
         table[tech.OCGT] = 741
-        table[tech.Behind_Meter_PV] = 0
+        table[tech.Behind_Meter_PV] = 949
         table[tech.PV1Axis] = 1013
         table[tech.Wind] = 1897
         table[tech.WindOffshore] = 4545
@@ -626,7 +626,7 @@ class GenCost2022_2040_CP(GenCost2022):
         table[tech.CentralReceiver] = 4894
         table[tech.Coal_CCS] = 8650
         table[tech.OCGT] = 716
-        table[tech.Behind_Meter_PV] = 0
+        table[tech.Behind_Meter_PV] = 691
         table[tech.PV1Axis] = 733
         table[tech.Wind] = 1868
         table[tech.WindOffshore] = 4482
@@ -648,7 +648,7 @@ class GenCost2022_2050_CP(GenCost2022):
         table[tech.CentralReceiver] = 4103
         table[tech.Coal_CCS] = 7958
         table[tech.OCGT] = 691
-        table[tech.Behind_Meter_PV] = 0
+        table[tech.Behind_Meter_PV] = 606
         table[tech.PV1Axis] = 644
         table[tech.Wind] = 1828
         table[tech.WindOffshore] = 4431
@@ -670,7 +670,7 @@ class GenCost2022_2030_NZE2050(GenCost2022):
         table[tech.CentralReceiver] = 4657
         table[tech.Coal_CCS] = 8631
         table[tech.OCGT] = 741
-        table[tech.Behind_Meter_PV] = 0
+        table[tech.Behind_Meter_PV] = 752
         table[tech.PV1Axis] = 785
         table[tech.Wind] = 1633
         table[tech.WindOffshore] = 2967
@@ -692,7 +692,7 @@ class GenCost2022_2040_NZE2050(GenCost2022):
         table[tech.CentralReceiver] = 3620
         table[tech.Coal_CCS] = 7768
         table[tech.OCGT] = 716
-        table[tech.Behind_Meter_PV] = 0
+        table[tech.Behind_Meter_PV] = 557
         table[tech.PV1Axis] = 578
         table[tech.Wind] = 1553
         table[tech.WindOffshore] = 2653
@@ -714,7 +714,7 @@ class GenCost2022_2050_NZE2050(GenCost2022):
         table[tech.CentralReceiver] = 2911
         table[tech.Coal_CCS] = 7552
         table[tech.OCGT] = 691
-        table[tech.Behind_Meter_PV] = 0
+        table[tech.Behind_Meter_PV] = 500
         table[tech.PV1Axis] = 521
         table[tech.Wind] = 1521
         table[tech.WindOffshore] = 2506
@@ -736,7 +736,7 @@ class GenCost2022_2030_NZEPost2050(GenCost2022):
         table[tech.CentralReceiver] = 5236
         table[tech.Coal_CCS] = 8747
         table[tech.OCGT] = 741
-        table[tech.Behind_Meter_PV] = 0
+        table[tech.Behind_Meter_PV] = 977
         table[tech.PV1Axis] = 1046
         table[tech.Wind] = 1778
         table[tech.WindOffshore] = 4437
@@ -758,7 +758,7 @@ class GenCost2022_2040_NZEPost2050(GenCost2022):
         table[tech.CentralReceiver] = 4181
         table[tech.Coal_CCS] = 8025
         table[tech.OCGT] = 716
-        table[tech.Behind_Meter_PV] = 0
+        table[tech.Behind_Meter_PV] = 653
         table[tech.PV1Axis] = 689
         table[tech.Wind] = 1648
         table[tech.WindOffshore] = 3772
@@ -780,7 +780,7 @@ class GenCost2022_2050_NZEPost2050(GenCost2022):
         table[tech.CentralReceiver] = 3478
         table[tech.Coal_CCS] = 7792
         table[tech.OCGT] = 691
-        table[tech.Behind_Meter_PV] = 0
+        table[tech.Behind_Meter_PV] = 508
         table[tech.PV1Axis] = 530
         table[tech.Wind] = 1546
         table[tech.WindOffshore] = 3168
@@ -840,28 +840,6 @@ class GenCost2023(Common):
         # Figures are entered in the classes in $/kWh, but these are
         # converted to $/kW in capcost().
         self.totcost_per_kwh = {}
-
-
-class GenCost2023_2023(GenCost2023):
-    """GenCost 2022-23 costs for 2023 (low assumption)."""
-
-    def __init__(self, discount, coal_price, gas_price, ccs_price):
-        """Construct a cost object."""
-        GenCost2023.__init__(self, discount, coal_price, gas_price, ccs_price)
-        table = self.capcost_per_kw
-        table[tech.Black_Coal] = 4964
-        table[tech.CCGT] = 1706
-        table[tech.CCGT_CCS] = 4340
-        table[tech.CentralReceiver] = 6368
-        table[tech.Coal_CCS] = 10513
-        table[tech.OCGT] = 1002
-        table[tech.Behind_Meter_PV] = 1400
-        table[tech.PV1Axis] = 1516
-        table[tech.Wind] = 2644
-        table[tech.WindOffshore] = 5480
-
-        table = self.totcost_per_kwh
-        table[tech.Battery] = {1: 936, 2: 677, 4: 549, 8: 488}
 
 
 class GenCost2023_2030_CP(GenCost2023):
@@ -1087,7 +1065,6 @@ cost_scenarios = {'Null': NullCosts,
                   'GenCost2022-in2050-CP': GenCost2022_2050_CP,
                   'GenCost2022-in2050-NZE2050': GenCost2022_2050_NZE2050,
                   'GenCost2022-in2050-NZE2050+': GenCost2022_2050_NZEPost2050,
-                  'GenCost2023-in2022': GenCost2023_2023,
                   'GenCost2023-in2030-CP': GenCost2023_2030_CP,
                   'GenCost2023-in2030-NZE2050': GenCost2023_2030_NZE2050,
                   'GenCost2023-in2030-NZE2050+': GenCost2023_2030_NZEPost2050,
