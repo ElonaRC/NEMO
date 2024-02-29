@@ -22,6 +22,7 @@ from nemo.types import UnreachableError
 
 RUNFAST = 0  # changes everypoly from 44 to 10
 
+
 class DualSetter:
     def __init__(self, setter1, setter2):
         self.setters = [setter1[0], setter2[0]]
@@ -29,6 +30,7 @@ class DualSetter:
     def set_capacity(self, cap):
         for setter in self.setters:
             setter(cap)
+
 
 def _demand_response():
     """Return a list of DR 'generators'."""
@@ -50,9 +52,9 @@ def _pumped_hydro():
     # Tumut 3 is 600 MW pumping and 1800 MW generating
     psh36stg = PumpedHydroStorage(15000, label='poly 36 pumped storage')
     psh36pump = PumpedHydroPump(36, 1740, psh36stg,
-                                label='poly 36 PSH pump')  ## Paper 1 has cap at 1740. Paper 2 had it as 600 + 160 + 80
+                                label='poly 36 PSH pump')  # Paper 1 has cap at 1740. Paper 2 had it as 600 + 160 + 80
     psh36turb = PumpedHydroTurbine(36, 1740, psh36stg,
-                                   label='poly 36 PSH generator')  ## Paper 1 has cap at 1740 Paper 2 had it as 1800 + 160 + 80
+                                   label='poly 36 PSH generator')  # Paper 1 has cap at 1740 Paper 2 had it as 1800 + 160 + 80
 
     return [psh17pump, psh36pump, psh17turb, psh36turb]
 
@@ -299,11 +301,8 @@ def re100SWHB4(context):
                        label=f'{"P24 New Batt 4 NSW"}', rte=0.9)
     battery8 = Battery(24, 100, 8, discharge_hours=hrs,
                        label=f'{"P24 New Batt 8 NSW"}', rte=0.9)
-    context.generators = (context.generators
-                          + [battery1]
-                          + [battery2]
-                          + [battery4]
-                          + [battery8])
+    context.generators = context.generators + \
+        [battery1, battery2, battery4, battery8]
 
 
 def re100SWHB4G(context):
@@ -376,14 +375,12 @@ def re100SWH_existingbatteries(context):
     batBulgana.capcost = lambda costs: 0
     batBulgana.setters = []
 
-    context.generators = (context.generators
-                          + [batteryhornsdaleSA]
-                          + [batDalrympleSA]
-                          + [batBallaratVIC]
-                          + [batGannawarraVIC]
-                          + [batBonneySA]
-                          + [batVicBB]
-                          + [batBulgana])
+    context.generators = context.generators + [batteryhornsdaleSA,
+                                               batDalrympleSA,
+                                               batBallaratVIC,
+                                               batGannawarraVIC,
+                                               batBonneySA, batVicBB,
+                                               batBulgana]
 
 
 def re100SWH_2(context):
@@ -429,9 +426,6 @@ def re100SWHB_2(context):
     """To Note: The code for battery and hydro generators has changed between Paper 1 and Paper 2"""
 
     re100SWH_2(context)
-
-    # discharge between 5pm and 7am daily
-    hrs = list(range(0, 8)) + list(range(17, 24))
 
     # 1 hour battery that NEMO can vary
     batt1, battload1 = _batterySet(24, 100, 1, "P24 Battery 1")
@@ -570,10 +564,7 @@ def re100SWHB_2_COMPARE_1(context):
     battload8.setters = []
     batt8.setters = [(dual8.set_capacity, 0, 40)]
 
-    #battload.setters = batt.setters
-    #batt.setters = [] # If you want fixed capacity batteries, you need to set the batt and battload setters to []. 
-    #battload.setters = [] # Otherwise, NEMO will try varying the capacity which in turn varies the full loads hours to a non-{1,2,4,8} multiple.
-    context.generators = context.generators + [batt1] + [battload1] + [batt2] + [battload2] + [batt4] + [battload4] + [batt8] + [battload8] 
+    context.generators = context.generators + [batt1] + [battload1] + [batt2] + [battload2] + [batt4] + [battload4] + [batt8] + [battload8]
 
 
 """ End Elonas Scenarios"""
