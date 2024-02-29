@@ -448,7 +448,7 @@ def _centroid(vertices):
 
 def dist(poly1, poly2):
     """Return the distance between two polygon centroids.
-    
+
     >>> dist(1,1)
     0
     >>> dist(1,43)

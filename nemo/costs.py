@@ -336,7 +336,7 @@ class AETA2013_2030Mid(AETA2012_2030):
 class CEEM2016_2030(AETA2012_2030Mid):
     """
     CEEM 2016 custom costs.
-    
+
     These custom costs were produced by CEEM -- AETA (2013) mid costs
     with CO2CRC Power Generation Technology Report 2030 capital costs
     for utility-scale PV.
@@ -521,7 +521,6 @@ class GenCost2022(Common):
     Source:
     CSIRO GenCost 2021-22 report
     https://data.csiro.au/collections/collection/CIcsiro:44228
-    note: rooftop is a weird one (Behind_the_meter O&M set to zero for now)
     """
 
     def __init__(self, discount, coal_price, gas_price, ccs_price):
