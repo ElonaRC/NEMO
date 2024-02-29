@@ -24,6 +24,7 @@ RUNFAST = 0  # changes everypoly from 44 to 10
 
 
 class DualSetter:
+    """A setter that passes its value to a pair of setters."""
     def __init__(self, setter1, setter2):
         self.setters = [setter1[0], setter2[0]]
 
@@ -178,13 +179,14 @@ def _batterySet(polygon, capacity, shours, comment):
     return (batt, load)
 
 
-""" Start Elona's Scenarios """
+# Start Elona's Scenarios
 
 
 def _existingSolarWind(gentype):
     """Add in existing large scale solar, rooftop PV, and wind generators for each polygon. All data is in MW"""
-    """INCLUDES ROOFTOP SOLAR HERE"""
-    """ERC Addition"""
+    # INCLUDES ROOFTOP SOLAR HERE
+    # ERC Addition
+
     # (Total solarfarms capacity for each polygon -
     # /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/
     # NEM_SolarGenerators_Spatial_Cap_OPENNEM.csv )
@@ -248,19 +250,20 @@ def _existingSolarWind(gentype):
 
 """100% renewable electricity with only PV, Wind, Hydro.
 ERC Addition"""
-""" Start Elona's Scenarios """
+# Start Elona's Scenarios
 
 
 def re100SWH(context):
     """This scenario is the original Re100SWH scenario that was used in paper 1"""
-    """IT ASSUMES: """
-    """100% renewable electricity with only PV, Wind, Hydro."""
-    """NO ROOFTOP SOLAR"""
-    """Existing capacity for PV and Wind are as of June 2022"""
-    """Existing Hydro and Pumped Hydro are placed where they are located IRL"""
-    """Adds a new PV and Wind generator to each polygon"""
+    # IT ASSUMES:
+    # 100% renewable electricity with only PV, Wind, Hydro.
+    # NO ROOFTOP SOLAR
+    # Existing capacity for PV and Wind are as of June 2022
+    # Existing Hydro and Pumped Hydro are placed where they are located IRL
+    # Adds a new PV and Wind generator to each polygon
 
-    """Note: PumpedHydroTurbine used to be called PumpedHydro in paper 1 but the code for these generators has since changed"""
+    # Note: PumpedHydroTurbine used to be called PumpedHydro in paper
+    # 1 but the code for these generators has since changed
 
     result = []
 
@@ -280,14 +283,14 @@ def re100SWH(context):
 
 def re100SWHB4(context):
     """This scenario is the original Re100SWHB scenario that was used in paper 1"""
-    """IT ASSUMES: """
-    """100% renewable electricity with only PV, Wind, Hydro."""
-    """NO ROOFTOP SOLAR"""
-    """Existing capacity for PV and Wind are as of June 2022"""
-    """Existing Hydro and Pumped Hydro are placed where they are located IRL"""
-    """Adds a new PV and Wind generator to each polygon"""
-    """Put a 1, 2, 4, 8 hour battery into Polygon 24 in NSW with a flexible capacity to test which one is least-cost"""
-    """BATTERY AT THE END OF MERIT ORDER"""
+    # IT ASSUMES:
+    # 100% renewable electricity with only PV, Wind, Hydro.
+    # NO ROOFTOP SOLAR
+    # Existing capacity for PV and Wind are as of June 2022
+    # Existing Hydro and Pumped Hydro are placed where they are located IRL
+    # Adds a new PV and Wind generator to each polygon
+    # Put a 1, 2, 4, 8 hour battery into Polygon 24 in NSW with a flexible capacity to test which one is least-cost
+    # BATTERY AT THE END OF MERIT ORDER
 
     re100SWH(context)
     # discharge between 5pm and 7am daily
@@ -307,25 +310,27 @@ def re100SWHB4(context):
 
 def re100SWHB4G(context):
     """This scenario is the original Re100SWHB+ (gas scenario) scenario that was used in paper 1"""
-    """IT ASSUMES: """
-    """100% renewable electricity with only PV, Wind, Hydro."""
-    """NO ROOFTOP SOLAR"""
-    """Existing capacity for PV and Wind are as of June 2022"""
-    """Existing Hydro and Pumped Hydro are placed where they are located IRL"""
-    """Adds a new PV and Wind generator to each polygon"""
-    """Put a 1, 2, 4, 8 hour battery into Polygon 24 in NSW with a flexible capacity to test which one is least-cost"""
-    """Add in the gas generation fleet at the end that is the size of the existing OCGT fleet."""
+
+    # IT ASSUMES:
+    # 100% renewable electricity with only PV, Wind, Hydro.
+    # NO ROOFTOP SOLAR
+    # Existing capacity for PV and Wind are as of June 2022
+    # Existing Hydro and Pumped Hydro are placed where they are located IRL
+    # Adds a new PV and Wind generator to each polygon
+    # Put a 1, 2, 4, 8 hour battery into Polygon 24 in NSW with a flexible capacity to test which one is least-cost
+    # Add in the gas generation fleet at the end that is the size of the existing OCGT fleet.
 
     re100SWHB4(context)
     gasNew = OCGT(24, 6700, label=f'{"P24 Existing OCGT NSW"}')
     gasNew.setters = []
-    context.generators = (context.generators + [gasNew])
+    context.generators = context.generators + [gasNew]
 
 
 def re100SWH_existingbatteries(context):
     """This scenario is an original testing scenario but it was never used for paper 1"""
-    """It takes scenario re100SWH but adds in the NEM existing battery fleet"""
-    """I am leaving it here for the data on existing battery fleet as of 2023"""
+
+    # It takes scenario re100SWH but adds in the NEM existing battery fleet
+    # I am leaving it here for the data on existing battery fleet as of 2023
 
     re100SWH(context)
     # discharge between 5pm and 7am daily
@@ -385,17 +390,17 @@ def re100SWH_existingbatteries(context):
 
 def re100SWH_2(context):
     """This scenario is the original Re100SWH scenario that was used in paper 2"""
-    """We do not use it explicitly in paper 2 BUT we use it inside of re100SWHB_2"""
+    # We do not use it explicitly in paper 2 BUT we use it inside of re100SWHB_2
 
-    """It is the same as for paper 1 but ADDS in rooftop solar"""
-    """IT ASSUMES: """
-    """100% renewable electricity with only Large Scale PV, Rooftop PV, Wind, Hydro."""
-    """Existing capacity for Large Scale PV and Wind are as of June 2022"""
-    """Existing capacity for Rooftop Solar PV are as of September 2023"""
-    """Existing Hydro and Pumped Hydro are placed where they are located IRL"""
-    """Adds a new rooftop, largescale PV and Wind generator to each polygon"""
+    # It is the same as for paper 1 but ADDS in rooftop solar
+    # IT ASSUMES:
+    # 100% renewable electricity with only Large Scale PV, Rooftop PV, Wind, Hydro.
+    # Existing capacity for Large Scale PV and Wind are as of June 2022
+    # Existing capacity for Rooftop Solar PV are as of September 2023
+    # Existing Hydro and Pumped Hydro are placed where they are located IRL
+    # Adds a new rooftop, largescale PV and Wind generator to each polygon
 
-    """To Note: The code for battery and hydro generators has changed between Paper 1 and Paper 2"""
+    # To Note: The code for battery and hydro generators has changed between Paper 1 and Paper 2
 
     result = []
 
@@ -415,15 +420,15 @@ def re100SWH_2(context):
 
 def re100SWHB_2(context):
     """This scenario is the original Re100SWHB scenario that was used in paper 2"""
-    """It is the same as for paper 1 but ADDS in rooftop solar and changes the config of battery storage and load"""
-    """IT ASSUMES: """
-    """100% renewable electricity with only Large Scale PV, Rooftop PV, Wind, Hydro."""
-    """Existing capacity for Large Scale PV and Wind are as of June 2022"""
-    """Existing capacity for Rooftop Solar PV are as of September 2023"""
-    """Existing Hydro and Pumped Hydro are placed where they are located IRL"""
-    """Adds a new rooftop, largescale PV and Wind generator to each polygon"""
+    # It is the same as for paper 1 but ADDS in rooftop solar and changes the config of battery storage and load
+    # IT ASSUMES:
+    # 100% renewable electricity with only Large Scale PV, Rooftop PV, Wind, Hydro.
+    # Existing capacity for Large Scale PV and Wind are as of June 2022
+    # Existing capacity for Rooftop Solar PV are as of September 2023
+    # Existing Hydro and Pumped Hydro are placed where they are located IRL
+    # Adds a new rooftop, largescale PV and Wind generator to each polygon
 
-    """To Note: The code for battery and hydro generators has changed between Paper 1 and Paper 2"""
+    # To Note: The code for battery and hydro generators has changed between Paper 1 and Paper 2
 
     re100SWH_2(context)
 
@@ -441,15 +446,15 @@ def re100SWHB_2(context):
 
 def re100SWHB_2_BattStartEnd(context):
     """This scenario is the original Re100SWHB scenario that was used in paper 2"""
-    """It is the same as for paper 1 but ADDS in rooftop solar and changes the config of battery storage and load"""
-    """IT ASSUMES: """
-    """100% renewable electricity with only Large Scale PV, Rooftop PV, Wind, Hydro."""
-    """Existing capacity for Large Scale PV and Wind are as of June 2022"""
-    """Existing capacity for Rooftop Solar PV are as of September 2023"""
-    """Existing Hydro and Pumped Hydro are placed where they are located IRL"""
-    """Adds a new rooftop, largescale PV and Wind generator to each polygon"""
+    # It is the same as for paper 1 but ADDS in rooftop solar and changes the config of battery storage and load
+    # IT ASSUMES:
+    # 100% renewable electricity with only Large Scale PV, Rooftop PV, Wind, Hydro.
+    # Existing capacity for Large Scale PV and Wind are as of June 2022
+    # Existing capacity for Rooftop Solar PV are as of September 2023
+    # Existing Hydro and Pumped Hydro are placed where they are located IRL
+    # Adds a new rooftop, largescale PV and Wind generator to each polygon
 
-    """To Note: The code for battery and hydro generators has changed between Paper 1 and Paper 2"""
+    # To Note: The code for battery and hydro generators has changed between Paper 1 and Paper 2
 
     re100SWH_2(context)
 
@@ -526,8 +531,9 @@ def re100SWHB_2_BattStartEnd(context):
 
 def re100SWHB_2_COMPARE_1(context):
     """THIS IS A TESTING SCENARIO"""
-    """Here, we are comparing the original re100SWHB4 to re100SWHB4_2"""
-    """This is because the code has changed for battery generators between paper 1 and 2"""
+
+    # Here, we are comparing the original re100SWHB4 to re100SWHB4_2
+    # This is because the code has changed for battery generators between paper 1 and 2
 
     re100SWH(context)
     # discharge between 5pm and 7am daily
@@ -567,7 +573,7 @@ def re100SWHB_2_COMPARE_1(context):
     context.generators = context.generators + [batt1] + [battload1] + [batt2] + [battload2] + [batt4] + [battload4] + [batt8] + [battload8]
 
 
-""" End Elonas Scenarios"""
+# End Elonas Scenarios
 
 
 def _one_per_poly(region):

@@ -91,7 +91,7 @@ def run_one(bundle):
 
     # save surplus energy at every time step from each generator into CSV
     spills = []
-    for i, g in enumerate(context.generators):
+    for g in context.generators:
         d = g.series()['spilled']
         d = d.rename(g)
         d = d.reindex(range(0, 96432), fill_value=0)
@@ -102,7 +102,7 @@ def run_one(bundle):
 
     # save generation at every time step from each generator into CSV
     power = []
-    for i, g in enumerate(context.generators):
+    for g in context.generators:
         d = g.series()['power']
         d = d.rename(g)
         d = d.reindex(range(0, 96432), fill_value=0)
@@ -124,9 +124,9 @@ def run_one(bundle):
     # save stored energy for those generators that can
     # store for each time step into CSV
     charge = []
-    for i, g in enumerate(context.generators):
+    for g in context.generators:
         d = g.series()
-        if 'charge' not in d.keys():
+        if 'charge' not in d:
             d = pd.Series(0, name=g)
         else:
             d = d['charge']
