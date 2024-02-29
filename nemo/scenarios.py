@@ -50,9 +50,9 @@ def _pumped_hydro():
     # Tumut 3 is 600 MW pumping and 1800 MW generating
     psh36stg = PumpedHydroStorage(15000, label='poly 36 pumped storage')
     psh36pump = PumpedHydroPump(36, 1740, psh36stg,
-                                label='poly 36 PSH pump') ##Paper 1 has cap at 1740. Paper 2 had it as 600 + 160 + 80
+                                label='poly 36 PSH pump')  ## Paper 1 has cap at 1740. Paper 2 had it as 600 + 160 + 80
     psh36turb = PumpedHydroTurbine(36, 1740, psh36stg,
-                                   label='poly 36 PSH generator') ##Paper 1 has cap at 1740 Paper 2 had it as 1800 + 160 + 80
+                                   label='poly 36 PSH generator')  ## Paper 1 has cap at 1740 Paper 2 had it as 1800 + 160 + 80
 
     return [psh17pump, psh36pump, psh17turb, psh36turb]
 
@@ -157,23 +157,23 @@ def re100(context):
 
 
 def _batterySet(polygon, capacity, shours, comment):
-   """
-   Generate and return a pair of battery generator objects: one for the charging
-   side and one for the discharging side.
+    """
+    Generate and return a pair of battery generator objects: one for the charging
+    side and one for the discharging side.
 
-   capacity is the initial generating capacity (in MW)
-   shours is the number of full load storage hours
-   comment is the prefix for the object titles (eg. "P24 battery")
-   """
-   # discharge between 5pm and 7am daily
-   hrs = list(range(0, 8)) + list(range(17, 24))
-   storage = BatteryStorage(capacity * shours, f"{comment} Storage")
-   batt = Battery(polygon, capacity, shours, storage, f"{comment} Discharge", discharge_hours=hrs)
-   load = BatteryLoad(polygon, capacity, storage, f"{comment} Charge", discharge_hours=hrs, rte=0.9)
-   dual = DualSetter(batt.setters[0], load.setters[0])
-   load.setters = []
-   batt.setters = [(dual.set_capacity, 0, 40)]
-   return (batt, load)
+    capacity is the initial generating capacity (in MW)
+    shours is the number of full load storage hours
+    comment is the prefix for the object titles (eg. "P24 battery")
+    """
+    # discharge between 5pm and 7am daily
+    hrs = list(range(0, 8)) + list(range(17, 24))
+    storage = BatteryStorage(capacity * shours, f"{comment} Storage")
+    batt = Battery(polygon, capacity, shours, storage, f"{comment} Discharge", discharge_hours=hrs)
+    load = BatteryLoad(polygon, capacity, storage, f"{comment} Charge", discharge_hours=hrs, rte=0.9)
+    dual = DualSetter(batt.setters[0], load.setters[0])
+    load.setters = []
+    batt.setters = [(dual.set_capacity, 0, 40)]
+    return (batt, load)
 
 
 """ Start Elona's Scenarios """
@@ -189,7 +189,7 @@ def _existingSolarWind(gentype):
     # (Total windfarm capacty for each polygon -
     # /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/Data/
     # NEM_WindGenerators_Spatial_Cap_OPENNEM.csv)
-    # Total rooftop PV capacity for each polygon - 
+    # Total rooftop PV capacity for each polygon -
     # /Users/elonarey-costa/OneDrive\ -\ UNSW/PhD/
     # 2.0Project_Surplus/Data/RooftopPV_APVI/
     # TotalPVCapacity_per_Polygon.xlsx
@@ -199,7 +199,7 @@ def _existingSolarWind(gentype):
         for (poly, capacity) in [(1, 12.5), (2, 5), (3, 50), (4, 962), (6, 205.7),
                                  (7, 26), (11, 141.13), (16, 14.7),
                                  (17, 302.75), (23, 267.7), (24, 20),
-                                 (26, 135), (27,4.9),(28, 53), (29, 1.2),
+                                 (26, 135), (27, 4.9), (28, 53), (29, 1.2),
                                  (30, 256.5), (31, 134.5), (32, 110.3),
                                  (33, 868.13), (34, 617.6), (35, 121),
                                  (36, 55.5), (37, 55), (38, 217), (39, 111.8)]:
@@ -225,15 +225,15 @@ def _existingSolarWind(gentype):
             result.append(g)
     elif gentype == Behind_Meter_PV:
         cfg = configfile.get('generation', 'rooftop-pv-trace')
-        for (poly, capacity) in [(1, 184.5), (2, 1.2), (3, 7.4), 
-                                 (4, 296.8), (5, 0.6), (6, 2.9), (7, 141.11), 
-                                 (8, 2.2), (9, 1.1), (10, 16.2), (11, 219.8), 
-                                 (14, 0.9), (15, 4.2), (16, 39.5), (17, 3005.6), (19, 3.6), 
-                                 (21, 0.8), (22, 6.2), (23, 46.2), (24, 428.2), 
-                                 (25, 3.1), (26, 106.8), (27, 39.1), (28, 20.6), 
-                                 (29, 5.9), (30, 86.3), (31, 2147.2), (32, 1330.1), 
-                                 (33, 53.6), (34, 45.4), (35, 166.9), (36, 566.2), 
-                                 (37, 94.8), (38, 190.1), (39, 2434.1), (40, 34.8), 
+        for (poly, capacity) in [(1, 184.5), (2, 1.2), (3, 7.4),
+                                 (4, 296.8), (5, 0.6), (6, 2.9), (7, 141.11),
+                                 (8, 2.2), (9, 1.1), (10, 16.2), (11, 219.8),
+                                 (14, 0.9), (15, 4.2), (16, 39.5), (17, 3005.6), (19, 3.6),
+                                 (21, 0.8), (22, 6.2), (23, 46.2), (24, 428.2),
+                                 (25, 3.1), (26, 106.8), (27, 39.1), (28, 20.6),
+                                 (29, 5.9), (30, 86.3), (31, 2147.2), (32, 1330.1),
+                                 (33, 53.6), (34, 45.4), (35, 166.9), (36, 566.2),
+                                 (37, 94.8), (38, 190.1), (39, 2434.1), (40, 34.8),
                                  (41, 65.7), (42, 5), (43, 95.8)]:
             g = gentype(poly, capacity, cfg, poly - 1,
                         build_limit=capacity / 1000,
@@ -292,13 +292,13 @@ def re100SWHB4(context):
     # discharge between 5pm and 7am daily
     hrs = list(range(0, 8)) + list(range(17, 24))
     battery1 = Battery(24, 100, 1, discharge_hours=hrs,
-                         label=f'{"P24 New Batt 1 NSW"}', rte=0.9)
+                       label=f'{"P24 New Batt 1 NSW"}', rte=0.9)
     battery2 = Battery(24, 100, 2, discharge_hours=hrs,
-                         label=f'{"P24 New Batt 2 NSW"}', rte=0.9)
+                       label=f'{"P24 New Batt 2 NSW"}', rte=0.9)
     battery4 = Battery(24, 100, 4, discharge_hours=hrs,
-                         label=f'{"P24 New Batt 4 NSW"}', rte=0.9)
+                       label=f'{"P24 New Batt 4 NSW"}', rte=0.9)
     battery8 = Battery(24, 100, 8, discharge_hours=hrs,
-                         label=f'{"P24 New Batt 8 NSW"}', rte=0.9)
+                       label=f'{"P24 New Batt 8 NSW"}', rte=0.9)
     context.generators = (context.generators
                           + [battery1]
                           + [battery2]
@@ -330,7 +330,7 @@ def re100SWH_existingbatteries(context):
 
     re100SWH(context)
     # discharge between 5pm and 7am daily
-    # batteries operational as of July 2022 
+    # batteries operational as of July 2022
     hrs = list(range(0, 8, 2)) + list(range(16, 24, 2))
     rte = 1
     # Hornsdale has 150MW capacity for 1.25 hours
@@ -365,18 +365,18 @@ def re100SWH_existingbatteries(context):
     batBonneySA.setters = []
     # Victorian Big Battery is 300MW for 1.5 hr - rounded to 2 hours
     batVicBB = Battery(39, 300, 2, discharge_hours=hrs,
-                          label=f'{"P38 Existing Batt VicBB VIC"}',
-                          rte=rte)
+                       label=f'{"P38 Existing Batt VicBB VIC"}',
+                       rte=rte)
     batVicBB.capcost = lambda costs: 0
     batVicBB.setters = []
     # Bulgana is 20MW for 1.7 hr - rounded to 2 hours
     batBulgana = Battery(37, 20, 2, discharge_hours=hrs,
-                          label=f'{"P38 Existing Batt Bulgana VIC"}',
-                          rte=rte)
+                         label=f'{"P38 Existing Batt Bulgana VIC"}',
+                         rte=rte)
     batBulgana.capcost = lambda costs: 0
     batBulgana.setters = []
 
-    context.generators = (context.generators 
+    context.generators = (context.generators
                           + [batteryhornsdaleSA]
                           + [batDalrympleSA]
                           + [batBallaratVIC]
@@ -389,7 +389,7 @@ def re100SWH_existingbatteries(context):
 def re100SWH_2(context):
     """This scenario is the original Re100SWH scenario that was used in paper 2"""
     """We do not use it explicitly in paper 2 BUT we use it inside of re100SWHB_2"""
-    
+
     """It is the same as for paper 1 but ADDS in rooftop solar"""
     """IT ASSUMES: """
     """100% renewable electricity with only Large Scale PV, Rooftop PV, Wind, Hydro."""
@@ -399,7 +399,7 @@ def re100SWH_2(context):
     """Adds a new rooftop, largescale PV and Wind generator to each polygon"""
 
     """To Note: The code for battery and hydro generators has changed between Paper 1 and Paper 2"""
-        
+
     result = []
 
     # The following list is in merit order.
@@ -417,7 +417,7 @@ def re100SWH_2(context):
 
 
 def re100SWHB_2(context):
-    """This scenario is the original Re100SWHB scenario that was used in paper 2"""    
+    """This scenario is the original Re100SWHB scenario that was used in paper 2"""
     """It is the same as for paper 1 but ADDS in rooftop solar and changes the config of battery storage and load"""
     """IT ASSUMES: """
     """100% renewable electricity with only Large Scale PV, Rooftop PV, Wind, Hydro."""
@@ -433,20 +433,20 @@ def re100SWHB_2(context):
     # discharge between 5pm and 7am daily
     hrs = list(range(0, 8)) + list(range(17, 24))
 
-    #1 hour battery that NEMO can vary
+    # 1 hour battery that NEMO can vary
     batt1, battload1 = _batterySet(24, 100, 1, "P24 Battery 1")
-    #2 hour battery that NEMO can vary
+    # 2 hour battery that NEMO can vary
     batt2, battload2 = _batterySet(24, 100, 2, "P24 Battery 2")
-    #4 hour battery that NEMO can vary
+    # 4 hour battery that NEMO can vary
     batt4, battload4 = _batterySet(24, 100, 4, "P24 Battery 4")
-    #8 hour battery that NEMO can vary
+    # 8 hour battery that NEMO can vary
     batt8, battload8 = _batterySet(24, 100, 8, "P24 Battery 8")
 
-    context.generators = context.generators + [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] 
+    context.generators = context.generators + [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8]
 
 
 def re100SWHB_2_BattStartEnd(context):
-    """This scenario is the original Re100SWHB scenario that was used in paper 2"""    
+    """This scenario is the original Re100SWHB scenario that was used in paper 2"""
     """It is the same as for paper 1 but ADDS in rooftop solar and changes the config of battery storage and load"""
     """IT ASSUMES: """
     """100% renewable electricity with only Large Scale PV, Rooftop PV, Wind, Hydro."""
@@ -459,75 +459,75 @@ def re100SWHB_2_BattStartEnd(context):
 
     re100SWH_2(context)
 
-    #1 hour battery that NEMO can vary
-    battstorage1 = BatteryStorage(100, "P24 New Batt Storage 1 NSW") #Storage MWh
-    batt1 = Battery(24, 100, 1, battstorage1, "P24 Batt Discharge 1 NSW") #Capacity MW
-    battload1 = BatteryLoad(24, 100, battstorage1, "P24 Batt Charge 1 NSW") #Capacity MW
+    # 1 hour battery that NEMO can vary
+    battstorage1 = BatteryStorage(100, "P24 New Batt Storage 1 NSW")  # Storage MWh
+    batt1 = Battery(24, 100, 1, battstorage1, "P24 Batt Discharge 1 NSW")  # Capacity MW
+    battload1 = BatteryLoad(24, 100, battstorage1, "P24 Batt Charge 1 NSW")  # Capacity MW
     dual1 = DualSetter(battload1.setters[0], batt1.setters[0])
     battload1.setters = []
     batt1.setters = [(dual1.set_capacity, 0, 40)]
-    
-    #2 hour battery that NEMO can vary
-    battstorage2 = BatteryStorage(200, "P24 New Batt Storage 2 NSW") #Storage MWh 
-    batt2 = Battery(24, 100, 2, battstorage2, "P24 New Batt Discharge 2 NSW") #Capacity MW
-    battload2 = BatteryLoad(24, 100, battstorage2, "P24 New Batt Charge 2 NSW") #Capacity MW
+
+    # 2 hour battery that NEMO can vary
+    battstorage2 = BatteryStorage(200, "P24 New Batt Storage 2 NSW")  # Storage MWh
+    batt2 = Battery(24, 100, 2, battstorage2, "P24 New Batt Discharge 2 NSW")  # Capacity MW
+    battload2 = BatteryLoad(24, 100, battstorage2, "P24 New Batt Charge 2 NSW")  # Capacity MW
     dual2 = DualSetter(battload2.setters[0], batt2.setters[0])
     battload2.setters = []
     batt2.setters = [(dual2.set_capacity, 0, 40)]
-    
-    #4 hour battery that NEMO can vary
-    battstorage4 = BatteryStorage(400, "P24 New Batt Storage 4 NSW") #Storage MWh
-    batt4 = Battery(24, 100, 4, battstorage4, "P24 New Batt Discharge 4 NSW") #Capacity MW
-    battload4 = BatteryLoad(24, 100, battstorage4, "P24 New Batt Charge 4 NSW") #Capacity MW
+
+    # 4 hour battery that NEMO can vary
+    battstorage4 = BatteryStorage(400, "P24 New Batt Storage 4 NSW")  # Storage MWh
+    batt4 = Battery(24, 100, 4, battstorage4, "P24 New Batt Discharge 4 NSW")  # Capacity MW
+    battload4 = BatteryLoad(24, 100, battstorage4, "P24 New Batt Charge 4 NSW")  # Capacity MW
     dual4 = DualSetter(battload4.setters[0], batt4.setters[0])
     battload4.setters = []
     batt4.setters = [(dual4.set_capacity, 0, 40)]
 
-    #8 hour battery that NEMO can vary
-    battstorage8 = BatteryStorage(800, "P24 New Batt Storage 8 NSW") #Storage MWh
-    batt8 = Battery(24, 100, 8, battstorage8, "P24 New Batt Discharge 8 NSW") #Capacity MW
-    battload8 = BatteryLoad(24, 100, battstorage8, "P24 New Batt Charge 8 NSW") #Capacity MW
+    # 8 hour battery that NEMO can vary
+    battstorage8 = BatteryStorage(800, "P24 New Batt Storage 8 NSW")  # Storage MWh
+    batt8 = Battery(24, 100, 8, battstorage8, "P24 New Batt Discharge 8 NSW")  # Capacity MW
+    battload8 = BatteryLoad(24, 100, battstorage8, "P24 New Batt Charge 8 NSW")  # Capacity MW
     dual8 = DualSetter(battload8.setters[0], batt8.setters[0])
     battload8.setters = []
     batt8.setters = [(dual8.set_capacity, 0, 40)]
 
-    #1 hour battery that NEMO can vary
-    battstorage11 = BatteryStorage(100, "P24 New Batt Storage 11 NSW") #Storage MWh
-    batt11 = Battery(24, 100, 1, battstorage11, "P24 Batt Discharge 11 NSW") #Capacity MW
-    battload11 = BatteryLoad(24, 100, battstorage11, "P24 Batt Charge 11 NSW") #Capacity MW
+    # 1 hour battery that NEMO can vary
+    battstorage11 = BatteryStorage(100, "P24 New Batt Storage 11 NSW")  # Storage MWh
+    batt11 = Battery(24, 100, 1, battstorage11, "P24 Batt Discharge 11 NSW")  # Capacity MW
+    battload11 = BatteryLoad(24, 100, battstorage11, "P24 Batt Charge 11 NSW")  # Capacity MW
     dual11 = DualSetter(battload11.setters[0], batt11.setters[0])
     battload11.setters = []
     batt11.setters = [(dual11.set_capacity, 0, 40)]
-    
-    #2 hour battery that NEMO can vary
-    battstorage22 = BatteryStorage(200, "P24 New Batt Storage 22 NSW") #Storage MWh 
-    batt22 = Battery(24, 100, 2, battstorage22, "P24 New Batt Discharge 22 NSW") #Capacity MW
-    battload22 = BatteryLoad(24, 100, battstorage22, "P24 New Batt Charge 22 NSW") #Capacity MW
+
+    # 2 hour battery that NEMO can vary
+    battstorage22 = BatteryStorage(200, "P24 New Batt Storage 22 NSW")  # Storage MWh
+    batt22 = Battery(24, 100, 2, battstorage22, "P24 New Batt Discharge 22 NSW")  # Capacity MW
+    battload22 = BatteryLoad(24, 100, battstorage22, "P24 New Batt Charge 22 NSW")  # Capacity MW
     dual22 = DualSetter(battload22.setters[0], batt22.setters[0])
     battload22.setters = []
     batt22.setters = [(dual22.set_capacity, 0, 40)]
-    
-    #4 hour battery that NEMO can vary
-    battstorage44 = BatteryStorage(400, "P24 New Batt Storage 44 NSW") #Storage MWh
-    batt44 = Battery(24, 100, 4, battstorage44, "P24 New Batt Discharge 44 NSW") #Capacity MW
-    battload44 = BatteryLoad(24, 100, battstorage44, "P24 New Batt Charge 44 NSW") #Capacity MW
+
+    # 4 hour battery that NEMO can vary
+    battstorage44 = BatteryStorage(400, "P24 New Batt Storage 44 NSW")  # Storage MWh
+    batt44 = Battery(24, 100, 4, battstorage44, "P24 New Batt Discharge 44 NSW")  # Capacity MW
+    battload44 = BatteryLoad(24, 100, battstorage44, "P24 New Batt Charge 44 NSW")  # Capacity MW
     dual44 = DualSetter(battload44.setters[0], batt44.setters[0])
     battload44.setters = []
     batt44.setters = [(dual44.set_capacity, 0, 40)]
 
-    #8 hour battery that NEMO can vary
-    battstorage88 = BatteryStorage(800, "P24 New Batt Storage 88 NSW") #Storage MWh
-    batt88 = Battery(24, 100, 8, battstorage88, "P24 New Batt Discharge 88 NSW") #Capacity MW
-    battload88 = BatteryLoad(24, 100, battstorage88, "P24 New Batt Charge 88 NSW") #Capacity MW
+    # 8 hour battery that NEMO can vary
+    battstorage88 = BatteryStorage(800, "P24 New Batt Storage 88 NSW")  # Storage MWh
+    batt88 = Battery(24, 100, 8, battstorage88, "P24 New Batt Discharge 88 NSW")  # Capacity MW
+    battload88 = BatteryLoad(24, 100, battstorage88, "P24 New Batt Charge 88 NSW")  # Capacity MW
     dual88 = DualSetter(battload88.setters[0], batt88.setters[0])
     battload88.setters = []
     batt88.setters = [(dual88.set_capacity, 0, 40)]
 
-    #battload.setters = batt.setters
-    #batt.setters = [] # If you want fixed capacity batteries, you need to set the batt and battload setters to []. 
-    #battload.setters = [] # Otherwise, NEMO will try varying the capacity which in turn varies the full loads hours to a non-{1,2,4,8} multiple.
-    #context.generators = context.generators + [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] 
-    context.generators = [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] + context.generators + [batt11, battload11, batt22, battload22, batt44, battload44, batt88, battload88] 
+    # battload.setters = batt.setters
+    # batt.setters = [] # If you want fixed capacity batteries, you need to set the batt and battload setters to [].
+    # battload.setters = [] # Otherwise, NEMO will try varying the capacity which in turn varies the full loads hours to a non-{1,2,4,8} multiple.
+    # context.generators = context.generators + [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8]
+    context.generators = [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] + context.generators + [batt11, battload11, batt22, battload22, batt44, battload44, batt88, battload88]
 
 
 def re100SWHB_2_COMPARE_1(context):
@@ -538,34 +538,34 @@ def re100SWHB_2_COMPARE_1(context):
     re100SWH(context)
     # discharge between 5pm and 7am daily
     hrs = list(range(0, 8)) + list(range(17, 24))
-    #1 hour battery that NEMO can vary
-    battstorage1 = BatteryStorage(100, "Battery Storage 1 hours") #Storage MWh
-    batt1 = Battery(38, 100, 1, battstorage1, "P38 Battery Discharge 1hr", discharge_hours = hrs) #Capacity MW
-    battload1 = BatteryLoad(38, 100, battstorage1, "P38 Battery Charge 1hr", discharge_hours = hrs, rte=0.9) #Capacity MW
+    # 1 hour battery that NEMO can vary
+    battstorage1 = BatteryStorage(100, "Battery Storage 1 hours")  # Storage MWh
+    batt1 = Battery(38, 100, 1, battstorage1, "P38 Battery Discharge 1hr", discharge_hours=hrs)  # Capacity MW
+    battload1 = BatteryLoad(38, 100, battstorage1, "P38 Battery Charge 1hr", discharge_hours=hrs, rte=0.9)  # Capacity MW
     dual1 = DualSetter(battload1.setters[0], batt1.setters[0])
     battload1.setters = []
     batt1.setters = [(dual1.set_capacity, 0, 40)]
-    
-    #2 hour battery that NEMO can vary
-    battstorage2 = BatteryStorage(200, "Battery Storage 2 hours") #Storage MWh 
-    batt2 = Battery(38, 100, 2, battstorage2, "P38 Battery Discharge 2hrs", discharge_hours = hrs) #Capacity MW
-    battload2 = BatteryLoad(38, 100, battstorage2, "P38 Battery Charge 2hrs", discharge_hours = hrs, rte=0.9) #Capacity MW
+
+    # 2 hour battery that NEMO can vary
+    battstorage2 = BatteryStorage(200, "Battery Storage 2 hours")  # Storage MWh
+    batt2 = Battery(38, 100, 2, battstorage2, "P38 Battery Discharge 2hrs", discharge_hours=hrs)  # Capacity MW
+    battload2 = BatteryLoad(38, 100, battstorage2, "P38 Battery Charge 2hrs", discharge_hours=hrs, rte=0.9)  # Capacity MW
     dual2 = DualSetter(battload2.setters[0], batt2.setters[0])
     battload2.setters = []
     batt2.setters = [(dual2.set_capacity, 0, 40)]
-    
-    #4 hour battery that NEMO can vary
-    battstorage4 = BatteryStorage(400, "Battery Storage 4 hours") #Storage MWh
-    batt4 = Battery(38, 100, 4, battstorage4, "P38 Battery Discharge 4hrs", discharge_hours = hrs) #Capacity MW
-    battload4 = BatteryLoad(38, 100, battstorage4, "P38 Battery Charge 4hrs", discharge_hours = hrs, rte=0.9) #Capacity MW
+
+    # 4 hour battery that NEMO can vary
+    battstorage4 = BatteryStorage(400, "Battery Storage 4 hours")  # Storage MWh
+    batt4 = Battery(38, 100, 4, battstorage4, "P38 Battery Discharge 4hrs", discharge_hours=hrs)  # Capacity MW
+    battload4 = BatteryLoad(38, 100, battstorage4, "P38 Battery Charge 4hrs", discharge_hours=hrs, rte=0.9)  # Capacity MW
     dual4 = DualSetter(battload4.setters[0], batt4.setters[0])
     battload4.setters = []
     batt4.setters = [(dual4.set_capacity, 0, 40)]
 
-    #8 hour battery that NEMO can vary
-    battstorage8 = BatteryStorage(800, "Battery Storage 8 hours") #Storage MWh
-    batt8 = Battery(38, 100, 8, battstorage8, "P38 Battery Discharge 8hrs", discharge_hours = hrs) #Capacity MW
-    battload8 = BatteryLoad(38, 100, battstorage8, "P38 Battery Charge 8hrs", discharge_hours = hrs, rte=0.9) #Capacity MW
+    # 8 hour battery that NEMO can vary
+    battstorage8 = BatteryStorage(800, "Battery Storage 8 hours")  # Storage MWh
+    batt8 = Battery(38, 100, 8, battstorage8, "P38 Battery Discharge 8hrs", discharge_hours=hrs)  # Capacity MW
+    battload8 = BatteryLoad(38, 100, battstorage8, "P38 Battery Charge 8hrs", discharge_hours=hrs, rte=0.9)  # Capacity MW
     dual8 = DualSetter(battload8.setters[0], batt8.setters[0])
     battload8.setters = []
     batt8.setters = [(dual8.set_capacity, 0, 40)]
@@ -681,8 +681,8 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100-nsw': re100_nsw,
                     're100-sa': re100_south_aus,
                     're100SWH': re100SWH,
-                    're100SWHB4':re100SWHB4,
-                    're100SWHB4G':re100SWHB4G,
+                    're100SWHB4': re100SWHB4,
+                    're100SWHB4G': re100SWHB4G,
                     're100SWH_existingbatteries': re100SWH_existingbatteries,
                     're100SWHB_2': re100SWHB_2,
                     're100SWHB_2_BattStartEnd': re100SWHB_2_BattStartEnd,
