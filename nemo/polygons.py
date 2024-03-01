@@ -400,7 +400,7 @@ def region(polygon):
 # solar modelling for the AEMO 100% Renewables project. See
 # nemo.ozlabs.org for a link to this report.
 # numbers in GW
-# rooftop build limits from 
+# rooftop build limits from
 # https://www.cefc.com.au/media/rcalz41c/isf-rooftop-solar-potential-report-final_.pdf
 
 wind_limit = [None, 80.3, 0, 36.9, 6.5, 15.6, 1.5, 6.9, 2.6, 0, 4.1,
@@ -419,9 +419,9 @@ cst_limit = [None, 102, 822, 166, 204, 1030, 1092, 220, 782, 504, 134,
              1004, 906, 96, 62, 378, 528, 718, 564, 400, 24, 404, 410,
              474, 260, 20, 514, 60, 266, 10, 16, 0.16, 4]
 
-rooftop_limit = [None, 2.3, 0.1, 0.1, 3.5, 0, 0.1, 1.7, 0.1, 0, 0, 2.3, 
-                 0, 0, 0, 0.1, 1.1, 26.7, 0, 0.2, 0, 0, 0.1, 1, 5.2, 
-                 0.1, 1.6, 0.7, 0.2, 0.1, 1.5, 29.6, 16.6, 1.1, 1, 
+rooftop_limit = [None, 2.3, 0.1, 0.1, 3.5, 0, 0.1, 1.7, 0.1, 0, 0, 2.3,
+                 0, 0, 0, 0.1, 1.1, 26.7, 0, 0.2, 0, 0, 0.1, 1, 5.2,
+                 0.1, 1.6, 0.7, 0.2, 0.1, 1.5, 29.6, 16.6, 1.1, 1,
                  2.6, 6.8, 2.6, 2.4, 36.2, 3, 2, 0.2, 2.2]
 
 # Only these four polygons have been chosen for off-shore wind farm siting.
@@ -448,7 +448,7 @@ def _centroid(vertices):
 
 def dist(poly1, poly2):
     """Return the distance between two polygon centroids.
-    
+
     >>> dist(1,1)
     0
     >>> dist(1,43)
