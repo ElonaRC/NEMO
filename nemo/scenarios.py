@@ -525,6 +525,30 @@ def re100SWHB_2_BattStartEnd(context):
     context.generators = [batt1, battload1, batt2, battload2, batt4, battload4, batt8, battload8] + context.generators + [batt11, battload11, batt22, battload22, batt44, battload44, batt88, battload88]
 
 
+def re100SWHB_3(context):
+    """This scenario is the original Re100SWHB scenario that was used in paper 3"""
+    # It is the same as for paper 2
+    # IT ASSUMES:
+    # 100% renewable electricity with only Large Scale PV, Rooftop PV, Wind, Hydro.
+    # Existing capacity for Large Scale PV and Wind are as of June 2022
+    # Existing capacity for Rooftop Solar PV are as of September 2023
+    # Existing Hydro and Pumped Hydro are placed where they are located IRL
+    # Adds a new rooftop, largescale PV and Wind generator to each polygon
+    # Adds in EV battery size if all household cars were electric (4 hour battery only)
+    # 96 GWh = 10% , 191 GWh = 20%, 287 GWh = 30%, 383 GWh - 40%, 478 GWh = 50%
+    # To note battery size is in MW so a 4 hour battery with 96 GWh will have a size of 24 GW
+
+    re100SWH_2(context)
+
+    batt4, battload4 = _batterySet(24, 75100, 4, "P24 Battery 4")
+    #batt4.capcost = lambda costs: 0
+    batt4.setters = []
+    #battload4.capcost = lambda costs: 0
+    battload4.setters = []
+   
+    context.generators = context.generators + [batt4, battload4]
+
+
 # End Elonas Scenarios
 
 
@@ -635,6 +659,7 @@ supply_scenarios = {'__one_ccgt__': _one_ccgt,  # nb. for testing only
                     're100SWH_existingbatteries': re100SWH_existingbatteries,
                     're100SWHB_2': re100SWHB_2,
                     're100SWHB_2_BattStartEnd': re100SWHB_2_BattStartEnd,
+                    're100SWHB_3': re100SWHB_3,
                     're100+dsp': re100_dsp,
                     're100-nocst': re100_nocst,
                     'replacement': replacement}

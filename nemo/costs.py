@@ -926,7 +926,7 @@ class GenCost2023_2030_NZE2050(GenCost2023):
         table[tech.WindOffshore] = 2755
 
         table = self.totcost_per_kwh
-        table[tech.Battery] = {1: 580, 2: 344, 4: 235, 8: 186}
+        table[tech.Battery] = {1: 580, 2: 344, 4: 25, 8: 186} #gencost 4 hour is 235
 
 
 class GenCost2023_2040_NZE2050(GenCost2023):
